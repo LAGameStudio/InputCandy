@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ActiveConfig="Default" Platform="Windows" Runtime="VM" Device="Default">
+	<Desktop x="-9" y="-9" width="3840" height="2081" id="19" title="InputCandy - GameMaker Studio 2" windowState="Maximized">
+		<Workspaces>
+			<Workspace active="False" chain="True" title="Workspace 1" localise_title="Workspace_TabTitle" localise_arguments="[&#xD;&#xA;    &quot;1&quot;&#xD;&#xA;]" workspace_offset="[725, -581]" workspace_scale="1">
+				<Module Command="open_sprite_editor">
+					<SpriteEditor SpriteEditor_Id="s_InputCandy_deviceicons">
+						<WorkspaceChain left="778.4dpi_px" top="1394.4dpi_px" />
+					</SpriteEditor>
+				</Module>
+				<Module Command="open_object_editor">
+					<ObjectEditor objectName="o_InputCandy_settings" eventsOpen="true" parentOpen="false" physicsOpen="false" physicsEditorOpen="false" propertiesOpen="false" activeWindow="parent">
+						<WorkspaceChain left="1680.8dpi_px" top="-840.8dpi_px" />
+					</ObjectEditor>
+				</Module>
+				<Module Command="open_object_editor">
+					<ObjectEditor objectName="o_InputCandy_player_selection" eventsOpen="true" parentOpen="false" physicsOpen="false" physicsEditorOpen="false" propertiesOpen="false" activeWindow="parent">
+						<WorkspaceChain left="352dpi_px" top="-841.6dpi_px" />
+					</ObjectEditor>
+				</Module>
+				<Module Command="open_object_editor">
+					<ObjectEditor objectName="o_InputCandy_diagnostics" eventsOpen="true" parentOpen="false" physicsOpen="false" physicsEditorOpen="false" propertiesOpen="false" activeWindow="parent">
+						<WorkspaceChain left="580dpi_px" top="766.4dpi_px" />
+						<DocumentWindow columns="1" fullscreen="False" activeTab="0" isActive="False" w="900dpi_px" h="600dpi_px" linkIndex="-1">
+							<Script column="0" file="${project_dir}\objects\o_InputCandy_diagnostics\Draw_0.gml" resource="o_InputCandy_diagnostics" subResource="8_0" overridden_title="False" view_readonly="False" />
+						</DocumentWindow>
+					</ObjectEditor>
+				</Module>
+				<Module Command="DocumentWindow_RestoreLayout" WorkspaceOwner="true">
+					<DocumentWindow columns="1" fullscreen="False" activeTab="0" isActive="False" w="1284dpi_px" h="600dpi_px">
+						<Script column="0" file="${project_dir}\scripts\InputCandySimple\InputCandySimple.gml" resource="InputCandySimple" overridden_title="False" view_readonly="False" />
+						<WorkspaceChain left="778.4dpi_px" top="2020dpi_px" />
+					</DocumentWindow>
+				</Module>
+				<Module Command="DocumentWindow_RestoreLayout" WorkspaceOwner="true">
+					<DocumentWindow columns="1" fullscreen="False" activeTab="0" isActive="False" w="1291.2dpi_px" h="600dpi_px">
+						<Script column="0" file="${project_dir}\scripts\Utilities\Utilities.gml" resource="Utilities" overridden_title="False" view_readonly="False" />
+						<WorkspaceChain left="778.4dpi_px" top="2665.6dpi_px" />
+					</DocumentWindow>
+				</Module>
+				<Module Command="DocumentWindow_RestoreLayout" WorkspaceOwner="true">
+					<DocumentWindow columns="1" fullscreen="False" activeTab="0" isActive="False" w="900dpi_px" h="600dpi_px">
+						<Script column="0" file="${project_dir}\notes\Note1\Note1.txt" resource="Note1" overridden_title="False" view_readonly="False" />
+						<WorkspaceChain left="778.4dpi_px" top="3981.6dpi_px" />
+					</DocumentWindow>
+				</Module>
+				<Module Command="open_object_editor">
+					<ObjectEditor objectName="o_InputCandy" eventsOpen="true" parentOpen="false" physicsOpen="false" physicsEditorOpen="false" propertiesOpen="false" activeWindow="parent">
+						<WorkspaceChain left="778.4dpi_px" top="3321.6dpi_px" />
+						<DocumentWindow columns="1" fullscreen="False" activeTab="0" isActive="False" w="900dpi_px" h="600dpi_px" linkIndex="-1">
+							<Script column="0" file="${project_dir}\objects\o_InputCandy\Create_0.gml" resource="o_InputCandy" subResource="0_0" overridden_title="False" view_readonly="False" />
+							<Script column="0" file="${project_dir}\objects\o_InputCandy\Step_0.gml" resource="o_InputCandy" subResource="3_0" overridden_title="False" view_readonly="False" />
+						</DocumentWindow>
+					</ObjectEditor>
+				</Module>
+				<Module Command="DocumentWindow_RestoreLayout" WorkspaceOwner="true">
+					<DocumentWindow columns="1" fullscreen="False" activeTab="0" isActive="False" w="1707.2dpi_px" h="1115.2dpi_px">
+						<Script column="0" file="${project_dir}\scripts\InputCandy\InputCandy.gml" resource="InputCandy" overridden_title="False" view_readonly="False" />
+						<DocumentWindow columns="1" fullscreen="False" activeTab="0" isActive="False" w="900dpi_px" h="600dpi_px">
+							<Script column="0" file="${project_dir}\scripts\Utilities\Utilities.gml" resource="Utilities" overridden_title="False" view_readonly="False" />
+						</DocumentWindow>
+						<WorkspaceChain left="580dpi_px" top="-404.8dpi_px" />
+					</DocumentWindow>
+				</Module>
+			</Workspace>
+			<Workspace active="False" chain="False" title="rm_InputCandy_diagnostic_test" localise_title="" workspace_offset="[0, 0]" workspace_scale="1">
+				<Module Command="open_room_editor" WorkspaceOwner="true">
+					<Room id="rm_InputCandy_diagnostic_test">
+						<RoomCreationCode>
+							<FloatingWorkspaceArea left="0dpi_px" top="-1428.458dpi_px" />
+							<DocumentWindow columns="1" fullscreen="False" activeTab="0" isActive="False" w="900dpi_px" h="600dpi_px">
+								<Script column="0" file="${project_dir}\rooms\rm_InputCandy_diagnostic_test\RoomCreationCode.gml" resource="rm_InputCandy_diagnostic_test" overridden_title="False" view_readonly="False" />
+							</DocumentWindow>
+						</RoomCreationCode>
+						<RoomEditArea>
+							<PanArea zoom="2.197628" pan="[-400.5455, -991.1017]" />
+							<Properties />
+							<Selected>
+								<Layer GUID="Instances" />
+								<Item name="inst_EAABFE4" path="rooms/rm_InputCandy_diagnostic_test/rm_InputCandy_diagnostic_test.yy" />
+							</Selected>
+						</RoomEditArea>
+					</Room>
+				</Module>
+			</Workspace>
+		</Workspaces>
+		<Dock state="Expanded" type="eLeft" restore_size="315dpi_px" active_tab="0">
+			<DockTab localise_title="RoomEditor_DockTab" cell_sizes="[536,143,125,194]" layout_id="room_editor_tab" layout_guid="82828573-05a4-40fa-943a-ce6adcbe1e90" />
+		</Dock>
+		<Dock state="Expanded" type="eRight" restore_size="305dpi_px" active_tab="0">
+			<DockTab localise_title="ResourceTree_Title" cell_sizes="[691,308]" layout_id="dock_tab_1" layout_guid="c65e7b74-59ed-4065-99d0-ca2e718ed952">
+				<Module Command="open_asset_browser">
+					<AssetBrowser sort="AtoZ" foldersFirst="True" zoom="100">
+						<Window left="" right="" top="" bottom="" width="370dpi_px" height="463dpi_px" flags="Default" title="Asset Browser" localise_title="AssetBrowser_Title" />
+					</AssetBrowser>
+				</Module>
+				<Module Command="open_recent_windows">
+					<RecentWindowsWindow left="" right="" top="" bottom="" width="400dpi_px" height="100dpi_px" flags="Default" title="Recent Windows" localise_title="recentwindows_title" />
+				</Module>
+			</DockTab>
+		</Dock>
+		<Dock state="Expanded" type="eBottom" restore_size="321.92dpi_px" active_tab="0">
+			<DockTab localise_title="OutputPanel_Output" cell_sizes="[621,211,166]" layout_id="dock_tab_1" layout_guid="bddafbac-063f-4993-9093-6435859f9da3">
+				<Module Command="open_output_panel">
+					<Window left="0px" right="" top="0px" bottom="" width="900px" height="240px" flags="Default" title="Output" localise_title="OutputPanel_Title" />
+				</Module>
+			</DockTab>
+			<DockTab localise_title="OutputPanel_SearchResults" cell_sizes="[1000]" layout_id="dock_tab_2" layout_guid="5982a521-417b-4338-8b58-4f1acc250fb1">
+				<Module Command="open_search_output_panel">
+					<Window left="0px" right="" top="0px" bottom="" width="900px" height="240px" flags="Default" title="Search Results" localise_title="OutputPanel_SearchResults" />
+				</Module>
+			</DockTab>
+			<DockTab localise_title="OutputPanel_SourceControl" cell_sizes="[1000]" layout_id="dock_tab_3" layout_guid="8ccd4706-f35b-42e0-8a36-8505c9c0a726">
+				<Module Command="open_sc_output_panel">
+					<Window left="0px" right="" top="0px" bottom="" width="900px" height="240px" flags="Default" title="Source Control" localise_title="OutputPanel_SourceControl" />
+				</Module>
+			</DockTab>
+			<DockTab localise_title="Breakpoints" cell_sizes="[1000]" layout_id="dock_tab_4" layout_guid="c30799b3-e932-40bb-99d8-3206f49145c4">
+				<Module Command="open_breakpoint_mgr">
+					<Window left="0px" right="" top="0px" bottom="" width="900px" height="240px" flags="Default" title="Breakpoints" localise_title="Breakpoints" />
+				</Module>
+			</DockTab>
+			<DockTab localise_title="CompileErrors" cell_sizes="[1000]" layout_id="dock_tab_5" layout_guid="3cb0a0f4-2337-41bd-bebe-159209127c58">
+				<Module Command="show_compile_errors">
+					<Window left="0px" right="" top="0px" bottom="" width="900px" height="240px" flags="Default" title="Compile Errors" localise_title="CompileErrors" />
+				</Module>
+			</DockTab>
+			<DockTab localise_title="SyntaxErrors" cell_sizes="[1000]" layout_id="dock_tab_6" layout_guid="58e29075-ec0a-4af9-bb4a-94f36109e894">
+				<Module Command="show_syntax_errors">
+					<Window left="0px" right="" top="0px" bottom="" width="900px" height="240px" flags="Default" title="Syntax Errors" localise_title="SyntaxErrors" />
+				</Module>
+			</DockTab>
+		</Dock>
+	</Desktop>
+	<Modules>
+		<YoYoStudio.Plugins.CorePlugins.RoomEditorModule>
+			<RoomEditor>
+				<LayerProperties left="20dpi_px" right="" top="" bottom="350dpi_px" width="260dpi_px" height="330dpi_px" flags="Default" title="Instances Layer Properties - rm_InputCandy_diagnostic_test" localise_title="RoomEditor_LayerProperties" dock_type="eLeft" dock_tab_index="0" dock_list_index="1" dock_proportion="0.575346" dock_tab_name="Room Editor" dock_tab_localise_name="RoomEditor_DockTab" dock_tab_id="room_editor_tab" dock_tab_guid="82828573-05a4-40fa-943a-ce6adcbe1e90" desktop="19" />
+				<Layers left="340dpi_px" right="" top="" bottom="270dpi_px" width="320dpi_px" height="250dpi_px" flags="CloseButton, MinimizeButton, ResizeButton" title="Layers - rm_InputCandy_diagnostic_test" localise_title="RoomEditor_Layers" dock_type="eLeft" dock_tab_index="0" dock_list_index="0" dock_proportion="2.146165" dock_tab_name="Room Editor" dock_tab_localise_name="RoomEditor_DockTab" dock_tab_id="room_editor_tab" dock_tab_guid="82828573-05a4-40fa-943a-ce6adcbe1e90" desktop="19" />
+				<RoomProperties left="10dpi_px" right="" top="125dpi_px" bottom="" width="300dpi_px" height="240dpi_px" flags="Default" title="Properties - rm_InputCandy_diagnostic_test" localise_title="RoomEditor_RoomProperties" dock_type="eLeft" dock_tab_index="0" dock_list_index="2" dock_proportion="0.5023929" dock_tab_name="Room Editor" dock_tab_localise_name="RoomEditor_DockTab" dock_tab_id="room_editor_tab" dock_tab_guid="82828573-05a4-40fa-943a-ce6adcbe1e90" desktop="19" />
+				<InstanceCreationOrder left="328px" right="" top="52px" bottom="" width="300px" height="300dpi_px" flags="Default" title="Instance Creation Order - rm_InputCandy_diagnostic_test" localise_title="RoomEditor_InstanceCreationOrder" dock_type="eLeft" dock_tab_index="0" dock_list_index="3" dock_proportion="0.7760962" dock_tab_name="Room Editor" dock_tab_localise_name="RoomEditor_DockTab" dock_tab_id="room_editor_tab" dock_tab_guid="82828573-05a4-40fa-943a-ce6adcbe1e90" desktop="19" />
+			</RoomEditor>
+		</YoYoStudio.Plugins.CorePlugins.RoomEditorModule>
+	</Modules>
+	<FoldRegions>
+		<FoldState docFile="scripts/InputCandy/InputCandy.gml" foldedRegions="2" />
+	</FoldRegions>
+</Project>
