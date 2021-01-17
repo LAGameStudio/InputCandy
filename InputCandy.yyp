@@ -4,9 +4,12 @@
     {"id":{"name":"InputCandy","path":"scripts/InputCandy/InputCandy.yy",},"order":0,},
     {"id":{"name":"o_InputCandy_diagnostics","path":"objects/o_InputCandy_diagnostics/o_InputCandy_diagnostics.yy",},"order":2,},
     {"id":{"name":"Note1","path":"notes/Note1/Note1.yy",},"order":0,},
+    {"id":{"name":"font_Jellee","path":"fonts/font_Jellee/font_Jellee.yy",},"order":0,},
+    {"id":{"name":"rm_InputCandySimple_demo","path":"rooms/rm_InputCandySimple_demo/rm_InputCandySimple_demo.yy",},"order":1,},
     {"id":{"name":"s_InputCandy_deviceicons","path":"sprites/s_InputCandy_deviceicons/s_InputCandy_deviceicons.yy",},"order":0,},
     {"id":{"name":"InputCandySimple","path":"scripts/InputCandySimple/InputCandySimple.yy",},"order":1,},
     {"id":{"name":"o_InputCandy","path":"objects/o_InputCandy/o_InputCandy.yy",},"order":3,},
+    {"id":{"name":"o_InputCandySimple_demo","path":"objects/o_InputCandySimple_demo/o_InputCandySimple_demo.yy",},"order":4,},
     {"id":{"name":"o_InputCandy_player_selection","path":"objects/o_InputCandy_player_selection/o_InputCandy_player_selection.yy",},"order":1,},
     {"id":{"name":"Utilities","path":"scripts/Utilities/Utilities.yy",},"order":2,},
     {"id":{"name":"rm_InputCandy_diagnostic_test","path":"rooms/rm_InputCandy_diagnostic_test/rm_InputCandy_diagnostic_test.yy",},"order":0,},
@@ -25,6 +28,7 @@
     "children": [],
   },
   "RoomOrderNodes": [
+    {"roomId":{"name":"rm_InputCandySimple_demo","path":"rooms/rm_InputCandySimple_demo/rm_InputCandySimple_demo.yy",},},
     {"roomId":{"name":"rm_InputCandy_diagnostic_test","path":"rooms/rm_InputCandy_diagnostic_test/rm_InputCandy_diagnostic_test.yy",},},
   ],
   "Folders": [
