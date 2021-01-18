@@ -1,6 +1,8 @@
 InputCandy by Lost Astronaut
 ============================
 
+![GitHub Logo](/marketplace/InputCandyTeaser.png)
+
 For GMS 2.3.1+
 
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
