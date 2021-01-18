@@ -1,1 +1,1 @@
-draw_text(16,16,controls.devicesString(devices));
+draw_text(16,16,"SIMPLE MODE\n\n"+controls.devicesString(devices)+"\n\n"+stateString);

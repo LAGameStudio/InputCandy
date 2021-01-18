@@ -1,5 +1,8 @@
 {
-  "spriteId": null,
+  "spriteId": {
+    "name": "s_InputCandy_Logo2",
+    "path": "sprites/s_InputCandy_Logo2/s_InputCandy_Logo2.yy",
+  },
   "solid": false,
   "visible": true,
   "spriteMaskId": null,
@@ -18,7 +21,8 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"parent":{"name":"o_InputCandy","path":"objects/o_InputCandy/o_InputCandy.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":7,"eventType":6,"collisionObjectId":null,"parent":{"name":"o_InputCandy_Logo","path":"objects/o_InputCandy_Logo/o_InputCandy_Logo.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":73,"eventType":8,"collisionObjectId":null,"parent":{"name":"o_InputCandy_Logo","path":"objects/o_InputCandy_Logo/o_InputCandy_Logo.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -27,7 +31,7 @@
     "path": "folders/Objects.yy",
   },
   "resourceVersion": "1.0",
-  "name": "o_InputCandy",
+  "name": "o_InputCandy_Logo",
   "tags": [],
   "resourceType": "GMObject",
 }

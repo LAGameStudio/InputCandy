@@ -12,9 +12,29 @@ See LICENSE for usage guidelines.
 #macro __ICI __INPUTCANDY.internal
 
 
-// Initialize the "Advanced mode with:
+// 1. Initialize the "Advanced mode" with the following function call in a Room Creation or during initial game startup.
 function Init_InputCandy_Advanced() { __Private_Init_InputCandy(); }
 
+/*
+  InputCandy's advanced mode is relatively easy to use.
+  
+  After initialization, see documentation on usage for how to set up these things:
+  
+  1. Define your game actions and any default signal bindings.
+  
+  2. Place action checks throughout your game to "tie in" the game.
+  
+  3. Provide access to the InputCandy player selection and settings rooms somehow in your game.
+  
+  4. Test.  You're good!
+  
+  5. Re-style the look of the InputCandy selection and settings rooms.
+  
+  6. Optional but appreciated:
+     Add InputCandy and Lost Astronaut logos found in the marketplace/ folder to your game
+	 documentation, website and startup screens.
+  
+*/  
 
 
 ////////// enumerations and global macros
@@ -356,12 +376,10 @@ __INPUTCANDY.signals = [
  {	index:124,  code: IC_key_apostrophe, name: "Apostrophe",    azerty_name: "Apostrophe",    qwertz_name:"Apostrophe",    deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "'" , shifted: "\"" },
 ];
 
+__INPUTCANDY.SDL_GameControllerDB = [];
 
-
-// Retrieved on 1/15/2021
-__INPUTCANDY.SDL_GameControllerDB = Process_SDL_GameControllerDB( file_as_string("SDLDB.txt") );
-
-
+__ICI.Init();
+__INPUTCANDY.ready=true;
 }
 
 // This function is invoked and stored in __IC.interface, but you can call it anywhere to grab an "instance" of all
@@ -473,10 +491,6 @@ function New_InputCandy() {
 function New_InputCandy_Private() {
  return {
 	 Step: function() {
-	    if ( __INPUTCANDY.ready == false ) {
-	    	__ICI.Init();
-			__INPUTCANDY.ready=true;
-	    }
 		__ICI.GetActiveDevices();
 		__ICI.GetDeviceStates();
 	    if ( __INPUTCANDY.use_network ) __ICI.UpdateNetwork();
@@ -837,4 +851,34 @@ function Process_SDL_GameControllerDB(txt) {
 		};
 	}
 	return out;
+}
+
+#macro __SDLDB_READ_BYTE_CHUNK_SIZE  1024
+
+function SDLDB_Load_Start() {
+ __INPUTCANDY.SDLDB_Buffer="";
+ if ( !file_exists("SDLDB.txt") ) global.SDLDB_Done=true;
+ __INPUTCANDY.SDLDB_Done=false;
+ __INPUTCANDY.SDLDB_File=file_bin_open("SDLDB.txt",0);
+ __INPUTCANDY.SDLDB_Size_Bytes=file_bin_size(__INPUTCANDY.SDLDB_File);
+ __INPUTCANDY.SDLDB_Read_Bytes=0;
+}
+
+function SDLDB_Load_Step() {
+	if ( __INPUTCANDY.SDLDB_Done ) return true;
+	if ( file_bin_position(__INPUTCANDY.SDLDB_File) == file_bin_size(__INPUTCANDY.SDLDB_File) ) {
+		file_bin_close(__INPUTCANDY.SDLDB_File);
+		Process_SDL_GameControllerDB( __INPUTCANDY.SDLDB_Buffer );
+		__INPUTCANDY.SDLDB_Buffer=""; // Saves ram?
+        __INPUTCANDY.SDLDB_Done = true;
+		return true;
+	}
+	
+	var i;
+	for ( i=0; i<__SDLDB_READ_BYTE_CHUNK_SIZE; i++ ){
+		if ( file_bin_position(__INPUTCANDY.SDLDB_File) == file_bin_size(__INPUTCANDY.SDLDB_File) ) break;
+		__INPUTCANDY.SDLDB_Buffer += chr(file_bin_read_byte(__INPUTCANDY.SDLDB_File));
+	}
+    __INPUTCANDY.SDLDB_Read_Bytes+=i;	
+	return false;
 }

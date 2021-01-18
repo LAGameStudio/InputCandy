@@ -16,6 +16,7 @@
     {"instances":[
         {"properties":[],"isDnd":false,"objectId":{"name":"o_InputCandy","path":"objects/o_InputCandy/o_InputCandy.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":-32.0,"y":0.0,"resourceVersion":"1.0","name":"inst_EAABFE4","tags":[],"resourceType":"GMRInstance",},
         {"properties":[],"isDnd":false,"objectId":{"name":"o_InputCandy_diagnostics","path":"objects/o_InputCandy_diagnostics/o_InputCandy_diagnostics.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":-32.0,"y":32.0,"resourceVersion":"1.0","name":"inst_7CB15213","tags":[],"resourceType":"GMRInstance",},
+        {"properties":[],"isDnd":false,"objectId":{"name":"o_InputCandy_Logo","path":"objects/o_InputCandy_Logo/o_InputCandy_Logo.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":1056.0,"y":672.0,"resourceVersion":"1.0","name":"inst_19A0D8A6","tags":[],"resourceType":"GMRInstance",},
       ],"visible":true,"depth":0,"userdefinedDepth":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":32,"gridY":32,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
     {"spriteId":null,"colour":4278190080,"x":0,"y":0,"htiled":false,"vtiled":false,"hspeed":0.0,"vspeed":0.0,"stretch":false,"animationFPS":15.0,"animationSpeedType":0,"userdefinedAnimFPS":false,"visible":true,"depth":100,"userdefinedDepth":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":32,"gridY":32,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Background","tags":[],"resourceType":"GMRBackgroundLayer",},
   ],
@@ -25,6 +26,7 @@
   "instanceCreationOrder": [
     {"name":"inst_EAABFE4","path":"rooms/rm_InputCandy_diagnostic_test/rm_InputCandy_diagnostic_test.yy",},
     {"name":"inst_7CB15213","path":"rooms/rm_InputCandy_diagnostic_test/rm_InputCandy_diagnostic_test.yy",},
+    {"name":"inst_19A0D8A6","path":"rooms/rm_InputCandy_diagnostic_test/rm_InputCandy_diagnostic_test.yy",},
   ],
   "inheritCreationOrder": false,
   "sequenceId": null,

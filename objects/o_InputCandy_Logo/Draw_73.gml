@@ -1,0 +1,1 @@
+if ( room == rm_InputCandySimple_demo ) draw_text(x+71,y+55,"click logo!");
