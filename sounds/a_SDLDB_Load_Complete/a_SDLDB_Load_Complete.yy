@@ -13,8 +13,8 @@
   "soundFile": "a_SDLDB_Load_Complete.wav",
   "duration": 1.404977,
   "parent": {
-    "name": "Sounds",
-    "path": "folders/Sounds.yy",
+    "name": "InputCandy",
+    "path": "folders/Sounds/InputCandy.yy",
   },
   "resourceVersion": "1.0",
   "name": "a_SDLDB_Load_Complete",

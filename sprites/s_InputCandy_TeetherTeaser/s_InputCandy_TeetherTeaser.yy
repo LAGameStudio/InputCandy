@@ -68,8 +68,8 @@
     {"visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default","resourceVersion":"1.0","name":"861397d0-a3ff-4ea1-b301-9c5270c62b38","tags":[],"resourceType":"GMImageLayer",},
   ],
   "parent": {
-    "name": "Sprites",
-    "path": "folders/Sprites.yy",
+    "name": "InputCandy",
+    "path": "folders/Sprites/InputCandy.yy",
   },
   "resourceVersion": "1.0",
   "name": "s_InputCandy_TeetherTeaser",

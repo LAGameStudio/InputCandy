@@ -68,8 +68,8 @@
     {"visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default","resourceVersion":"1.0","name":"6fc17ddf-ef64-4e3c-a86b-e7885bcc6fe3","tags":[],"resourceType":"GMImageLayer",},
   ],
   "parent": {
-    "name": "Sprites",
-    "path": "folders/Sprites.yy",
+    "name": "InputCandy",
+    "path": "folders/Sprites/InputCandy.yy",
   },
   "resourceVersion": "1.0",
   "name": "s_InputCandy_deviceicons",

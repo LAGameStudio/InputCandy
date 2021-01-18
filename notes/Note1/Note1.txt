@@ -30,7 +30,7 @@ to import all the other stuff.
 
 - Advanced, verbose player-configured mode which allows for a lot of freedom but requires setup by the player
 
-This script file contains Advanced mode information.  You want to use this is if you want a wider support for the
+This file contains Advanced mode information.  You want to use this is if you want a wider support for the
 gamepad, and the ability to allow players to set their own control schemes.
 
 

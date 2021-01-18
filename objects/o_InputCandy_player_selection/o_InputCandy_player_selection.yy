@@ -21,8 +21,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Objects",
-    "path": "folders/Objects.yy",
+    "name": "Advanced",
+    "path": "folders/Objects/InputCandy/Advanced.yy",
   },
   "resourceVersion": "1.0",
   "name": "o_InputCandy_player_selection",

@@ -68,8 +68,8 @@
     {"visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default","resourceVersion":"1.0","name":"dfda7637-3a80-4201-bd84-24f6d85f73b7","tags":[],"resourceType":"GMImageLayer",},
   ],
   "parent": {
-    "name": "Sprites",
-    "path": "folders/Sprites.yy",
+    "name": "InputCandy",
+    "path": "folders/Sprites/InputCandy.yy",
   },
   "resourceVersion": "1.0",
   "name": "s_InputCandy_Logo2",

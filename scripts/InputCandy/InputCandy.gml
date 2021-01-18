@@ -51,7 +51,19 @@ function Init_InputCandy_Advanced() { __Private_Init_InputCandy(); }
 #macro ICDeviceType_keyboard_mouse 4
 #macro ICDeviceType_touchscreen 5
 #macro ICDeviceType_any 6
-
+function ICDeviceTypeString(i) {
+	switch (i) {
+		case ICDeviceType_nothing: return "nothing";
+		case ICDeviceType_keyboard: return "keyboard";
+		case ICDeviceType_gamepad: return "gamepad";
+		case ICDeviceType_mouse: return "mouse";
+		case ICDeviceType_keyboard_mouse: return "keyboard+mouse";
+		case ICDeviceType_touchscreen: return "touch";
+		case ICDeviceType_any: return "any";
+		default: return "?";
+	}
+}
+		
 
 #macro ICKeyboardLayout_qwerty 0
 #macro ICKeyboardLayout_azerty 1
@@ -450,6 +462,14 @@ function New_InputCandy() {
 		// Returns the number of active players
 		GetPlayers: function () {
 		},
+		ParseDeviceGUIDs: function() {
+			var len=array_length(__INPUTCANDY.devices);
+			for ( var i=0; i<len; i++ ) {
+				if ( __INPUTCANDY.devices[i].guid != "none" and string_length(__INPUTCANDY.devices[i].guid) > 0 ) {
+					__INPUTCANDY.devices[i].sdl=SDLDB_Lookup_GUID(__INPUTCANDY.devices[i].guid );
+				}
+			}
+		},
 		DiagnosticsString: function() {
 			var verbose=true;
 			if ( argument_count > 0 ) {
@@ -460,11 +480,12 @@ function New_InputCandy() {
 			var slen=array_length(__INPUTCANDY.states);
 			for ( var i=0; i<len; i++ ) {
 				if ( verbose ) {
-					out += int(i)+"# "+__ICI.ICDevicePrintDiagnostics_Verbose(__INPUTCANDY.devices[i])+"\n";
-					if ( i < slen ) out += int(i)+"# "+__ICI.ICDeviceStatePrintDiagnostics_Verbose(__INPUTCANDY.states[i])+"\n";
+					i=i;
+					out += int(i)+"# "+__INPUTCANDY.devices[i].desc+":"+__INPUTCANDY.devices[i].sdl.name+":"+__INPUTCANDY.devices[i].guid+"\n"+__ICI.ICDevicePrintDiagnostics_Verbose(__INPUTCANDY.devices[i])+"\n";
+					if ( i < slen ) out += "   "+__ICI.ICDeviceStatePrintDiagnostics_Verbose(__INPUTCANDY.states[i])+"\n";
 				} else {
-					out += int(i)+"# "+__ICI.ICDevicePrintDiagnostics(__INPUTCANDY.devices[i])+"\n";
-					if ( i < slen ) out += int(i)+"# "+__ICI.ICDeviceStatePrintDiagnostics(__INPUTCANDY.states[i])+"\n";
+					out += int(i)+"# "+__INPUTCANDY.devices[i].desc+":"+__INPUTCANDY.devices[i].sdl.name+":"+__INPUTCANDY.devices[i].guid+"\n"+__ICI.ICDevicePrintDiagnostics(__INPUTCANDY.devices[i])+"\n";
+					if ( i < slen ) out += "   "+__ICI.ICDeviceStatePrintDiagnostics(__INPUTCANDY.states[i])+"\n";
 				}
 			}
 			return out;
@@ -540,12 +561,14 @@ function New_InputCandy_Private() {
 			button_thresholds: [],
 			axis_count: 0,
 			axis_deadzones: [],
-			guid: none,
+			guid: "none",
+			desc: "",
+			sdl: { index: -1, guid: "none", name: "Unknown", remapping: "", platform: "" },
 			index: -1
 		};
 	},
 	ICDevicePrintDiagnostics: function( device ) {
-	 return "T: "+int(device.type)+" gpSlot: "+int(device.slot_id)+" Hats: "+int(device.hat_count)+" Bs: "+int(device.button_count)+" As: "+int(device.axis_count);
+	 return "T: "+ICDeviceTypeString(device.type)+"("+int(device.type)+") gpSlot: "+int(device.slot_id)+" Hats: "+int(device.hat_count)+" Bs: "+int(device.button_count)+" As: "+int(device.axis_count);
 	},
 	ICDevicePrintDiagnostics_Verbose: function ( d ) {
 	 var out=__ICI.ICDevicePrintDiagnostics(d);
@@ -599,6 +622,7 @@ function New_InputCandy_Private() {
 				// Associated and collect all information into the new devices list.
 				devices_list[j].slot_id=i;
 				devices_list[j].guid = gamepad_get_guid(i);
+				devices_list[j].desc = gamepad_get_description(i);
 				devices_list[j].hat_count = gamepad_hat_count(i);
 				var btns= gamepad_button_count(i);
 				devices_list[j].button_count = btns;
@@ -607,6 +631,7 @@ function New_InputCandy_Private() {
 				devices_list[j].axis_count = axes;
 				for ( var k=0; k<axes; k++ ) devices_list[j].axis_deadzones[k]=gamepad_get_axis_deadzone(i);
 				devices_list[j].index=j;
+				devices_list[j].sdl = SDLDB_Lookup_Device(devices_list[j]);
 				j++;
 			 }
 		 }
@@ -826,59 +851,4 @@ function New_InputCandy_Private() {
 		 }
 	}	 
  };	 
-}
-
-
-// Converts a copy of the SDL_GameControllerDB into an array.
-function Process_SDL_GameControllerDB(txt) {
-	var sanitized = string_replace_all(txt,"\r","");
-	var out=[];
-	var lines=string_split(sanitized,"\n");
-	var lineslen=array_length(lines);
-	for ( var i=0; i<lineslen; i++ ) {
-		var line=lines[i];
-		var comma=string_pos(",",line);
-		if ( comma == 0 ) continue; // Empty lines / lines with no CSV
-		var pound=string_pos("#",line); // Comment detector
-		if ( pound != 0 ) line = string_copy(line,0,pound); // Comment Removal
-		var parts=string_split(line,",");
-		if ( array_length(parts) < 4 ) continue; // Not a CSV with minimum number of columns
-		out[i]={
-			SDL: line,
-			db_id: parts[0],
-			name: parts[1],
-			platform: string_replace(parts[array_length(parts)-1],"platform:","")
-		};
-	}
-	return out;
-}
-
-#macro __SDLDB_READ_BYTE_CHUNK_SIZE  1024
-
-function SDLDB_Load_Start() {
- __INPUTCANDY.SDLDB_Buffer="";
- if ( !file_exists("SDLDB.txt") ) global.SDLDB_Done=true;
- __INPUTCANDY.SDLDB_Done=false;
- __INPUTCANDY.SDLDB_File=file_bin_open("SDLDB.txt",0);
- __INPUTCANDY.SDLDB_Size_Bytes=file_bin_size(__INPUTCANDY.SDLDB_File);
- __INPUTCANDY.SDLDB_Read_Bytes=0;
-}
-
-function SDLDB_Load_Step() {
-	if ( __INPUTCANDY.SDLDB_Done ) return true;
-	if ( file_bin_position(__INPUTCANDY.SDLDB_File) == file_bin_size(__INPUTCANDY.SDLDB_File) ) {
-		file_bin_close(__INPUTCANDY.SDLDB_File);
-		Process_SDL_GameControllerDB( __INPUTCANDY.SDLDB_Buffer );
-		__INPUTCANDY.SDLDB_Buffer=""; // Saves ram?
-        __INPUTCANDY.SDLDB_Done = true;
-		return true;
-	}
-	
-	var i;
-	for ( i=0; i<__SDLDB_READ_BYTE_CHUNK_SIZE; i++ ){
-		if ( file_bin_position(__INPUTCANDY.SDLDB_File) == file_bin_size(__INPUTCANDY.SDLDB_File) ) break;
-		__INPUTCANDY.SDLDB_Buffer += chr(file_bin_read_byte(__INPUTCANDY.SDLDB_File));
-	}
-    __INPUTCANDY.SDLDB_Read_Bytes+=i;	
-	return false;
 }

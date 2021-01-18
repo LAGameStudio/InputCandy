@@ -50,8 +50,8 @@
     "PhysicsWorldPixToMetres": 0.1,
   },
   "parent": {
-    "name": "Rooms",
-    "path": "folders/Rooms.yy",
+    "name": "InputCandy",
+    "path": "folders/Rooms/InputCandy.yy",
   },
   "resourceVersion": "1.0",
   "name": "rm_InputCandy_startup_example",

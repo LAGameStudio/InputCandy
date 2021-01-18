@@ -2,8 +2,8 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Scripts",
-    "path": "folders/Scripts.yy",
+    "name": "InputCandy",
+    "path": "folders/Scripts/InputCandy.yy",
   },
   "resourceVersion": "1.0",
   "name": "ICUI",

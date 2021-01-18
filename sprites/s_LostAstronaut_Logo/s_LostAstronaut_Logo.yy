@@ -68,8 +68,8 @@
     {"visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default","resourceVersion":"1.0","name":"bd97d5b6-a297-4909-8ad6-116b5c4d007c","tags":[],"resourceType":"GMImageLayer",},
   ],
   "parent": {
-    "name": "Sprites",
-    "path": "folders/Sprites.yy",
+    "name": "InputCandy",
+    "path": "folders/Sprites/InputCandy.yy",
   },
   "resourceVersion": "1.0",
   "name": "s_LostAstronaut_Logo",

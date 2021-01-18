@@ -28,8 +28,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Objects",
-    "path": "folders/Objects.yy",
+    "name": "Advanced",
+    "path": "folders/Objects/InputCandy/Advanced.yy",
   },
   "resourceVersion": "1.0",
   "name": "o_SDLDB_Loader_Example",
