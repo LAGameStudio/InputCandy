@@ -101,6 +101,7 @@ The following table illustrates support level for each device type by the InputC
 |Android       |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported
 |Xbox          |Untested, Gamepads supported
 |Sony PS4/5    |Untested, Gamepads supported
+|HTML5 (Web)   |Untested, Gamepads supported
 
 In the above table, I'm trying to illustrate that, if you are making a single player game for a touch device, this
 probably isn't the library for you.  If you want to support multiple controllers and user-defined control bindings,
