@@ -91,15 +91,16 @@ Support Table
 
 The following table illustrates support level for each device type by the InputCandy framework.
 
-|Platform      |InputCandy's coverage|
-|Windows PC    |Keyboard, Mouse, Gamepads supported in InputCandy for 1-X players, no touch support: use GameMaker to support|
-|Linux PC      |Keyboard, Mouse, Gamepads supported in InputCandy for 1-X players, no touch support: use GameMaker to support|
-|Mac           |Support similar to Linux and Windows, needs further testing and corner cases|
-|Apple TV      |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported|
-|iOS           |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported|
-|Android       |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported|
-|Xbox          |Untested, Gamepads supported|
-|Sony PS4/5    |Untested, Gamepads supported|
+|Platform      |InputCandy's coverage
+---------------|---------------------
+|Windows PC    |Keyboard, Mouse, Gamepads supported in InputCandy for 1-X players, no touch support: use GameMaker to support
+|Linux PC      |Keyboard, Mouse, Gamepads supported in InputCandy for 1-X players, no touch support: use GameMaker to support
+|Mac           |Support similar to Linux and Windows, needs further testing and corner cases
+|Apple TV      |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported
+|iOS           |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported
+|Android       |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported
+|Xbox          |Untested, Gamepads supported
+|Sony PS4/5    |Untested, Gamepads supported
 
 In the above table, I'm trying to illustrate that, if you are making a single player game for a touch device, this
 probably isn't the library for you.  If you want to support multiple controllers and user-defined control bindings,
