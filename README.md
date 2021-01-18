@@ -6,39 +6,36 @@ InputCandy by Lost Astronaut
 For GMS 2.3.1+
 
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
+See a bug?  Submit an issue here, or better yet, a Pull Request.
 
 If you like this library, please star the above Repo, it helps. :)     If you use this library in your
 game, please add the provided Lost Astronaut and Image Candy logos to your startup screen if you wish
 to give back a little credit to the creators of InputCandy.
 
-InputCandy focuses on PC and gamepad-friendly platforms.  
+InputCandy focuses on PC and gamepad-friendly platforms.
 
-It currently does not handle multitouch, screen reorientation,
+It currently does not handle multitouch, screen reorientation, platform specific scenarios beyond gamepads.
 
 InputCandy makes it easier to use input in GameMaker and does all of the "settings" and "selection"
 for you, so you can easily import these features into other projects.  It was first written by LostAstronaut.com
-for use with their games.  
+for use with their games.
 
 It's important to note that this is for detecting momentary actions, not for detecting textual input ("typing").
 It treats mice, keyboard and gamepad input as "button states"
 
 InputCandy has two modes:
 
-- NES-style simple mode, which works on a variety of devices and requires no set up but has a limited number of inputs,
+* NES-style __simple mode__, which works on a variety of devices and requires no set up but has a limited number of inputs,
   and works with certain assumptions
 
 To access Simple mode, see the script InputCandySimple included in the package.  It's one function, so you don't have
 to import all the other stuff.
 
-- Advanced, verbose player-configured mode which allows for a lot of freedom but requires setup by the player
+* Advanced, verbose player-configured mode which allows for a lot of freedom but requires setup by the player
 
 A Notes file contains Advanced mode information.  You want to use this is if you want a wider support for the
 gamepad, and the ability to allow players to set their own control schemes.
 
-
-
-Advanced: Verbose Player-Configured, Hardware-Normalized
-========================================================
 
 Hardware Testing Notes
 ----------------------
