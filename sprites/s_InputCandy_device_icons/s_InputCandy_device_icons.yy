@@ -45,6 +45,12 @@
     {"compositeImage":{"FrameId":{"name":"18ac087d-e5aa-42f0-be0d-922f2176c7a5","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"LayerId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},"images":[
         {"FrameId":{"name":"18ac087d-e5aa-42f0-be0d-922f2176c7a5","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"LayerId":{"name":"68a9f1e6-c0b7-448e-84bf-009a88baa28d","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},
       ],"parent":{"name":"s_InputCandy_device_icons","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","name":"18ac087d-e5aa-42f0-be0d-922f2176c7a5","tags":[],"resourceType":"GMSpriteFrame",},
+    {"compositeImage":{"FrameId":{"name":"74eefe04-34e5-4b0b-9fbb-131f9e287b05","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"LayerId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},"images":[
+        {"FrameId":{"name":"74eefe04-34e5-4b0b-9fbb-131f9e287b05","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"LayerId":{"name":"68a9f1e6-c0b7-448e-84bf-009a88baa28d","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},
+      ],"parent":{"name":"s_InputCandy_device_icons","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","name":"74eefe04-34e5-4b0b-9fbb-131f9e287b05","tags":[],"resourceType":"GMSpriteFrame",},
+    {"compositeImage":{"FrameId":{"name":"d2415a36-1a48-442d-b13f-e64704b691c7","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"LayerId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},"images":[
+        {"FrameId":{"name":"d2415a36-1a48-442d-b13f-e64704b691c7","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"LayerId":{"name":"68a9f1e6-c0b7-448e-84bf-009a88baa28d","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMSpriteBitmap",},
+      ],"parent":{"name":"s_InputCandy_device_icons","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","name":"d2415a36-1a48-442d-b13f-e64704b691c7","tags":[],"resourceType":"GMSpriteFrame",},
   ],
   "sequence": {
     "spriteId": {"name":"s_InputCandy_device_icons","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},
@@ -54,7 +60,7 @@
     "playbackSpeedType": 0,
     "autoRecord": true,
     "volume": 1.0,
-    "length": 7.0,
+    "length": 9.0,
     "events": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MessageEventKeyframe>",},
     "moments": {"Keyframes":[],"resourceVersion":"1.0","resourceType":"KeyframeStore<MomentsEventKeyframe>",},
     "tracks": [
@@ -66,6 +72,8 @@
             {"id":"d6960338-9604-4a8d-a3e7-28aadbf6c810","Key":4.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"4f38d398-59cf-427a-af97-714f43399cbb","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
             {"id":"c223cb55-e9e0-4ae8-b5c8-ef8b196a67b7","Key":5.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"75d8c36a-37f1-4580-ac1e-08bc70df0438","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
             {"id":"614f5dc3-7d4d-4d63-b4cd-b8ce7ac174d1","Key":6.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"18ac087d-e5aa-42f0-be0d-922f2176c7a5","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+            {"id":"5d7b6b2e-a1ac-467d-80d3-29a53dcbfbe4","Key":7.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"74eefe04-34e5-4b0b-9fbb-131f9e287b05","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
+            {"id":"2049fba3-ac9a-41ab-a23a-4ee04bf1e771","Key":8.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"d2415a36-1a48-442d-b13f-e64704b691c7","path":"sprites/s_InputCandy_device_icons/s_InputCandy_device_icons.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
           ],"resourceVersion":"1.0","resourceType":"KeyframeStore<SpriteFrameKeyframe>",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"modifiers":[],"isCreationTrack":false,"resourceVersion":"1.0","tags":[],"resourceType":"GMSpriteFramesTrack",},
     ],
     "visibleRange": null,
