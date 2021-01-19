@@ -3,7 +3,25 @@
 #macro __SDLDB_READ_BYTE_CHUNK_SIZE  1024
 
 
-// Converts a copy of the SDL_GameControllerDB into an array.  See below for "unwrapped" iterative version that doesn't block user input.
+/*
+
+ SDL Game Controller Database flat file loader with non-blocking unwrapped method (non-async method).
+ 
+ See an example outlined in o_SDLDB_Loader_Example (used in rm_InputCandy_startup_example).
+ 
+ Since the file is large, use SDLDB_Load_Start() then in Step call SDLDB_Load_Step() until it returns true,
+ during this time you can draw your progress bar by calculating number of read bytes versus total file size.
+ 
+ Once load is complete (SDLDB_Load_Step function returns true) immediately call SDLDB_Process_Start(). 
+ 
+ Follow through with calls to SDLDB_Process_Step() until it returns true indicating processing is complete.
+ 
+ This will populate global.SDLDB with a JSON-organized version of the SDL Game Controller DB CSV flat file.
+ 
+ */
+
+// Converts a copy of the SDL_GameControllerDB into an array.
+// See below for "unwrapped" iterative version that doesn't block user input and animation.
 function Process_SDL_GameControllerDB(txt) {
 	var sanitized = string_replace_all(txt,"\r","");
 	var out=[];
