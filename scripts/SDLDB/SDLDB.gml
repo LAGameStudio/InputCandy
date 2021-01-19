@@ -1,8 +1,9 @@
-#macro __SDLDB_PROCESS_LINES 10
+#macro __SDLDB_PROCESS_SPLIT_BATCH_SIZE 10
+#macro __SDLDB_PROCESS_LINES_BATCH_SIZE 10
 #macro __SDLDB_READ_BYTE_CHUNK_SIZE  1024
 
 
-// Converts a copy of the SDL_GameControllerDB into an array.
+// Converts a copy of the SDL_GameControllerDB into an array.  See below for "unwrapped" iterative version that doesn't block user input.
 function Process_SDL_GameControllerDB(txt) {
 	var sanitized = string_replace_all(txt,"\r","");
 	var out=[];
@@ -31,22 +32,18 @@ function Process_SDL_GameControllerDB(txt) {
 
 function SDLDB_Load_Start() {
  __INPUTCANDY.SDLDB_Buffer="";
- if ( !file_exists("SDLDB.txt") ) global.SDLDB_Done=true;
- __INPUTCANDY.SDLDB_Done=false;
+ if ( !file_exists("SDLDB.txt") ) __INPUTCANDY.SDLDB_Load_Done=true;
+ __INPUTCANDY.SDLDB_Load_Done=false;
  __INPUTCANDY.SDLDB_File=file_bin_open("SDLDB.txt",0);
  __INPUTCANDY.SDLDB_Size_Bytes=file_bin_size(__INPUTCANDY.SDLDB_File);
  __INPUTCANDY.SDLDB_Read_Bytes=0;
 }
 
 function SDLDB_Load_Step() {
-	if ( __INPUTCANDY.SDLDB_Done ) return true;
+	if ( __INPUTCANDY.SDLDB_Load_Done ) return true;
 	if ( file_bin_position(__INPUTCANDY.SDLDB_File) == file_bin_size(__INPUTCANDY.SDLDB_File) ) {
 		file_bin_close(__INPUTCANDY.SDLDB_File);
-		global.SDLDB=Process_SDL_GameControllerDB( __INPUTCANDY.SDLDB_Buffer );
-		global.SDLDB_Entries=array_length(global.SDLDB);
-		__IC.ParseDeviceGUIDs();
-		__INPUTCANDY.SDLDB_Buffer=""; // Saves ram?
-        __INPUTCANDY.SDLDB_Done = true;
+        __INPUTCANDY.SDLDB_Load_Done = true;
 		return true;
 	}
 	
@@ -59,6 +56,73 @@ function SDLDB_Load_Step() {
 	return false;
 }
 
+
+// Converts a copy of the SDL_GameControllerDB into an array.
+function SDLDB_Process_Start() {
+ global.SDLDB=[];
+ __INPUTCANDY.SDLDB_Process_Sanitized=string_replace_all(__INPUTCANDY.SDLDB_Buffer,"\r","")+"\n";
+ __INPUTCANDY.SDLDB_Process_Splitlines_Done=false;
+ __INPUTCANDY.SDLDB_Process_i=0;
+ __INPUTCANDY.SDLDB_Process_len=string_count("\n",__INPUTCANDY.SDLDB_Process_Sanitized);
+ __INPUTCANDY.SDLDB_Process_Lines=[];
+ __INPUTCANDY.SDLDB_Process_j=0;
+ __INPUTCANDY.SDLDB_Process_Completeness=0;
+}
+
+function SDLDB_Process_Step() {
+	if ( !__INPUTCANDY.SDLDB_Process_Splitlines_Done ) {
+		repeat ( __SDLDB_PROCESS_SPLIT_BATCH_SIZE ) {
+			__INPUTCANDY.SDLDB_Process_Completeness=(__INPUTCANDY.SDLDB_Process_i/__INPUTCANDY.SDLDB_Process_len) * 0.5;
+			var p=string_pos("\n",__INPUTCANDY.SDLDB_Process_Sanitized)-1;
+			if ( p >= 0 ) {
+			__INPUTCANDY.SDLDB_Process_Lines[__INPUTCANDY.SDLDB_Process_i]=string_copy(__INPUTCANDY.SDLDB_Process_Sanitized,1,p);
+			__INPUTCANDY.SDLDB_Process_i++;
+			__INPUTCANDY.SDLDB_Process_Sanitized=string_delete(__INPUTCANDY.SDLDB_Process_Sanitized,1,p+1);
+			} else {
+				__INPUTCANDY.SDLDB_Process_Splitlines_Done=true;
+				__INPUTCANDY.SDLDB_Process_i=0;
+				__INPUTCANDY.SDLDB_Process_len = array_length(__INPUTCANDY.SDLDB_Process_Lines);
+				break;
+			}
+		}
+		return false;
+	}
+	if ( __INPUTCANDY.SDLDB_Process_i < __INPUTCANDY.SDLDB_Process_len ) {
+		repeat ( __SDLDB_PROCESS_LINES_BATCH_SIZE ) {
+			var line = __INPUTCANDY.SDLDB_Process_Lines[__INPUTCANDY.SDLDB_Process_i];
+			__INPUTCANDY.SDLDB_Process_i++;
+			var comma=string_pos(",",line);
+			if ( comma == 0 ) { // Empty lines / lines with no CSV
+				/* Do nothing */
+			} else {
+				var pound=string_pos("#",line); // Comment detector
+				if ( pound != 0 ) line = string_copy(line,0,pound); // Comment Removal
+				var parts=string_split(line,",");
+				if ( array_length(parts) < 4 ) { // Not a CSV with minimum number of columns
+					/* Do nothing */
+				} else {
+					global.SDLDB[__INPUTCANDY.SDLDB_Process_j]={
+						index: __INPUTCANDY.SDLDB_Process_j,
+						guid: string_lower(parts[0]),
+						name: string_lower(parts[1]),
+						remapping: line,
+						platform: string_replace(parts[array_length(parts)-1],"platform:","")
+					};
+					__INPUTCANDY.SDLDB_Process_j++;
+					__INPUTCANDY.SDLDB_Process_Completeness=0.5 + (__INPUTCANDY.SDLDB_Process_i/__INPUTCANDY.SDLDB_Process_len) * 0.5;
+				}
+			}
+		}
+		return false;
+	}
+	global.SDLDB_Entries=array_length(global.SDLDB);
+	__INPUTCANDY.SDLDB_Buffer=""; // Saves ram?	
+	__INPUTCANDY.SDLDB_Process_Lines=[]; // Saves ram?
+	__IC.ParseDeviceGUIDs();
+	return true;
+}
+
+/// Lookup functions.
 
 function SDLDB_Lookup_GUID( guid ) {
 	guid=string_lower(guid);
@@ -87,6 +151,8 @@ function SDLDB_Lookup_MatchName( name ) {
 	return results;
 }
 
+
+// Device identification.
 
 function SDLDB_Lookup_Device( device ) {
 	var lookup=SDLDB_Lookup_GUID(device);
