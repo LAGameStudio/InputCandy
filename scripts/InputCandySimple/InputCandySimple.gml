@@ -95,6 +95,14 @@ function InputCandySimple() {
 				count: gamepad_count
 			};
 		},
+		deviceAvailable: function( player_number ) {			
+			var gamepad_count=gamepad_get_device_count();
+			var gamepads=[];
+			var j=0;
+			for ( var i=0; i<gamepad_count; i++ ) if ( gamepad_is_connected(i) ) gamepads[j++]=i;
+			gamepad_count = array_length(gamepads);
+			return gamepad_count > player_number-1;
+		},
 		devicesString: function( devices ) {
 			var out="Gamepads: \n";
 			for ( var i=0; i<devices.count; i++ ) {
@@ -111,30 +119,46 @@ function InputCandySimple() {
 			if ( player_number == 1 ) {
 				  return keyboard_check(vk_left)
 				   or keyboard_check(ord("A"))
-				   or (0 < gamepad_count and ((gamepad_axis_value(gamepads[0], gp_axislh) < -0.5) or gamepad_button_check(gamepads[0], gp_padl)));
+				   or (0 < gamepad_count and ((gamepad_axis_value(gamepads[0], gp_axislh) < -0.5) or gamepad_button_check(gamepads[0], gp_padl)
+					   or (gamepad_hat_count(gamepads[0])>0 and gamepad_hat_value(gamepads[0],0)&8)
+					   or (gamepad_hat_count(gamepads[0])>1 and gamepad_hat_value(gamepads[0],1)&8)));
 			} else if ( player_number == 2 ) {
 				  return keyboard_check(vk_numpad4)
 				   or keyboard_check(ord("J"))
 				   or (1 < gamepad_count and ((gamepad_axis_value(gamepads[1], gp_axislh) < -0.5)
-					   or gamepad_button_check(gamepads[1], gp_padl)));
+					   or gamepad_button_check(gamepads[1], gp_padl)
+					   or (gamepad_hat_count(gamepads[1])>0 and gamepad_hat_value(gamepads[0],0)&8)
+					   or (gamepad_hat_count(gamepads[1])>1 and gamepad_hat_value(gamepads[0],1)&8)));
 			} else if ( player_number == 3 ) {
 				  return (2 < gamepad_count and ((gamepad_axis_value(gamepads[2], gp_axislh) < -0.5)
-					   or gamepad_button_check(gamepads[2], gp_padl)));
+					   or gamepad_button_check(gamepads[2], gp_padl)
+					   or (gamepad_hat_count(gamepads[2])>0 and gamepad_hat_value(gamepads[0],0)&8)
+					   or (gamepad_hat_count(gamepads[2])>1 and gamepad_hat_value(gamepads[0],1)&8)));
 			} else if ( player_number == 4 ) {
 				  return (3 < gamepad_count and ((gamepad_axis_value(gamepads[3], gp_axislh) < -0.5)
-					   or gamepad_button_check(gamepads[3], gp_padl)));
+					   or gamepad_button_check(gamepads[3], gp_padl)
+					   or (gamepad_hat_count(gamepads[3])>0 and gamepad_hat_value(gamepads[0],0)&8)
+					   or (gamepad_hat_count(gamepads[3])>1 and gamepad_hat_value(gamepads[0],1)&8)));
 			} else if ( player_number == 5 ) {
 				  return (4 < gamepad_count and ((gamepad_axis_value(gamepads[4], gp_axislh) < -0.5)
-					   or gamepad_button_check(gamepads[4], gp_padl)));
+					   or gamepad_button_check(gamepads[4], gp_padl)
+					   or (gamepad_hat_count(gamepads[4])>0 and gamepad_hat_value(gamepads[0],0)&8)
+					   or (gamepad_hat_count(gamepads[4])>1 and gamepad_hat_value(gamepads[0],1)&8)));
 			} else if ( player_number == 6 ) {
 				  return (5 < gamepad_count and ((gamepad_axis_value(gamepads[5], gp_axislh) < -0.5)
-					   or gamepad_button_check(gamepads[5], gp_padl)));
+					   or gamepad_button_check(gamepads[5], gp_padl)
+					   or (gamepad_hat_count(gamepads[5])>0 and gamepad_hat_value(gamepads[0],0)&8)
+					   or (gamepad_hat_count(gamepads[5])>1 and gamepad_hat_value(gamepads[0],1)&8)));
 			} else if ( player_number == 7 ) {
 				  return (6 < gamepad_count and ((gamepad_axis_value(gamepads[6], gp_axislh) < -0.5)
-					   or gamepad_button_check(gamepads[6], gp_padl)));
+					   or gamepad_button_check(gamepads[6], gp_padl)
+					   or (gamepad_hat_count(gamepads[6])>0 and gamepad_hat_value(gamepads[0],0)&8)
+					   or (gamepad_hat_count(gamepads[6])>1 and gamepad_hat_value(gamepads[0],1)&8)));
 			} else if ( player_number == 8 ) {
 				  return (7 < gamepad_count and ((gamepad_axis_value(gamepads[7], gp_axislh) < -0.5)
-					   or gamepad_button_check(gamepads[7], gp_padl)));
+					   or gamepad_button_check(gamepads[7], gp_padl)
+					   or (gamepad_hat_count(gamepads[7])>0 and gamepad_hat_value(gamepads[0],0)&8)
+					   or (gamepad_hat_count(gamepads[7])>1 and gamepad_hat_value(gamepads[0],1)&8)));
 			}
 		},
 		right: function ( player_number ) {
@@ -147,30 +171,46 @@ function InputCandySimple() {
 				  return keyboard_check(vk_right)
 				   or keyboard_check(ord("D"))
 				   or (0 < gamepad_count and ((gamepad_axis_value(gamepads[0], gp_axislh) > 0.5)
-					   or gamepad_button_check(gamepads[0], gp_padr)));
+					   or gamepad_button_check(gamepads[0], gp_padr)
+					   or (gamepad_hat_count(gamepads[0])>0 and gamepad_hat_value(gamepads[0],0)&2)
+					   or (gamepad_hat_count(gamepads[0])>1 and gamepad_hat_value(gamepads[0],1)&2)));
 			} else if ( player_number == 2 ) {
 				  return keyboard_check(vk_numpad6)
 				   or keyboard_check(ord("L"))
 				   or (1 < gamepad_count and ((gamepad_axis_value(gamepads[1], gp_axislh) > 0.5)
-					   or gamepad_button_check(gamepads[1], gp_padr)));
+					   or gamepad_button_check(gamepads[1], gp_padr)
+					   or (gamepad_hat_count(gamepads[1])>0 and gamepad_hat_value(gamepads[1],0)&2)
+					   or (gamepad_hat_count(gamepads[1])>1 and gamepad_hat_value(gamepads[1],1)&2)));
 			} else if ( player_number == 3 ) {
 				return (2 < gamepad_count and ((gamepad_axis_value(gamepads[2], gp_axislh) > 0.5)
-					   or gamepad_button_check(gamepads[2], gp_padr)));
+					   or gamepad_button_check(gamepads[2], gp_padr)
+					   or (gamepad_hat_count(gamepads[2])>0 and gamepad_hat_value(gamepads[2],0)&2)
+					   or (gamepad_hat_count(gamepads[2])>1 and gamepad_hat_value(gamepads[2],1)&2)));
 			} else if ( player_number == 4 ) {
 				return (3 < gamepad_count and ((gamepad_axis_value(gamepads[3], gp_axislh) > 0.5)
-					   or gamepad_button_check(gamepads[3], gp_padr)));
+					   or gamepad_button_check(gamepads[3], gp_padr)
+					   or (gamepad_hat_count(gamepads[3])>0 and gamepad_hat_value(gamepads[3],0)&2)
+					   or (gamepad_hat_count(gamepads[3])>1 and gamepad_hat_value(gamepads[3],1)&2)));
 			} else if ( player_number == 5 ) {
 				return (4 < gamepad_count and ((gamepad_axis_value(gamepads[4], gp_axislh) > 0.5)
-					   or gamepad_button_check(gamepads[4], gp_padr)));
+					   or gamepad_button_check(gamepads[4], gp_padr)
+					   or (gamepad_hat_count(gamepads[4])>0 and gamepad_hat_value(gamepads[4],0)&2)
+					   or (gamepad_hat_count(gamepads[4])>1 and gamepad_hat_value(gamepads[4],1)&2)));
 			} else if ( player_number == 6 ) {
 				return (5 < gamepad_count and ((gamepad_axis_value(gamepads[5], gp_axislh) > 0.5)
-					   or gamepad_button_check(gamepads[5], gp_padr)));
+					   or gamepad_button_check(gamepads[5], gp_padr)
+					   or (gamepad_hat_count(gamepads[5])>0 and gamepad_hat_value(gamepads[5],0)&2)
+					   or (gamepad_hat_count(gamepads[5])>1 and gamepad_hat_value(gamepads[5],1)&2)));
 			} else if ( player_number == 7 ) {
 				return (6 < gamepad_count and ((gamepad_axis_value(gamepads[6], gp_axislh) > 0.5)
-					   or gamepad_button_check(gamepads[6], gp_padr)));
+					   or gamepad_button_check(gamepads[6], gp_padr)
+					   or (gamepad_hat_count(gamepads[6])>0 and gamepad_hat_value(gamepads[6],0)&2)
+					   or (gamepad_hat_count(gamepads[6])>1 and gamepad_hat_value(gamepads[6],1)&2)));
 			} else if ( player_number == 8 ) {
 				return (7 < gamepad_count and ((gamepad_axis_value(gamepads[7], gp_axislh) > 0.5)
-					   or gamepad_button_check(gamepads[7], gp_padr)));
+					   or gamepad_button_check(gamepads[7], gp_padr)
+					   or (gamepad_hat_count(gamepads[7])>0 and gamepad_hat_value(gamepads[7],0)&2)
+					   or (gamepad_hat_count(gamepads[7])>1 and gamepad_hat_value(gamepads[7],1)&2)));
 			}
 		},
 		up: function ( player_number ) {
@@ -183,30 +223,46 @@ function InputCandySimple() {
 				  return keyboard_check(vk_up)
 				   or keyboard_check(ord("W"))
 				   or (0 < gamepad_count and ((gamepad_axis_value(gamepads[0], gp_axislv) > 0.5)
-					   or gamepad_button_check(gamepads[0], gp_padu)));
+					   or gamepad_button_check(gamepads[0], gp_padu)
+					   or (gamepad_hat_count(gamepads[0])>0 and gamepad_hat_value(gamepads[0],0)&1)
+					   or (gamepad_hat_count(gamepads[0])>1 and gamepad_hat_value(gamepads[0],1)&1)));
 			} else if ( player_number == 2 ) {
 				  return keyboard_check(vk_numpad8)
 				   or keyboard_check(ord("I"))
 				   or (1 < gamepad_count and ((gamepad_axis_value(gamepads[1], gp_axislv) > 0.5)
-					   or gamepad_button_check(gamepads[1], gp_padu)));
+					   or gamepad_button_check(gamepads[1], gp_padu)
+					   or (gamepad_hat_count(gamepads[1])>0 and gamepad_hat_value(gamepads[1],0)&1)
+					   or (gamepad_hat_count(gamepads[1])>1 and gamepad_hat_value(gamepads[1],1)&1)));
 			} else if ( player_number == 3 ) {
 				   return (2 < gamepad_count and ((gamepad_axis_value(gamepads[2], gp_axislv) > 0.5)
-					   or gamepad_button_check(gamepads[2], gp_padu)));
+					   or gamepad_button_check(gamepads[2], gp_padu)
+					   or (gamepad_hat_count(gamepads[2])>0 and gamepad_hat_value(gamepads[2],0)&1)
+					   or (gamepad_hat_count(gamepads[2])>1 and gamepad_hat_value(gamepads[2],1)&1)));
 			} else if ( player_number == 4 ) {
 				   return (3 < gamepad_count and ((gamepad_axis_value(gamepads[3], gp_axislv) > 0.5)
-					   or gamepad_button_check(gamepads[3], gp_padu)));
+					   or gamepad_button_check(gamepads[3], gp_padu)
+					   or (gamepad_hat_count(gamepads[3])>0 and gamepad_hat_value(gamepads[3],0)&1)
+					   or (gamepad_hat_count(gamepads[3])>1 and gamepad_hat_value(gamepads[3],1)&1)));
 			} else if ( player_number == 5 ) {
 				   return (4 < gamepad_count and ((gamepad_axis_value(gamepads[4], gp_axislv) > 0.5)
-					   or gamepad_button_check(gamepads[4], gp_padu)));
+					   or gamepad_button_check(gamepads[4], gp_padu)
+					   or (gamepad_hat_count(gamepads[4])>0 and gamepad_hat_value(gamepads[4],0)&1)
+					   or (gamepad_hat_count(gamepads[4])>1 and gamepad_hat_value(gamepads[4],1)&1)));
 			} else if ( player_number == 6 ) {
 				   return (5 < gamepad_count and ((gamepad_axis_value(gamepads[5], gp_axislv) > 0.5)
-					   or gamepad_button_check(gamepads[5], gp_padu)));
+					   or gamepad_button_check(gamepads[5], gp_padu)
+					   or (gamepad_hat_count(gamepads[5])>0 and gamepad_hat_value(gamepads[5],0)&1)
+					   or (gamepad_hat_count(gamepads[5])>1 and gamepad_hat_value(gamepads[5],1)&1)));
 			} else if ( player_number == 7 ) {
 				   return (6 < gamepad_count and ((gamepad_axis_value(gamepads[6], gp_axislv) > 0.5)
-					   or gamepad_button_check(gamepads[6], gp_padu)));
+					   or gamepad_button_check(gamepads[6], gp_padu)
+					   or (gamepad_hat_count(gamepads[6])>0 and gamepad_hat_value(gamepads[6],0)&1)
+					   or (gamepad_hat_count(gamepads[6])>1 and gamepad_hat_value(gamepads[6],1)&1)));
 			} else if ( player_number == 8 ) {
 				   return (7 < gamepad_count and ((gamepad_axis_value(gamepads[7], gp_axislv) > 0.5)
-					   or gamepad_button_check(gamepads[7], gp_padu)));
+					   or gamepad_button_check(gamepads[7], gp_padu)
+					   or (gamepad_hat_count(gamepads[7])>0 and gamepad_hat_value(gamepads[7],0)&1)
+					   or (gamepad_hat_count(gamepads[7])>1 and gamepad_hat_value(gamepads[7],1)&1)));
 			}
 		},
 		down: function ( player_number ) {
@@ -219,30 +275,46 @@ function InputCandySimple() {
 				  return keyboard_check(vk_down)
 				   or keyboard_check(ord("S"))
 				   or (0 < gamepad_count and ((gamepad_axis_value(gamepads[0], gp_axislv) < -0.5)
-					   or gamepad_button_check(gamepads[0], gp_padd)));
+					   or gamepad_button_check(gamepads[0], gp_padd)
+					   or (gamepad_hat_count(gamepads[0])>0 and gamepad_hat_value(gamepads[0],0)&4)
+					   or (gamepad_hat_count(gamepads[0])>1 and gamepad_hat_value(gamepads[0],1)&4)));
 			} else if ( player_number == 2 ) {
 				  return keyboard_check(vk_numpad2)
 				   or keyboard_check(ord("K"))
 				   or (1 < gamepad_count and ((gamepad_axis_value(gamepads[1], gp_axislv) < -0.5)
-					   or gamepad_button_check(gamepads[1], gp_padd)));
+					   or gamepad_button_check(gamepads[1], gp_padd)
+					   or (gamepad_hat_count(gamepads[1])>0 and gamepad_hat_value(gamepads[1],0)&4)
+					   or (gamepad_hat_count(gamepads[1])>1 and gamepad_hat_value(gamepads[1],1)&4)));
 			} else if ( player_number == 3 ) {
 				   return (2 < gamepad_count and ((gamepad_axis_value(gamepads[2], gp_axislv) < -0.5)
-					   or gamepad_button_check(gamepads[2], gp_padu)));
+					   or gamepad_button_check(gamepads[2], gp_padu)
+					   or (gamepad_hat_count(gamepads[2])>0 and gamepad_hat_value(gamepads[2],0)&4)
+					   or (gamepad_hat_count(gamepads[2])>1 and gamepad_hat_value(gamepads[2],1)&4)));
 			} else if ( player_number == 4 ) {
 				   return (3 < gamepad_count and ((gamepad_axis_value(gamepads[3], gp_axislv) < -0.5)
-					   or gamepad_button_check(gamepads[3], gp_padu)));
+					   or gamepad_button_check(gamepads[3], gp_padu)
+					   or (gamepad_hat_count(gamepads[3])>0 and gamepad_hat_value(gamepads[3],0)&4)
+					   or (gamepad_hat_count(gamepads[3])>1 and gamepad_hat_value(gamepads[3],1)&4)));
 			} else if ( player_number == 5 ) {
 				   return (4 < gamepad_count and ((gamepad_axis_value(gamepads[4], gp_axislv) < -0.5)
-					   or gamepad_button_check(gamepads[4], gp_padu)));
+					   or gamepad_button_check(gamepads[4], gp_padu)
+					   or (gamepad_hat_count(gamepads[4])>0 and gamepad_hat_value(gamepads[4],0)&4)
+					   or (gamepad_hat_count(gamepads[4])>1 and gamepad_hat_value(gamepads[4],1)&4)));
 			} else if ( player_number == 6 ) {
 				   return (5 < gamepad_count and ((gamepad_axis_value(gamepads[5], gp_axislv) < -0.5)
-					   or gamepad_button_check(gamepads[5], gp_padu)));
+					   or gamepad_button_check(gamepads[5], gp_padu)
+					   or (gamepad_hat_count(gamepads[5])>0 and gamepad_hat_value(gamepads[5],0)&4)
+					   or (gamepad_hat_count(gamepads[5])>1 and gamepad_hat_value(gamepads[5],1)&4)));
 			} else if ( player_number == 7 ) {
 				   return (6 < gamepad_count and ((gamepad_axis_value(gamepads[6], gp_axislv) < -0.5)
-					   or gamepad_button_check(gamepads[6], gp_padu)));
+					   or gamepad_button_check(gamepads[6], gp_padu)
+					   or (gamepad_hat_count(gamepads[6])>0 and gamepad_hat_value(gamepads[6],0)&4)
+					   or (gamepad_hat_count(gamepads[6])>1 and gamepad_hat_value(gamepads[6],1)&4)));
 			} else if ( player_number == 8 ) {
 				   return (7 < gamepad_count and ((gamepad_axis_value(gamepads[7], gp_axislv) < -0.5)
-					   or gamepad_button_check(gamepads[7], gp_padu)));
+					   or gamepad_button_check(gamepads[7], gp_padu)
+					   or (gamepad_hat_count(gamepads[7])>0 and gamepad_hat_value(gamepads[7],0)&4)
+					   or (gamepad_hat_count(gamepads[7])>1 and gamepad_hat_value(gamepads[7],1)&4)));
 			}
 		},
 		A: function ( player_number ) {
