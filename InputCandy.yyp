@@ -1,12 +1,10 @@
 {
   "resources": [
     {"id":{"name":"o_InputCandy_settings","path":"objects/o_InputCandy_settings/o_InputCandy_settings.yy",},"order":4,},
-    {"id":{"name":"rm_InputCandy_device_select","path":"rooms/rm_InputCandy_device_select/rm_InputCandy_device_select.yy",},"order":2,},
+    {"id":{"name":"rm_InputCandy_UI","path":"rooms/rm_InputCandy_UI/rm_InputCandy_UI.yy",},"order":2,},
     {"id":{"name":"InputCandy","path":"scripts/InputCandy/InputCandy.yy",},"order":1,},
     {"id":{"name":"o_SDLDB_Loader_Example","path":"objects/o_SDLDB_Loader_Example/o_SDLDB_Loader_Example.yy",},"order":6,},
     {"id":{"name":"SDLDB","path":"scripts/SDLDB/SDLDB.yy",},"order":4,},
-    {"id":{"name":"rm_InputCandy_gamepad_setup","path":"rooms/rm_InputCandy_gamepad_setup/rm_InputCandy_gamepad_setup.yy",},"order":3,},
-    {"id":{"name":"rm_InputCandy_control_binding","path":"rooms/rm_InputCandy_control_binding/rm_InputCandy_control_binding.yy",},"order":4,},
     {"id":{"name":"o_InputCandy_diagnostics","path":"objects/o_InputCandy_diagnostics/o_InputCandy_diagnostics.yy",},"order":1,},
     {"id":{"name":"s_InputCandy_TeetherTeaser","path":"sprites/s_InputCandy_TeetherTeaser/s_InputCandy_TeetherTeaser.yy",},"order":5,},
     {"id":{"name":"Note1","path":"notes/Note1/Note1.yy",},"order":0,},
@@ -18,9 +16,10 @@
     {"id":{"name":"o_InputCandy_Logo","path":"objects/o_InputCandy_Logo/o_InputCandy_Logo.yy",},"order":2,},
     {"id":{"name":"rm_InputCandySimple_demo","path":"rooms/rm_InputCandySimple_demo/rm_InputCandySimple_demo.yy",},"order":5,},
     {"id":{"name":"s_InputCandy_gamepad_photos","path":"sprites/s_InputCandy_gamepad_photos/s_InputCandy_gamepad_photos.yy",},"order":8,},
+    {"id":{"name":"s_InputCandy_ICUI_mouse_cursor","path":"sprites/s_InputCandy_ICUI_mouse_cursor/s_InputCandy_ICUI_mouse_cursor.yy",},"order":9,},
     {"id":{"name":"s_InputCandy_Logo2","path":"sprites/s_InputCandy_Logo2/s_InputCandy_Logo2.yy",},"order":3,},
     {"id":{"name":"o_InputCandy_startup_example","path":"objects/o_InputCandy_startup_example/o_InputCandy_startup_example.yy",},"order":5,},
-    {"id":{"name":"s_InputCandy_deviceicons","path":"sprites/s_InputCandy_deviceicons/s_InputCandy_deviceicons.yy",},"order":1,},
+    {"id":{"name":"o_ICUI","path":"objects/o_ICUI/o_ICUI.yy",},"order":8,},
     {"id":{"name":"InputCandySimple","path":"scripts/InputCandySimple/InputCandySimple.yy",},"order":2,},
     {"id":{"name":"o_InputCandy","path":"objects/o_InputCandy/o_InputCandy.yy",},"order":0,},
     {"id":{"name":"ICUI","path":"scripts/ICUI/ICUI.yy",},"order":0,},
@@ -31,7 +30,7 @@
     {"id":{"name":"rm_InputCandy_startup_example","path":"rooms/rm_InputCandy_startup_example/rm_InputCandy_startup_example.yy",},"order":1,},
     {"id":{"name":"o_InputCandy_player_selection","path":"objects/o_InputCandy_player_selection/o_InputCandy_player_selection.yy",},"order":3,},
     {"id":{"name":"Utilities","path":"scripts/Utilities/Utilities.yy",},"order":3,},
-    {"id":{"name":"rm_InputCandy_diagnostic_test","path":"rooms/rm_InputCandy_diagnostic_test/rm_InputCandy_diagnostic_test.yy",},"order":0,},
+    {"id":{"name":"rm_InputCandy_diagnostics","path":"rooms/rm_InputCandy_diagnostics/rm_InputCandy_diagnostics.yy",},"order":0,},
   ],
   "Options": [
     {"name":"Linux","path":"options/linux/options_linux.yy",},
@@ -48,11 +47,9 @@
   },
   "RoomOrderNodes": [
     {"roomId":{"name":"rm_InputCandy_startup_example","path":"rooms/rm_InputCandy_startup_example/rm_InputCandy_startup_example.yy",},},
-    {"roomId":{"name":"rm_InputCandy_diagnostic_test","path":"rooms/rm_InputCandy_diagnostic_test/rm_InputCandy_diagnostic_test.yy",},},
+    {"roomId":{"name":"rm_InputCandy_diagnostics","path":"rooms/rm_InputCandy_diagnostics/rm_InputCandy_diagnostics.yy",},},
     {"roomId":{"name":"rm_InputCandySimple_demo","path":"rooms/rm_InputCandySimple_demo/rm_InputCandySimple_demo.yy",},},
-    {"roomId":{"name":"rm_InputCandy_device_select","path":"rooms/rm_InputCandy_device_select/rm_InputCandy_device_select.yy",},},
-    {"roomId":{"name":"rm_InputCandy_gamepad_setup","path":"rooms/rm_InputCandy_gamepad_setup/rm_InputCandy_gamepad_setup.yy",},},
-    {"roomId":{"name":"rm_InputCandy_control_binding","path":"rooms/rm_InputCandy_control_binding/rm_InputCandy_control_binding.yy",},},
+    {"roomId":{"name":"rm_InputCandy_UI","path":"rooms/rm_InputCandy_UI/rm_InputCandy_UI.yy",},},
   ],
   "Folders": [
     {"folderPath":"folders/Sprites.yy","order":1,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},

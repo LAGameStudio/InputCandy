@@ -5,6 +5,8 @@ Always get the latest version from https://github.com/LAGameStudio/InputCandy
 
 See LICENSE for usage guidelines.
 
+See Notes > Note1 for more information
+
 */
 
 #macro __INPUTCANDY global.IC
@@ -69,6 +71,10 @@ function ICDeviceTypeString(i) {
 #macro ICKeyboardLayout_azerty 1
 #macro ICKeyboardLayout_qwertz 2
 
+#macro ICGamepad_Hat_U 1
+#macro ICGamepad_Hat_R 2
+#macro ICGamepad_Hat_D 4
+#macro ICGamepad_Hat_L 8
 
 /*
  Button signals
@@ -200,6 +206,29 @@ function ICDeviceTypeString(i) {
 #macro IC_key_rbracket 122
 #macro IC_key_semi 123
 #macro IC_key_apostrophe 124
+#macro IC_enter 125
+#macro IC_space 126
+#macro IC_key_escape 127
+#macro IC_hat0_U 128
+#macro IC_hat0_D 129
+#macro IC_hat0_L 130
+#macro IC_hat0_R 131
+#macro IC_hat1_U 132
+#macro IC_hat1_D 133
+#macro IC_hat1_L 134
+#macro IC_hat1_R 135
+#macro IC_hat2_U 136
+#macro IC_hat2_D 137
+#macro IC_hat2_L 138
+#macro IC_hat2_R 139
+#macro IC_hat3_U 140
+#macro IC_hat3_D 141
+#macro IC_hat3_L 142
+#macro IC_hat3_R 143
+#macro IC_hat4_U 144
+#macro IC_hat4_D 145
+#macro IC_hat4_L 146
+#macro IC_hat4_R 147
 
 
 #macro __FIRST_GAMEPAD_SIGNAL 6
@@ -299,7 +328,7 @@ __INPUTCANDY.signals = [
  {	index:35,   code: IC_any_shift,		 name: "SHIFT",   azerty_name: "SHIFT",   qwertz_name: "SHIFT",   deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_shift },
  {	index:36,   code: IC_any_control,	 name: "CTRL",    azerty_name: "CTRL",    qwertz_name: "CTRL",    deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_control },
  {	index:37,   code: IC_lalt,			 name: "L-Alt",   azerty_name: "L-Alt",   qwertz_name: "L-Alt",   deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_lalt },
- {	index:38,   code: IC_ralt,			 name: "R-Alt",   azerty_name: "R-Alt",   qwertz_name: "R-Alt",   deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_ralt },
+ {	index:38,   code: IC_ralt,			 name: "R-Alt",   azerty_name: "R-Alt",   qwertz_name: "AltGr",   deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_ralt },
  {	index:39,   code: IC_lctrl,			 name: "L-CTRL",  azerty_name: "L-CTRL",  qwertz_name: "L-CTRL",  deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_lcontrol },
  {	index:40,   code: IC_rctrl,			 name: "R-CTRL",  azerty_name: "R-CTRL",  qwertz_name: "R-CTRL",  deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_rcontrol },
  {	index:41,   code: IC_lshift,		 name: "L-SHIFT", azerty_name: "L-SHIFT", qwertz_name: "L-SHIFT", deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_lshift },
@@ -376,22 +405,47 @@ __INPUTCANDY.signals = [
  {	index:112,  code: IC_key_8,		 name: "Key 8",   azerty_name: "Key 8",   qwertz_name: "Key 8",   deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_ord, keychar: "8" },
  {	index:113,  code: IC_key_9,		 name: "Key 9",   azerty_name: "Key 9",   qwertz_name: "Key 9",   deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_ord, keychar: "9" },
  {	index:114,  code: IC_key_backtick,	 name: "Backtick",      azerty_name: "Backtick",      qwertz_name:"Backtick",      deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "`" , shifted: "~" },
- {	index:115,  code: IC_key_comma,	 name: "Comma",         azerty_name: "Comma",         qwertz_name:"Comma",             deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "," , shifted: "<" },
+ {	index:115,  code: IC_key_comma,		 name: "Comma",         azerty_name: "Comma",         qwertz_name:"Comma",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "," , shifted: "<" },
  {	index:116,  code: IC_key_period,	 name: "Period",        azerty_name: "Period",        qwertz_name:"Period",        deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "." , shifted: ">" },
- {	index:117,  code: IC_key_slash,	 name: "Slash",         azerty_name: "Slash",         qwertz_name:"Slash",             deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "/" , shifted: "?" },
- {	index:118,  code: IC_key_backslash, name: "Backslash",     azerty_name: "Backslash",     qwertz_name:"Backslash",      deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "\\", shifted: "|" },
- {	index:119,  code: IC_key_minus,	 name: "Minus",         azerty_name: "Minus",         qwertz_name:"Minus",             deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "-" , shifted: "_" },
+ {	index:117,  code: IC_key_slash,		 name: "Slash",         azerty_name: "Slash",         qwertz_name:"Slash",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "/" , shifted: "?" },
+ {	index:118,  code: IC_key_backslash,  name: "Backslash",     azerty_name: "Backslash",     qwertz_name:"Backslash",     deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "\\", shifted: "|" },
+ {	index:119,  code: IC_key_minus,		 name: "Minus",         azerty_name: "Minus",         qwertz_name:"Minus",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "-" , shifted: "_" },
  {	index:120,  code: IC_key_equals,	 name: "Equals",        azerty_name: "Equals",        qwertz_name:"Equals",        deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "=" , shifted: "+" },
  {	index:121,  code: IC_key_lbracket,	 name: "Left Bracket",  azerty_name: "Left Bracket",  qwertz_name:"Left Bracket",  deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "[" , shifted: "{" },
  {	index:122,  code: IC_key_rbracket,	 name: "Right Bracket", azerty_name: "Right Bracket", qwertz_name:"Right Bracket", deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "]" , shifted: "}" },
  {	index:123,  code: IC_key_semi,		 name: "Semicolon",     azerty_name: "Semicolon",     qwertz_name:"Semicolon",     deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: ";" , shifted: ":" },
  {	index:124,  code: IC_key_apostrophe, name: "Apostrophe",    azerty_name: "Apostrophe",    qwertz_name:"Apostrophe",    deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "'" , shifted: "\"" },
+ {	index:125,  code: IC_enter,          name: "Enter",			azerty_name: "Enter",         qwertz_name:"Enter",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "\n" , shifted: "\n" },
+ {	index:126,  code: IC_space,          name: "Space",			azerty_name: "Space",         qwertz_name:"Space",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: " " , shifted: " " },
+ {	index:127,  code: IC_key_escape,     name: "Escape",		azerty_name: "Escape",        qwertz_name:"Escape",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: chr(27), shifted: chr(27) },
+ {	index:128,  code: IC_hat0_U,		 name: "Hat0 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:129,  code: IC_hat0_D,		 name: "Hat0 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:130,  code: IC_hat0_L,		 name: "Hat0 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:131,  code: IC_hat0_R,	     name: "Hat0 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:132,  code: IC_hat1_U,		 name: "Hat1 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:133,  code: IC_hat1_D,		 name: "Hat1 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:134,  code: IC_hat1_L,		 name: "Hat1 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:135,  code: IC_hat1_R,	     name: "Hat1 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:136,  code: IC_hat2_U,		 name: "Hat2 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:137,  code: IC_hat2_D,		 name: "Hat2 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:138,  code: IC_hat2_L,		 name: "Hat2 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:139,  code: IC_hat2_R,	     name: "Hat2 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:140,  code: IC_hat3_U,		 name: "Hat3 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:141,  code: IC_hat3_D,		 name: "Hat3 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:142,  code: IC_hat3_L,		 name: "Hat3 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:143,  code: IC_hat3_R,	     name: "Hat3 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:144,  code: IC_hat4_U,		 name: "Hat4 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:145,  code: IC_hat4_D,		 name: "Hat4 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:146,  code: IC_hat4_L,		 name: "Hat4 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:147,  code: IC_hat4_R,	     name: "Hat4 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
 ];
 
 __INPUTCANDY.SDL_GameControllerDB = [];
 
 __ICI.Init();
 __INPUTCANDY.ready=true;
+
+__Init_ICUI();
 }
 
 // This function is invoked and stored in __IC.interface, but you can call it anywhere to grab an "instance" of all
@@ -443,6 +497,46 @@ function New_InputCandy() {
 		},
 		// Checks _any_ player for an action
 		CheckAny: function ( action ) {
+		},
+		// Directly checks a signal, bypassing the Actions system, -1 means "none", otherwise # of frames its been held for
+		Signal: function ( player_number, button_id ) {
+			var device=__INPUTCANDY.players[player_number-1].device;
+			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) return 0;
+			var len=array_length(__INPUTCANDY.states[device].signals);
+			for ( var i=0; i<len; i++ ) {
+				if ( __INPUTCANDY.states[device].signals[i].button == button_id and __INPUTCANDY.states[device].signals[i].is_held ) return __INPUTCANDY.states[device].signals[i].held_for;
+			}
+		},
+		// Directly checks signals from any device, bypassing the Actions system
+		SignalAny: function ( button_id ) {
+			var len=array_length(__INPUTCANDY.devices);
+			for ( var i=0; i<len; i++ ) {
+				var sigs=array_length(__INPUTCANDY.states[i].signals);
+				for ( var j=0; j<sigs; j++ ) {
+					if ( __INPUTCANDY.states[i].signals[j].button == button_id and __INPUTCANDY.states[i].signals[j].is_held ) return __INPUTCANDY.states[i].signals[j].held_for;
+				}
+			}
+			return 0;
+		},
+		// Directly checks a signal, bypassing the Actions system, -1 means "none", otherwise # of frames its been held for
+		SignalReleased: function ( player_number, button_id ) {
+			var device=__INPUTCANDY.players[player_number-1].device;
+			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) return false;
+			var len=array_length(__INPUTCANDY.states[device].signals);
+			for ( var i=0; i<len; i++ ) {
+				if ( __INPUTCANDY.states[device].signals[i].button == button_id and __INPUTCANDY.states[device].signals[i].was_held ) return true;
+			}
+		},
+		// Directly checks signals from any device, bypassing the Actions system
+		SignalAnyReleased: function ( button_id ) {
+			var len=array_length(__INPUTCANDY.devices);
+			for ( var i=0; i<len; i++ ) {
+				var sigs=array_length(__INPUTCANDY.states[i].signals);
+				for ( var j=0; j<sigs; j++ ) {
+					if ( __INPUTCANDY.states[i].signals[j].button == button_id and __INPUTCANDY.states[i].signals[j].was_held ) return true;
+				}
+			}
+			return 0;
 		},
 		AxisToAngle: function ( H, V ) { return point_direction(0, 0, H, V); },
 		// 
@@ -514,6 +608,7 @@ function New_InputCandy_Private() {
 	 Step: function() {
 		__ICI.GetActiveDevices();
 		__ICI.GetDeviceStates();
+		__ICI.AssignUnusedDevices();
 	    if ( __INPUTCANDY.use_network ) __ICI.UpdateNetwork();
 	 },
 	 Init: function() {
@@ -638,7 +733,9 @@ function New_InputCandy_Private() {
 		 // Append detected devices not found in the already known and connected list
 		 var len=array_length(devices_list);
 		 for ( var i=0; i<len; i++ ) {
-			 __INPUTCANDY.devices[array_length(__INPUTCANDY.devices)]=devices_list[i];
+			 var index=array_length(__INPUTCANDY.devices);
+			 __INPUTCANDY.devices[index]=devices_list[i];
+			 if ( devices_list[i].type == ICDeviceType_keyboard_mouse and index != 0 ) devices_list[i].type=ICDeviceType_gamepad;
 		 }
 		 // Determine if any of the already known are still connected.  If not, prune in a special case, otherwise, create a new device profile and populate it.
 		 j=0;
@@ -676,7 +773,46 @@ function New_InputCandy_Private() {
 		 // Get the latest list and make it available.
 		 __INPUTCANDY.devices=devices_list;
 	 },
-	 
+	 AssignUnusedDevices: function() {
+	 	// TODO: Load Previously Saved Device Assignment Settings here...
+	 	var device_count=array_length(__INPUTCANDY.devices);
+	 	for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
+			if ( __INPUTCANDY.players[i].device != none and __INPUTCANDY.players[i].device < device_count ) {
+				// Check for duplicate assignments.  Earlier players get precedence.
+	 			var found=0;
+	 			for ( var k=0; k<__INPUTCANDY.max_players; k++ ) {
+	 				if ( __INPUTCANDY.players[k].device == __INPUTCANDY.players[i].device ) found++;
+					if ( found > 1 ) __INPUTCANDY.players[k].device=none;
+	 			}
+				continue; // Already assigned valid device and duplicates up the line were removed.
+			}
+			if ( __INPUTCANDY.players[i].device == none ) {
+				var assigned=false;
+	 			for ( var j=0; j<device_count; j++ ) {
+	 				var found=false;
+	 				for ( var k=0; k<__INPUTCANDY.max_players; k++ ) {
+	 					if ( __INPUTCANDY.players[k].device == j ) { found=true; break; }
+	 				}
+					if ( found ) continue;
+					else {
+						__INPUTCANDY.players[i].device=j;
+						assigned=true;
+					}
+	 			}
+			}
+	 	}
+	 },
+	 GuessBestDeviceIcon: function ( device ) {
+		 if ( device == none ) return 9;
+		 if ( device.type == ICDeviceType_keyboard or device.type == ICDeviceType_mouse or device.type == ICDeviceType_keyboard_mouse ) return 0;
+		 if ( device.axis_count == 5 and device.button_count == 17 ) return 4;
+		 if ( device.axis_count == 4 and device.button_count == 17 ) return 3;
+		 if ( device.axis_count == 2 and device.button_count == 10 ) return 2;
+		 if ( device.axis_count == 2 and device.button_count == 8 ) return 1;
+		 if ( device.desc == "Classic Controller" ) return 7; // ATARI VCS Classic Controller
+		 if ( device.guid == "5032021000000000000504944564944" ) return 8; // ATARI VCS Modern Controller
+		 return 5;
+	 },
 	 //// BUTTONSTATE
 	New_ICButtonState: function() {
 		return {
@@ -738,7 +874,127 @@ function New_InputCandy_Private() {
 			state.LV = gamepad_axis_value(state.slot_id, gp_axislv);
 			state.RH = gamepad_axis_value(state.slot_id, gp_axisrh);
 			state.RV = gamepad_axis_value(state.slot_id, gp_axisrv);
-			for ( var k=0; k<__INPUTCANDY.devices[i].hat_count; k++ ) state.hats[k]=gamepad_hat_value(state.slot_id,k);
+			var hat_code=IC_hat0_U;
+			for ( var k=0; k<__INPUTCANDY.devices[i].hat_count; k++ ) {
+				if ( k > 4 ) break; // Can't track signals beyond hat 4
+				state.hats[k]=gamepad_hat_value(state.slot_id,k);
+				if ( state.hats[k]&ICGamepad_Hat_U ) { // Up is held
+					var found_signal=none;
+					if ( previous_states_len > i )
+						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
+							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
+					var j=array_length(state.signals);
+					state.signals[j]=__ICI.New_ICButtonState();
+					state.signals[j].button=hat_code;
+					state.signals[j].signal_index=hat_code;
+					state.signals[j].is_held = true;
+					if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
+					else state.signals[j].held_for = 1;
+				} else { // Released
+					var found_signal=none;
+					if ( previous_states_len > i )
+						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
+							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
+					if ( found_signal == none or previous_states[i].signals[found_signal].was_held ) { /* stop tracking it */ }
+					else {
+						var j=array_length(state.signals);
+						state.signals[j]=__ICI.New_ICButtonState();
+						state.signals[j].button=hat_code;
+						state.signals[j].signal_index=hat_code;
+						state.signals[j].was_held = true;
+						if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
+						else state.signals[j].held_for = 1;
+					}
+				}
+				hat_code++;
+				if ( state.hats[k]&ICGamepad_Hat_R ) { // Right is held
+					var found_signal=none;
+					if ( previous_states_len > i )
+						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
+							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
+					var j=array_length(state.signals);
+					state.signals[j]=__ICI.New_ICButtonState();
+					state.signals[j].button=hat_code;
+					state.signals[j].signal_index=hat_code;
+					state.signals[j].is_held = true;
+					if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
+					else state.signals[j].held_for = 1;
+				} else { // Released
+					var found_signal=none;
+					if ( previous_states_len > i )
+						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
+							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
+					if ( found_signal == none or previous_states[i].signals[found_signal].was_held ) { /* stop tracking it */ }
+					else {
+						var j=array_length(state.signals);
+						state.signals[j]=__ICI.New_ICButtonState();
+						state.signals[j].button=hat_code;
+						state.signals[j].signal_index=hat_code;
+						state.signals[j].was_held = true;
+						if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
+						else state.signals[j].held_for = 1;
+					}
+				}
+				hat_code++;
+				if ( state.hats[k]&ICGamepad_Hat_D ) { // Down is held
+					var found_signal=none;
+					if ( previous_states_len > i )
+						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
+							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
+					var j=array_length(state.signals);
+					state.signals[j]=__ICI.New_ICButtonState();
+					state.signals[j].button=hat_code;
+					state.signals[j].signal_index=hat_code;
+					state.signals[j].is_held = true;
+					if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
+					else state.signals[j].held_for = 1;
+				} else { // Released
+					var found_signal=none;
+					if ( previous_states_len > i )
+						for ( var m=0; m<array_length(previous_states[i].signals); m++ )
+							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
+					if ( found_signal == none or previous_states[i].signals[found_signal].was_held ) { /* stop tracking it */ }
+					else {
+						var j=array_length(state.signals);
+						state.signals[j]=__ICI.New_ICButtonState();
+						state.signals[j].button=hat_code;
+						state.signals[j].signal_index=hat_code;
+						state.signals[j].was_held = true;
+						if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
+						else state.signals[j].held_for = 1;
+					}
+				}
+				hat_code++;
+				if ( state.hats[k]&ICGamepad_Hat_L ) { // Left is held
+					var found_signal=none;
+					if ( previous_states_len > i )
+						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
+							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
+					var j=array_length(state.signals);
+					state.signals[j]=__ICI.New_ICButtonState();
+					state.signals[j].button=hat_code;
+					state.signals[j].signal_index=hat_code;
+					state.signals[j].is_held = true;
+					if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
+					else state.signals[j].held_for = 1;
+				} else { // Released
+					var found_signal=none;
+					if ( previous_states_len > i ) 
+						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
+							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
+					if ( found_signal == none or previous_states[i].signals[found_signal].was_held ) { /* stop tracking it */ }
+					else {
+						var j=array_length(state.signals);
+						state.signals[j]=__ICI.New_ICButtonState();
+						state.signals[j].button=hat_code;
+						state.signals[j].signal_index=hat_code;
+						state.signals[j].was_held = true;
+						if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
+						else state.signals[j].held_for = 1;
+					}
+				}
+				hat_code++;
+			}
 			for ( var k=0; k<__INPUTCANDY.devices[i].axis_count; k++ ) state.axis[k]=gamepad_axis_value(state.slot_id,k);
 			for ( var k=0; k<__INPUTCANDY.devices[i].button_count; k++ ) state.buttons[k]=gamepad_button_value(state.slot_id,k);
 			for ( var k=__FIRST_GAMEPAD_SIGNAL; k<__LAST_GAMEPAD_SIGNAL_PLUS_1; k++ ) {
@@ -770,11 +1026,22 @@ function New_InputCandy_Private() {
 					state.signals[j].was_held = true;
 					if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
 					else state.signals[j].held_for = 1;
-				}
+				} 
 			}
 			__INPUTCANDY.states[array_length(__INPUTCANDY.states)]=state;
 		}
 	},
+	
+	
+	//// PLAYERS
+	New_ICPlayer: function () {
+		return {
+			settings: none,
+			device: none,
+			active: false,    // It's up to you to maintain this.  Set to true once a player is "in the game", and false once they are "out of the game"
+			data: {}          // This is left here so you can add additional values yourself to a player, like if they are on a high score screen, or in character select mode, etc.
+		};
+	},	
 	
 	//// BINDING
 	New_ICBinding: function() {
@@ -796,13 +1063,6 @@ function New_InputCandy_Private() {
 			use_keyboard_mouse: false,
 			use_gamepad: false,
 			mappings: [],
-		};
-	},
-	New_ICPlayer: function () {
-		return {
-			settings: none,
-			device: none,
-			active: false
 		};
 	},
 	New_ICAction: function () {
