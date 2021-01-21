@@ -263,7 +263,7 @@ function ICUI_Draw_device_select() {
 	
 	if ( __INPUTCANDY.ui.style.show_title ) {
 		oy+=eh;
-		ICUI_text( false, "Change Controls for Players", ox+ew/2, oy );
+		ICUI_text( false, "Choose Device and Configure Controls", ox+ew/2, oy );
 		oy+=smidge+eh*2;
 	}
 	
