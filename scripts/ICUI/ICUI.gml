@@ -294,7 +294,7 @@ function ICUI_Draw_device_select() {
 	
 	for ( var k=0; k<__INPUTCANDY.max_players; k++ ) {
 		ICUI_text( false, "Player "+int(k+1), ox+cw/2, oy );
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.influencing == k and __INPUTCANDY.ui.device_select.menuitem == 0, "", ox+cw/2-cw*0.375, oy+rh/2-rh*0.375, cw*0.75, rh*0.75 );
+		if ( !__INPUTCANDY.ui.device_select.selecting ) ICUI_labeled_button( __INPUTCANDY.ui.device_select.influencing == k and __INPUTCANDY.ui.device_select.menuitem == 0, "", ox+cw/2-cw*0.375, oy+rh/2-rh*0.375, cw*0.75, rh*0.75 );
 		if ( __INPUTCANDY.keyboard_mouse_gamepad1_same and __INPUTCANDY.players[k].device == ICDeviceType_keyboard_mouse ) {
 			draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.75, 0, c_white, 1.0 );
 			draw_sprite_ext( s_InputCandy_device_icons, 0,ox+cw/2+cw/4,oy+rh/2+rh/4, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.25, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.25, 0, c_white, 1.0 );
@@ -309,34 +309,36 @@ function ICUI_Draw_device_select() {
 		}
 	}
 	
-	if ( __INPUTCANDY.ui.input(ICUI_right) ) {
-		audio_play_sound(a_ICUI_click,100,0);
-		__INPUTCANDY.ui.device_select.menuitem=0;
-		__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+1)%__INPUTCANDY.max_players;
-	}
-	if ( __INPUTCANDY.ui.input(ICUI_left) ) {
-		audio_play_sound(a_ICUI_click,100,0);
-		__INPUTCANDY.ui.device_select.menuitem=0;
-		__INPUTCANDY.ui.device_select.influencing-=1;
-		if (__INPUTCANDY.ui.device_select.influencing< 0) __INPUTCANDY.ui.device_select.influencing=__INPUTCANDY.max_players-1;
-	}
-	if ( __INPUTCANDY.ui.input(ICUI_up) ) {
-		audio_play_sound(a_ICUI_click,100,0);
-		__INPUTCANDY.ui.device_select.menuitem=0;
-		__INPUTCANDY.ui.device_select.influencing-=cols;
-		while (__INPUTCANDY.ui.device_select.influencing< 0) __INPUTCANDY.ui.device_select.influencing+=__INPUTCANDY.max_players;
-		if ( __INPUTCANDY.ui.device_select.influencing > __INPUTCANDY.max_players )
-			__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+cols)%__INPUTCANDY.max_players;
-
-	}
-	if ( __INPUTCANDY.ui.input(ICUI_down) ) {
-		audio_play_sound(a_ICUI_click,100,0);
-		__INPUTCANDY.ui.device_select.menuitem=0;
-		__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+cols)%__INPUTCANDY.max_players;
-	}
-	if( __INPUTCANDY.ui.input(ICUI_button) ) {
-		audio_play_sound(a_ICUI_tone,100,0);
-		__INPUTCANDY.ui.device_select.selecting=true;
+	if ( !__INPUTCANDY.ui.device_select.selecting ) {
+	 if ( __INPUTCANDY.ui.input(ICUI_right) ) {
+	 	audio_play_sound(a_ICUI_click,100,0);
+	 	__INPUTCANDY.ui.device_select.menuitem=0;
+	 	__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+1)%__INPUTCANDY.max_players;
+	 }
+	 if ( __INPUTCANDY.ui.input(ICUI_left) ) {
+	 	audio_play_sound(a_ICUI_click,100,0);
+	 	__INPUTCANDY.ui.device_select.menuitem=0;
+	 	__INPUTCANDY.ui.device_select.influencing-=1;
+	 	if (__INPUTCANDY.ui.device_select.influencing< 0) __INPUTCANDY.ui.device_select.influencing=__INPUTCANDY.max_players-1;
+	 }
+	 if ( __INPUTCANDY.ui.input(ICUI_up) ) {
+	 	audio_play_sound(a_ICUI_click,100,0);
+	 	__INPUTCANDY.ui.device_select.menuitem=0;
+	 	__INPUTCANDY.ui.device_select.influencing-=cols;
+	 	while (__INPUTCANDY.ui.device_select.influencing< 0) __INPUTCANDY.ui.device_select.influencing+=__INPUTCANDY.max_players;
+	 	if ( __INPUTCANDY.ui.device_select.influencing > __INPUTCANDY.max_players )
+	 		__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+cols)%__INPUTCANDY.max_players;
+	 
+	 }
+	 if ( __INPUTCANDY.ui.input(ICUI_down) ) {
+	 	audio_play_sound(a_ICUI_click,100,0);
+	 	__INPUTCANDY.ui.device_select.menuitem=0;
+	 	__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+cols)%__INPUTCANDY.max_players;
+	 }
+	 if( __INPUTCANDY.ui.input(ICUI_button) ) {
+	 	audio_play_sound(a_ICUI_tone,100,0);
+	 	__INPUTCANDY.ui.device_select.selecting=true;
+	 }
 	}
 	
 	draw_set_font(oldfont);

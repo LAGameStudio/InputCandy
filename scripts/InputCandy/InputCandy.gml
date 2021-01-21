@@ -807,14 +807,15 @@ function New_InputCandy_Private() {
 	 	}
 	 },
 	 GuessBestDeviceIcon: function ( device ) {
-		 if ( device == none ) return 9;
-		 if ( device.type == ICDeviceType_keyboard or device.type == ICDeviceType_mouse /*or device.type == ICDeviceType_keyboard_mouse*/ ) return 0;
+		 if ( device == none or device == 0 ) return 9;
+		 if ( device.type == ICDeviceType_keyboard ) return 10;
+		 if ( device.type == ICDeviceType_mouse ) return 11;
+		 if ( device.desc == "Classic Controller" ) return 7; // ATARI VCS Classic Controller
+		 if ( device.guid == "5032021000000000000504944564944" ) return 8; // ATARI VCS Modern Controller
 		 if ( device.axis_count == 5 and device.button_count == 17 ) return 4;
 		 if ( device.axis_count == 4 and device.button_count == 17 ) return 3;
 		 if ( device.axis_count == 2 and device.button_count == 10 ) return 2;
 		 if ( device.axis_count == 2 and device.button_count == 8 ) return 1;
-		 if ( device.desc == "Classic Controller" ) return 7; // ATARI VCS Classic Controller
-		 if ( device.guid == "5032021000000000000504944564944" ) return 8; // ATARI VCS Modern Controller
 		 return 5;
 	 },
 	 //// BUTTONSTATE
