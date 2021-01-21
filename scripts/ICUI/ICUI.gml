@@ -85,8 +85,8 @@ function __Init_ICUI() {
 			shadow: 0.2,        // Amount of shadowed color that should be mixed with black
 			rect_col1: c_white, // Rectangle color1
 			rect_col2: c_gray,  // Rectangle color2
-			box1: c_gray,		// Box interior color1 for input boxes
-			box2: c_dkgray,		// Box interior color2
+			box1: c_dkgray,		// Box interior color1 for input boxes
+			box2: c_black,		// Box interior color2
 			  //////// Slider
 			slider_knob: 0.1,   // How wide the slider knob should be horizontally, 0.1 is good
 			slider_groove: 0.8, // How tall the slider groove should be horizontally, 0.1-1.0
@@ -103,7 +103,7 @@ function __Init_ICUI() {
 			highlight1: c_fuchsia, // Color1 of influence indicator
 			highlight2: c_purple,  // Color2 of influence indicator
 			pulse_highlight: true,  // Pulse the influence indicator
-			pulse_speed_s: 1.5,     // Speed of the pulsing (in seconds)
+			pulse_speed_s: 1.3,     // Speed of the pulsing (in seconds)
 			draw_3d_buttons: true,  // Draws a "Fake 3d" button instead of a flat button
 			show_title: true,    // false if you are going to provide your own title/mode display
 			  //////// Mouse support
@@ -205,12 +205,12 @@ function ICUI_text_in_box( is_focused, text, x, y, w, h ) {
 			var pulse = __INPUTCANDY.ui.expired % __INPUTCANDY.ui.style.pulse_speed_s / __INPUTCANDY.ui.style.pulse_speed_s;
 			var rgb1=color_mult( __INPUTCANDY.ui.style.highlight1, pulse );
 			var rgb2=color_mult( __INPUTCANDY.ui.style.highlight2, pulse );
-			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness*2,y+h+thickness*2,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,rgb1,rgb2,false);
+			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness,y+h+thickness,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,rgb1,rgb2,false);
 		} else {
-			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness*2,y+h+thickness*2,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.highlight1,__INPUTCANDY.ui.style.highlight2,false);
+			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness,y+h+thickness,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.highlight1,__INPUTCANDY.ui.style.highlight2,false);
 		}
 	}
-	draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.box1,__INPUTCANDY.ui.style.box2,false);
+	draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.box2,__INPUTCANDY.ui.style.box1,false);
 	ICUI_text(false,text,x+w/2,y+h/2);
 }
 
@@ -263,7 +263,7 @@ function ICUI_Draw_device_select() {
 	
 	if ( __INPUTCANDY.ui.style.show_title ) {
 		oy+=eh;
-		ICUI_text( false, "Select Controller", ox+ew/2, oy );
+		ICUI_text( false, "Change Controls for Players", ox+ew/2, oy );
 		oy+=smidge+eh*2;
 	}
 	
@@ -301,7 +301,7 @@ function ICUI_Draw_device_select() {
 		} else
 		draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.players[k].device==none?none:__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.75, 0, c_white, 1.0 );
 		if ( __INPUTCANDY.players[k].device != none )
-		ICUI_text( false, "#"+int(__INPUTCANDY.players[k].device), ox+cw-ew, oy+rh-eh );
+		ICUI_text( false, "Slot #"+int(__INPUTCANDY.players[k].device+1), ox+cw/4, oy+rh-rh/5 );
 		ox += cw;
 		if ( ox >= __INPUTCANDY.ui.style.region.x2-cw/2 ) {
 			ox = __INPUTCANDY.ui.style.region.x;
@@ -319,6 +319,20 @@ function ICUI_Draw_device_select() {
 		__INPUTCANDY.ui.device_select.menuitem=0;
 		__INPUTCANDY.ui.device_select.influencing-=1;
 		if (__INPUTCANDY.ui.device_select.influencing< 0) __INPUTCANDY.ui.device_select.influencing=__INPUTCANDY.max_players-1;
+	}
+	if ( __INPUTCANDY.ui.input(ICUI_up) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.device_select.menuitem=0;
+		__INPUTCANDY.ui.device_select.influencing-=cols;
+		while (__INPUTCANDY.ui.device_select.influencing< 0) __INPUTCANDY.ui.device_select.influencing+=__INPUTCANDY.max_players;
+		if ( __INPUTCANDY.ui.device_select.influencing > __INPUTCANDY.max_players )
+			__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+cols)%__INPUTCANDY.max_players;
+
+	}
+	if ( __INPUTCANDY.ui.input(ICUI_down) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.device_select.menuitem=0;
+		__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+cols)%__INPUTCANDY.max_players;
 	}
 	if( __INPUTCANDY.ui.input(ICUI_button) ) {
 		audio_play_sound(a_ICUI_tone,100,0);

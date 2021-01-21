@@ -901,7 +901,7 @@ function New_InputCandy_Private() {
 					if ( previous_states_len > i )
 						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
 							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
-					if ( found_signal == none or previous_states[i].signals[found_signal].was_held ) { /* stop tracking it */ }
+					if ( found_signal == none or previous_states[i].signals[found_signal].was_held and !previous_states[i].signals[found_signal].is_held ) { /* stop tracking it */ }
 					else {
 						var j=array_length(state.signals);
 						state.signals[j]=__ICI.New_ICButtonState();
@@ -933,7 +933,7 @@ function New_InputCandy_Private() {
 					if ( previous_states_len > i )
 						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
 							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
-					if ( found_signal == none or previous_states[i].signals[found_signal].was_held ) { /* stop tracking it */ }
+					if ( found_signal == none or previous_states[i].signals[found_signal].was_held and !previous_states[i].signals[found_signal].is_held ) { /* stop tracking it */ }
 					else {
 						var j=array_length(state.signals);
 						state.signals[j]=__ICI.New_ICButtonState();
@@ -963,7 +963,7 @@ function New_InputCandy_Private() {
 					if ( previous_states_len > i )
 						for ( var m=0; m<array_length(previous_states[i].signals); m++ )
 							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
-					if ( found_signal == none or previous_states[i].signals[found_signal].was_held ) { /* stop tracking it */ }
+					if ( found_signal == none or previous_states[i].signals[found_signal].was_held and !previous_states[i].signals[found_signal].is_held ) { /* stop tracking it */ }
 					else {
 						var j=array_length(state.signals);
 						state.signals[j]=__ICI.New_ICButtonState();
@@ -995,7 +995,7 @@ function New_InputCandy_Private() {
 					if ( previous_states_len > i ) 
 						for ( var m=0; m<array_length(previous_states[i].signals); m++ ) 
 							if ( previous_states[i].signals[m].button == hat_code ) { found_signal=m; break; }
-					if ( found_signal == none or previous_states[i].signals[found_signal].was_held ) { /* stop tracking it */ }
+					if ( found_signal == none or previous_states[i].signals[found_signal].was_held and !previous_states[i].signals[found_signal].is_held ) { /* stop tracking it */ }
 					else {
 						var j=array_length(state.signals);
 						state.signals[j]=__ICI.New_ICButtonState();
