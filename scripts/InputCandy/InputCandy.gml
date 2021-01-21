@@ -524,7 +524,9 @@ function New_InputCandy() {
 			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) return false;
 			var len=array_length(__INPUTCANDY.states[device].signals);
 			for ( var i=0; i<len; i++ ) {
-				if ( __INPUTCANDY.states[device].signals[i].button == button_id and __INPUTCANDY.states[device].signals[i].was_held ) return true;
+				if ( __INPUTCANDY.states[device].signals[i].button == button_id
+				 and __INPUTCANDY.states[device].signals[i].was_held 
+				 and !__INPUTCANDY.states[device].signals[i].is_held ) return true;
 			}
 		},
 		// Directly checks signals from any device, bypassing the Actions system
@@ -533,7 +535,9 @@ function New_InputCandy() {
 			for ( var i=0; i<len; i++ ) {
 				var sigs=array_length(__INPUTCANDY.states[i].signals);
 				for ( var j=0; j<sigs; j++ ) {
-					if ( __INPUTCANDY.states[i].signals[j].button == button_id and __INPUTCANDY.states[i].signals[j].was_held ) return true;
+					if ( __INPUTCANDY.states[i].signals[j].button == button_id
+					 and __INPUTCANDY.states[i].signals[j].was_held
+					 and !__INPUTCANDY.states[i].signals[j].is_held ) return true;
 				}
 			}
 			return 0;
@@ -804,7 +808,7 @@ function New_InputCandy_Private() {
 	 },
 	 GuessBestDeviceIcon: function ( device ) {
 		 if ( device == none ) return 9;
-		 if ( device.type == ICDeviceType_keyboard or device.type == ICDeviceType_mouse or device.type == ICDeviceType_keyboard_mouse ) return 0;
+		 if ( device.type == ICDeviceType_keyboard or device.type == ICDeviceType_mouse /*or device.type == ICDeviceType_keyboard_mouse*/ ) return 0;
 		 if ( device.axis_count == 5 and device.button_count == 17 ) return 4;
 		 if ( device.axis_count == 4 and device.button_count == 17 ) return 3;
 		 if ( device.axis_count == 2 and device.button_count == 10 ) return 2;
@@ -888,8 +892,10 @@ function New_InputCandy_Private() {
 					state.signals[j].button=hat_code;
 					state.signals[j].signal_index=hat_code;
 					state.signals[j].is_held = true;
-					if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
-					else state.signals[j].held_for = 1;
+					if ( found_signal != none ) {
+						state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
+						state.signals[j].was_held = true;
+					} else state.signals[j].held_for = 1;
 				} else { // Released
 					var found_signal=none;
 					if ( previous_states_len > i )
@@ -901,9 +907,10 @@ function New_InputCandy_Private() {
 						state.signals[j]=__ICI.New_ICButtonState();
 						state.signals[j].button=hat_code;
 						state.signals[j].signal_index=hat_code;
-						state.signals[j].was_held = true;
-						if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
-						else state.signals[j].held_for = 1;
+						if ( found_signal != none ) {
+							state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
+							state.signals[j].was_held = true;
+						} else state.signals[j].held_for = 1;
 					}
 				}
 				hat_code++;
@@ -917,8 +924,10 @@ function New_InputCandy_Private() {
 					state.signals[j].button=hat_code;
 					state.signals[j].signal_index=hat_code;
 					state.signals[j].is_held = true;
-					if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
-					else state.signals[j].held_for = 1;
+					if ( found_signal != none ) {
+						state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
+						state.signals[j].was_held = true;
+					} else state.signals[j].held_for = 1;
 				} else { // Released
 					var found_signal=none;
 					if ( previous_states_len > i )
@@ -930,9 +939,10 @@ function New_InputCandy_Private() {
 						state.signals[j]=__ICI.New_ICButtonState();
 						state.signals[j].button=hat_code;
 						state.signals[j].signal_index=hat_code;
-						state.signals[j].was_held = true;
-						if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
-						else state.signals[j].held_for = 1;
+						if ( found_signal != none ) {
+							state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
+							state.signals[j].was_held = true;
+						} else state.signals[j].held_for = 1;
 					}
 				}
 				hat_code++;
@@ -959,9 +969,10 @@ function New_InputCandy_Private() {
 						state.signals[j]=__ICI.New_ICButtonState();
 						state.signals[j].button=hat_code;
 						state.signals[j].signal_index=hat_code;
-						state.signals[j].was_held = true;
-						if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
-						else state.signals[j].held_for = 1;
+						if ( found_signal != none ) {
+							state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
+							state.signals[j].was_held = true;
+						} else state.signals[j].held_for = 1;
 					}
 				}
 				hat_code++;
@@ -975,8 +986,10 @@ function New_InputCandy_Private() {
 					state.signals[j].button=hat_code;
 					state.signals[j].signal_index=hat_code;
 					state.signals[j].is_held = true;
-					if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
-					else state.signals[j].held_for = 1;
+					if ( found_signal != none ) {
+						state.signals[j].held_for = previous_states[i].signals[found_signal].held_for+1;
+						state.signals[j].was_held = true;
+					} else state.signals[j].held_for = 1;
 				} else { // Released
 					var found_signal=none;
 					if ( previous_states_len > i ) 
@@ -988,9 +1001,10 @@ function New_InputCandy_Private() {
 						state.signals[j]=__ICI.New_ICButtonState();
 						state.signals[j].button=hat_code;
 						state.signals[j].signal_index=hat_code;
-						state.signals[j].was_held = true;
-						if ( found_signal != none ) state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
-						else state.signals[j].held_for = 1;
+						if ( found_signal != none ) {
+							state.signals[j].held_for = previous_states[i].signals[found_signal].held_for;
+							state.signals[j].was_held = true;
+						} else state.signals[j].held_for = 1;
 					}
 				}
 				hat_code++;

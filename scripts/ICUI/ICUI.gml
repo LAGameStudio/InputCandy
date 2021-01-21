@@ -115,6 +115,7 @@ function __Init_ICUI() {
 		// UI mode where we're selecting a device for each player, this is the default mode
 		device_select: {
 			mode: true,
+			selecting: false,
 			influencing: 0,
 			menuitem: 0,
 			allow_multiple_players: false  // Allows multiple players to use the same gamepad
@@ -174,11 +175,12 @@ function ICUI_slider( is_focused, value, increment, x, y, w, h ) {
 		} else {
 			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness*2,y+h+thickness*2,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.highlight1,__INPUTCANDY.ui.style.highlight2,false);
 		}
-		if ( __INPUTCANDY.ui.Signalled(ICUI_left)%room_speed == room_speed-1 ) value -= increment;
-		if ( __INPUTCANDY.ui.Signalled(ICUI_right)%room_speed == room_speed-1 ) value += increment;
+		if ( __INPUTCANDY.ui.input(ICUI_left) ) value -= increment;
+		if ( __INPUTCANDY.ui.input(ICUI_right) ) value += increment;
 	}
 	draw_roundrect_color_ext(x,y+groove_h_padding,x+w,y+h-groove_h_padding*2,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.slider1,__INPUTCANDY.ui.style.slider2,false);
 	draw_roundrect_color_ext(x+knob_x-knob_w/2,y,x+knob_x+knob_w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.knob1,__INPUTCANDY.ui.style.knob2,false);
+	return value;
 }
 
 // this text is centered
@@ -207,8 +209,6 @@ function ICUI_text_in_box( is_focused, text, x, y, w, h ) {
 		} else {
 			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness*2,y+h+thickness*2,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.highlight1,__INPUTCANDY.ui.style.highlight2,false);
 		}
-		if ( __INPUTCANDY.ui.input(ICUI_left)%room_speed == room_speed-1 ) value -= increment;
-		if ( __INPUTCANDY.ui.input(ICUI_right)%room_speed == room_speed-1 ) value += increment;
 	}
 	draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.box1,__INPUTCANDY.ui.style.box2,false);
 	ICUI_text(false,text,x+w/2,y+h/2);
@@ -294,7 +294,11 @@ function ICUI_Draw_device_select() {
 	
 	for ( var k=0; k<__INPUTCANDY.max_players; k++ ) {
 		ICUI_text( false, "Player "+int(k+1), ox+cw/2, oy );
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.influencing == k and __INPUTCANDY.ui.device_select.menuitem == 0, "", ox+cw/2-(cw/2)*0.75, oy+rh/2-(rh/2)*0.75, cw*0.75, rh*0.75 );
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.influencing == k and __INPUTCANDY.ui.device_select.menuitem == 0, "", ox+cw/2-cw*0.375, oy+rh/2-rh*0.375, cw*0.75, rh*0.75 );
+		if ( __INPUTCANDY.keyboard_mouse_gamepad1_same and __INPUTCANDY.players[k].device == ICDeviceType_keyboard_mouse ) {
+			draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.75, 0, c_white, 1.0 );
+			draw_sprite_ext( s_InputCandy_device_icons, 0,ox+cw/2+cw/4,oy+rh/2+rh/4, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.25, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.25, 0, c_white, 1.0 );
+		} else
 		draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.players[k].device==none?none:__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.75, 0, c_white, 1.0 );
 		if ( __INPUTCANDY.players[k].device != none )
 		ICUI_text( false, "#"+int(__INPUTCANDY.players[k].device), ox+cw-ew, oy+rh-eh );
@@ -305,14 +309,20 @@ function ICUI_Draw_device_select() {
 		}
 	}
 	
-	if ( __INPUTCANDY.ui.input(ICUI_left)%room_speed == room_speed-1 ) {
+	if ( __INPUTCANDY.ui.input(ICUI_right) ) {
+		audio_play_sound(a_ICUI_click,100,0);
 		__INPUTCANDY.ui.device_select.menuitem=0;
 		__INPUTCANDY.ui.device_select.influencing= (__INPUTCANDY.ui.device_select.influencing+1)%__INPUTCANDY.max_players;
 	}
-	if ( __INPUTCANDY.ui.input(ICUI_right)%room_speed == room_speed-1 ) {
+	if ( __INPUTCANDY.ui.input(ICUI_left) ) {
+		audio_play_sound(a_ICUI_click,100,0);
 		__INPUTCANDY.ui.device_select.menuitem=0;
 		__INPUTCANDY.ui.device_select.influencing-=1;
 		if (__INPUTCANDY.ui.device_select.influencing< 0) __INPUTCANDY.ui.device_select.influencing=__INPUTCANDY.max_players-1;
+	}
+	if( __INPUTCANDY.ui.input(ICUI_button) ) {
+		audio_play_sound(a_ICUI_tone,100,0);
+		__INPUTCANDY.ui.device_select.selecting=true;
 	}
 	
 	draw_set_font(oldfont);
