@@ -230,6 +230,50 @@ function ICDeviceTypeString(i) {
 #macro IC_hat4_L 146
 #macro IC_hat4_R 147
 
+////// Action pad indications.  A special category of action.
+
+/* 
+  Unlike buttons, a single signal, Axis, Hats and DPads are different.
+  
+  Actions that are for movement (usually) but may be used
+  with secondary movement (aiming a turret for example), the user may want
+  to swap Axis 0 for Axis 1, or Hat 1 for the Dpad
+   */
+
+// Directional pad.  Controllers tend to have 1 of these. LRUD
+#macro IC_dpad 200
+
+// Hats are a strange hybrid between Dpad and simply an array of 4 buttons.  LRUD usually
+// Sometimes "Hats" are the joystick itself.  Hats can also be thumb buttons.
+// Hats can also be unidirectional (up/down)
+#macro IC_hat0 300
+#macro IC_hat1 301
+#macro IC_hat2 302
+#macro IC_hat3 303
+#macro IC_hat4 304
+#macro IC_hat5 305
+#macro IC_hat6 306
+#macro IC_hat7 307
+#macro IC_hat8 308
+#macro IC_hat9 309
+
+
+// Axis sticks are usually "horizontal and vertical" 0-1, where 0.5, 0.5 would mean "up right"
+// The Classic Controller "Twist" on the Atari is only horizontal and is a special case.
+// Axis sticks can also be used to define a slider control on some specialty joysticks.
+// You can convert an Axis H/V value into an angle-of-direction with point_direction or __IC.AxisToAngle
+// Axis values can also be converted into 4-directional indicators similar to DPads and Hats
+#macro IC_axis0 400
+#macro IC_axis1 401
+#macro IC_axis2 402
+#macro IC_axis3 403
+#macro IC_axis4 404
+#macro IC_axis5 405
+#macro IC_axis6 406
+#macro IC_axis7 407
+#macro IC_axis8 408
+#macro IC_axis9 409
+
 
 #macro __FIRST_GAMEPAD_SIGNAL 6
 #macro __LAST_GAMEPAD_SIGNAL_PLUS_1 24
@@ -253,7 +297,7 @@ global._INPUTCANDY_DEFAULTS_ = {
  //// Global Settings ////
  ready: false,                            // Has IC been initialized?
  max_players: 8,                          // Default value for SetMaxPlayers()
- allow_keyboard_mouse: true,              // If the platform supports it, setting this true will use keyboard_and_mouse as an input device
+ allow_keyboard_mouse: true,              // If the platform supports it, setting this true will use keyboard_and_mouse as an input device (false = hide on consoles w/o keyboard)
  keyboard_layout: ICKeyboardLayout_qwerty,                // Changing to Azerty or Qwertz provides a remapping for keyboards
  keyboard_mouse_gamepad1_same: true,	  // A global setting that treats the keyboard, mouse and controller 1 as a single device.
  skip_simplified_axis: false,             // Set this value to true to stop IC from registering simplified axis movements.
@@ -454,26 +498,59 @@ function New_InputCandy() {
 	return {
 		// Call this in a controller object's Step event, once per frame
 		Step: function () { __ICI.Step(); },
-		// @description Adds an action to the global action list, second optional argument is group name.  "None" is the default group name.  Don't save action indexes to savegames or settings files.
-		// @param verb_string A string to look the action up by.
-		// @param group_name A group name (optional parameter)
-		Action: function ( verb_string ) {
+		// @description This function installs a new action.  You can call it with 3, but it can take up to 7 parameters:
+		// verb_string - the name of your action you will look it up by
+		// default_gamepad - this expects an IC_ button code, like IC_dpad_U, for gamepad default suggestion, IC_none otherwise/default
+		// default_keyboard - this expects an IC_ button code, like IC_key_A, for gamepad default suggestion, IC_none otherwise/default
+		// default_mouse   - IC_LMB, IC_RMB, IC_MMB or IC_none (default)
+		// group - another string that groups actions together (optional)
+		// is_directional - a true/false value indicating this is for a dpad, hat or axis (false by default)
+		// requires_angle - a true/false value that further specifies we are expecting a vert/horiz axis to be used (false by default)
+		// enabled - optional, a true/false (true is default) that starts this action as deactivated or activated
+		// @returns integer index of new action from __INPUTCANDY.actions[] array
+		Action: function ( verb_string, default_gamepad, default_keyboard ) {
 			var a=__ICI.New_ICAction();
 			a.name=verb_string;
-			if ( argument_count > 1 ) { // Group this action.
-				a.group=argument1;
-			}
+			a.gamepad=default_gamepad;
+			a.keyboard=default_keyboard;
+			if ( argument_count > 4 ) a.mouse=argument[4];
+			if ( argument_count > 5 ) a.group=argument[5];
+			if ( argument_count > 6 ) a.is_directional=argument[6];
+			if ( argument_count > 7 ) a.requires_angle=argument[7];
+			if ( argument_count > 8 ) a.enabled=argument[8];
 			a.index = array_length(__INPUTCANDY.actions);
 			__INPUTCANDY.actions[a.index]=a;
 			return a.index;
 		},
+		// Alternatively, you can install an action list from an array of struct source
+		// using the template for actions defined in New_ICAction()
 		Actions: function ( action_list ) {
 			var len=array_length(action_list);
 			for ( var i=0; i<len; i++ ) {
 				__IC.Action( action_list[i].name, action_list[i].group );
 			}
 		},
-		// Get Action from list by name, if you pass a second argument, it requires it to be in the same group.
+		// Toggles the enabled value to true
+		ActivateAction: function ( action_index ) { __INPUTCANDY.actions[action_index].enabled=true; },
+		// Toggles the enabled value to false
+		DeactivateAction: function ( action_index ) { __INPUTCANDY.actions[action_index].enabled=false;	},
+		// Asks if the action is enabled
+		IsActionEnabled: function ( action_index ) { return __INPUTCANDY.actions[action_index].enabled; },
+		// Deactivates a group of actions and returns their indexes
+		DeactivateGroup: function ( group_name ) {
+			var grouped=__IC.GetActionGroup( group_name );
+			var len=array_length(grouped);
+			for ( var i=0; i<len; i++ ) __INPUTCANDY.actions[grouped[i]].enabled=false;
+			return grouped;
+		},
+		// Activates a group of actions and returns their indexes
+		ActivateGroup: function ( group_name ) {
+			var grouped=__IC.GetActionGroup( group_name );
+			var len=array_length(grouped);
+			for ( var i=0; i<len; i++ ) __INPUTCANDY.actions[grouped[i]].enabled=false;
+			return grouped;
+		},
+		// Get Action's index from list by name, if you pass a second argument, it requires it to be in the specified group.
 		GetAction: function ( name /*, group*/ ) {
 			var len=array_length(__INPUTCANDY.actions);
 			if ( argument_count > 1 ) {
@@ -491,7 +568,6 @@ function New_InputCandy() {
 			}
 			return result;
 		},
-		GetActionByIndex: function (player_number, action_index) { return __INPUTCANDY.actions[action_index]; },
 		// Checks a specific player&device&binding pairing for presence of a provided action
 		Check: function ( player_number, action ) {
 		},
@@ -543,9 +619,6 @@ function New_InputCandy() {
 			return 0;
 		},
 		AxisToAngle: function ( H, V ) { return point_direction(0, 0, H, V); },
-		// 
-		AssignPlayerDevice: function( player_number, device_profile_index ) {
-		},
 		// Allocates a series of player profiles.  This is where you set your game's max players.  14 is a device maximum on Linux, 12 of Windows, 4 on Mac
 		SetMaxPlayers: function ( max_players ) {
 			var player_list=[];
@@ -558,7 +631,14 @@ function New_InputCandy() {
 			__INPUTCANDY.players=player_list;
 		},
 		// Returns the number of active players
-		GetPlayers: function () {
+		GetPlayers: function () { return __ICI.GetActivePlayers(); },
+		// Returns 1 if the player has been activated, 2 if the player doesn't exist or 3 was already active
+		ActivatePlayer: function ( player_number ) {
+			var player_index=player_number-1;
+			if ( player_index >= array_length(__INPUTCANDY.max_players) ) return 2;
+			if ( __INPUTCANDY.players[player_index].active ) return 3;
+			__INPUTCANDY.players[player_index].active=true;
+			return 1;
 		},
 		ParseDeviceGUIDs: function() {
 			var len=array_length(__INPUTCANDY.devices);
@@ -1084,9 +1164,14 @@ function New_InputCandy_Private() {
 	},
 	New_ICAction: function () {
 		return {
+			index: none,
 			name: "New Action",
 			group: "None",
-			index: none,
+			gamepad: IC_none,
+			keyboard: IC_none,
+			mouse: IC_none,
+			is_directional: false,
+			requires_angle: false,
 			enabled: true
 		};
 	},
