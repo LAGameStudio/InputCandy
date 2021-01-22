@@ -2,6 +2,7 @@
   "resources": [
     {"id":{"name":"o_InputCandy_settings","path":"objects/o_InputCandy_settings/o_InputCandy_settings.yy",},"order":4,},
     {"id":{"name":"rm_InputCandy_UI","path":"rooms/rm_InputCandy_UI/rm_InputCandy_UI.yy",},"order":2,},
+    {"id":{"name":"s_InputCandy_ICUI_icons","path":"sprites/s_InputCandy_ICUI_icons/s_InputCandy_ICUI_icons.yy",},"order":10,},
     {"id":{"name":"InputCandy","path":"scripts/InputCandy/InputCandy.yy",},"order":1,},
     {"id":{"name":"o_SDLDB_Loader_Example","path":"objects/o_SDLDB_Loader_Example/o_SDLDB_Loader_Example.yy",},"order":6,},
     {"id":{"name":"SDLDB","path":"scripts/SDLDB/SDLDB.yy",},"order":4,},
@@ -23,6 +24,7 @@
     {"id":{"name":"o_ICUI","path":"objects/o_ICUI/o_ICUI.yy",},"order":8,},
     {"id":{"name":"InputCandySimple","path":"scripts/InputCandySimple/InputCandySimple.yy",},"order":2,},
     {"id":{"name":"o_InputCandy","path":"objects/o_InputCandy/o_InputCandy.yy",},"order":0,},
+    {"id":{"name":"rm_InputCandy_fakegamemenu","path":"rooms/rm_InputCandy_fakegamemenu/rm_InputCandy_fakegamemenu.yy",},"order":6,},
     {"id":{"name":"ICUI","path":"scripts/ICUI/ICUI.yy",},"order":0,},
     {"id":{"name":"s_LostAstronaut_Logo","path":"sprites/s_LostAstronaut_Logo/s_LostAstronaut_Logo.yy",},"order":6,},
     {"id":{"name":"a_SDLDB_Load_Complete","path":"sounds/a_SDLDB_Load_Complete/a_SDLDB_Load_Complete.yy",},"order":0,},
@@ -53,6 +55,7 @@
     {"roomId":{"name":"rm_InputCandy_diagnostics","path":"rooms/rm_InputCandy_diagnostics/rm_InputCandy_diagnostics.yy",},},
     {"roomId":{"name":"rm_InputCandySimple_demo","path":"rooms/rm_InputCandySimple_demo/rm_InputCandySimple_demo.yy",},},
     {"roomId":{"name":"rm_InputCandy_UI","path":"rooms/rm_InputCandy_UI/rm_InputCandy_UI.yy",},},
+    {"roomId":{"name":"rm_InputCandy_fakegamemenu","path":"rooms/rm_InputCandy_fakegamemenu/rm_InputCandy_fakegamemenu.yy",},},
   ],
   "Folders": [
     {"folderPath":"folders/Sprites.yy","order":1,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},
