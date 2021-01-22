@@ -407,7 +407,7 @@ function ICUI_Draw_device_select() {
 		
 		var player_index=__INPUTCANDY.ui.device_select.influencing;
 		var player=__INPUTCANDY.players[player_index]
-		var device=player.device == none ? none : (player.device == 0 ? none : __INPUTCANDY.devices[player.device]);
+		var device=player.device == none ? none : __INPUTCANDY.devices[player.device];
 		
 		var subwindow_margin=0.1*__INPUTCANDY.ui.region.h;
 		var region=rectangle( __INPUTCANDY.ui.region.x+subwindow_margin, __INPUTCANDY.ui.region.y+subwindow_margin,
@@ -425,15 +425,38 @@ function ICUI_Draw_device_select() {
 		var btn_width=region.w-menu_margin*2;
 		var btn_height=region.h/12;
 		
+		sy+=btn_height;
+		
+		var topregion = rectangle( region.x+menu_margin, sy, btn_width, 4*btn_height );
+		var rightside = rectangle ( region.x+topregion.h, topregion.y, topregion.w-topregion.h, topregion.h );
+		
+		if ( device != none ) {
+			draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(device), topregion.x + topregion.h/2, topregion.y + topregion.h/2,
+				1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.75, 0, c_white, 1.0 );
+			draw_set_halign(fa_left);
+			ICUI_text( false,
+				"Gamepad: "+device.desc+" (Slot #"+int(player.device+1)+")\n"
+			   +"GUID: "+device.guid+"\n"
+			   +"Buttons: "+int(device.button_count)+"   Axis: "+int(device.axis_count)+"   Hats: "+int(device.hat_count)+"\n"
+		       +"SDL Name: "+device.sdl.name+"\n"
+			   +"SDL DB matched? "+(string_length(device.sdl.remapping)>0?"Yes":"No")+"\n"
+			   +"SDL Mapping Active:\n"+device.SDL_Mapping,
+			 rightside.x+rightside.w/2, rightside.y+rightside.h/2
+			);
+			draw_set_halign(fa_center);
+		}
+		
+		
+		
 		sx = menu_margin+region.x;
 		var max_menuitem=4;
-		sy += 2*btn_height;
+		sy += 5*btn_height+btn_height/5;
 		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 1, "Select Other Gamepad", sx, sy, btn_width, btn_height );
-		sy += 2*btn_height;
+		sy += btn_height+btn_height/5;
 		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 2, "Gamepad Input Bindings", sx, sy, btn_width, btn_height );
-		sy += 2*btn_height;
+		sy += btn_height+btn_height/5;
 		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 3, "Pick Gamepad SDL Remapping", sx, sy, btn_width, btn_height );
-		sy += 2*btn_height;
+		sy += btn_height+btn_height/5;
 		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 4, "Test on Gamepad Simulator", sx, sy, btn_width, btn_height );
 		
 		if ( player_index == 0 ) {
@@ -441,7 +464,7 @@ function ICUI_Draw_device_select() {
 			if ( device.type == ICDeviceType_keyboard ) kms="Keyboard Settings";
 			else if ( device.type == ICDeviceType_mouse ) kms="Mouse Settings";
 			max_menuitem=5;
-			sy += 2*btn_height;
+			sy += btn_height+btn_height/5;
 			ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 5, kms, sx, sy, btn_width, btn_height );
 		}		
 
