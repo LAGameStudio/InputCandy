@@ -702,6 +702,17 @@ function New_InputCandy() {
 					else gamepad_set_vibration(__INPUTCANDY.devices[i].slot_id,abs(__INPUTCANDY.states[i].LH+__INPUTCANDY.states[i].RH),abs(__INPUTCANDY.states[i].LV+__INPUTCANDY.states[i].RV));
 				} else gamepad_set_vibration(__INPUTCANDY.devices[i].slot_id,0,0);
 			}
+		},
+		KeyboardMouseDiagnosticString: function () {
+			var out="";
+			if ( !__INPUTCANDY.allow_keyboard_mouse ) out += "Mouse and keyboard disabled\n";
+			if ( !__INPUTCANDY.keyboard_mouse_gamepad1_same ) out+="Player 1 uses Mouse and keyboard\n";
+			else out+="Player 1 uses Mouse and Keyboard AND/OR Gamepad\n";
+			out+="Mouse:     "+json_stringify(__INPUTCANDY.mouse)+"\n";
+			out+="wasMouse: "+json_stringify(__INPUTCANDY.wasMouse)+"\n";
+			out+="Mouse Button States:\n"+string_replace_all(json_stringify(__INPUTCANDY.mouseStates),",",",\n")+"\n";
+			out+="Keyboard States:\n"+string_replace_all(json_stringify(__INPUTCANDY.keys),",",",\n")+"\n";
+			return out;
 		}
 		
 	};
@@ -1188,6 +1199,7 @@ function New_InputCandy_Private() {
 					state.was_held = true;
 				} else state.held_for = 1;
 				__INPUTCANDY.keys[j]=state;
+				j++;
 			} else if ( prev != none and prev.is_held == true ) {
 				var state=__ICI.New_ICButtonState();
 				state.button=__INPUTCANDY.signals[k].code;
@@ -1196,8 +1208,8 @@ function New_InputCandy_Private() {
 				state.was_held = true;
 				state.held_for = prev.held_for+1;
 				__INPUTCANDY.keys[j]=state;
+				j++;
 			}
-			j++;
 		}
 		//MOUSE
 		var previous_mouse=__INPUTCANDY.mouseStates;
@@ -1328,17 +1340,6 @@ function New_InputCandy_Private() {
 		}
 		__INPUTCANDY.mouse.x=mouse_x;
 		__INPUTCANDY.mouse.y=mouse_y;
-	},
-	KeyboardMouseDiagnosticString: function () {
-		var out="";
-		if ( !__INPUTCANDY.allow_keyboard_mouse ) out += "Mouse and keyboard disabled\n";
-		if ( !__INPUTCANDY.keyboard_mouse_gamepad1_same ) out+="Player 1 uses Mouse and keyboard\n";
-		else out+="Player 1 uses Mouse and Keyboard AND/OR Gamepad\n";
-		out+="Mouse:     "+json_stringify(__INPUTCANDY.mouse)+"\n";
-		out+="wasMouse: "+json_stringify(__INPUTCANDY.wasMouse)+"\n";
-		out+="Mouse Button States:\n"+json_stringify(__INPUTCANDY.mouseStates)+"\n";
-		out+="Keyboard States:\n"+json_stringify(__INPUTCANDY.keys)+"\n";
-		return out;
 	},
 	New_ICAction: function () {
 		return {
