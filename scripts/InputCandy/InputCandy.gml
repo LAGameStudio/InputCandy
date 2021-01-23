@@ -43,6 +43,8 @@ function Init_InputCandy_Advanced() { __Private_Init_InputCandy(); }
 
 
 #macro none noone
+#macro unknown -123456789
+
 #macro AXIS_NO_VALUE -10000
 
 // Types of input devices.
@@ -288,6 +290,10 @@ function ICDeviceTypeString(i) {
 #macro ICKeyboardMethod_ord 3
 #macro ICKeyboardMethod_lastkey 4
 
+// Types of activities involving buttons
+#macro ICButton_released 0
+#macro ICButton_held 1
+#macro ICButton_pressed 2
 
 // Called "once" to initialize everything.
 
@@ -463,8 +469,8 @@ __INPUTCANDY.signals = [
  {	index:122,  code: IC_key_rbracket,	 name: "Right Bracket", azerty_name: "Right Bracket", qwertz_name:"Right Bracket", deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "]" , shifted: "}" },
  {	index:123,  code: IC_key_semi,		 name: "Semicolon",     azerty_name: "Semicolon",     qwertz_name:"Semicolon",     deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: ";" , shifted: ":" },
  {	index:124,  code: IC_key_apostrophe, name: "Apostrophe",    azerty_name: "Apostrophe",    qwertz_name:"Apostrophe",    deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_lastkey, keychar: "'" , shifted: "\"" },
- {	index:125,  code: IC_enter,          name: "Enter",			azerty_name: "Enter",         qwertz_name:"Enter",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_enter },
- {	index:126,  code: IC_space,          name: "Space",			azerty_name: "Space",         qwertz_name:"Space",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_space },
+ {	index:125,  code: IC_enter,          name: "Enter",			azerty_name: "Enter",         qwertz_name:"Enter",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_enter  },
+ {	index:126,  code: IC_space,          name: "Space",			azerty_name: "Space",         qwertz_name:"Space",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_space  },
  {	index:127,  code: IC_key_escape,     name: "Escape",		azerty_name: "Escape",        qwertz_name:"Escape",        deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck_direct, keycode: vk_escape },
  {	index:128,  code: IC_hat0_U,		 name: "Hat0 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
  {	index:129,  code: IC_hat0_D,		 name: "Hat0 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
@@ -562,6 +568,7 @@ function New_InputCandy() {
 			} else {
 				for ( var i=0; i<len; i++ ) if ( __INPUTCANDY.actions[i].name == name ) return i;
 			}
+			return none;
 		},
 		// Returns a list of action indexes referring to actions in the same named group.  Pass "None" for ungrouped actions.
 		GetActionGroup: function ( groupname ) {
@@ -573,40 +580,175 @@ function New_InputCandy() {
 			return result;
 		},
 		// Checks a specific player&device&binding pairing for presence of a provided action currently
-		Check: function ( player_number, action ) {
+		ActionCheck: function ( player_number, action /*, group*/ ) {
+			var index;
+			if ( argument_count > 2 ) index= __IC.GetAction(action);
+			else index= __IC.GetAction(action,argument1);
+			if ( index == none ) {
+				show_debug_message("Invalid action: "+action+" Group: "+argument1);
+				return false;
+			}
+			return __IC.Check( player_number, index );
 		},
 		// Checks that an action was recently stopped ("released")
-		CheckReleased: function ( player_number, action ) {
+		ActionCheckReleased: function ( player_number, action /*, group*/ ) {
+			var index;
+			if ( argument_count > 2 ) index= __IC.GetAction(action);
+			else index= __IC.GetAction(action,argument1);
+			if ( index == none ) {
+				show_debug_message("Invalid action: "+action+" Group: "+argument1);
+				return false;
+			}
+			return __IC.CheckReleased( player_number, index );
 		},
 		// Checks _any_ player for an action
-		CheckAny: function ( action ) {
+		ActionCheckAny: function ( action /*, group*/ ) {
+			var index;
+			if ( argument_count > 1 ) index= __IC.GetAction(action);
+			else index= __IC.GetAction(action,argument1);
+			if ( index == none ) {
+				show_debug_message("Invalid action: "+action+" Group: "+argument1);
+				return false;
+			}
+			return __IC.CheckAny( index );
 		},
 		// Checks _any_ player for an action was recently stopped ("released")
-		CheckReleasedAny: function ( action ) {
+		ActionCheckReleasedAny: function ( action /*, group*/ ) {
+			var index;
+			if ( argument_count > 1 ) index= __IC.GetAction(action);
+			else index= __IC.GetAction(action,argument1);
+			if ( index == none ) {
+				show_debug_message("Invalid action: "+action+" Group: "+argument1);
+				return false;
+			}
+			return __IC.CheckReleasedAny( index );
+		},
+		// Checks a specific player&device&binding pairing for presence of a provided action currently
+		Check: function ( player_number, action_index ) {
+			var action=__IC.actions[action_index];
+			if ( !action.enabled ) return none;
+			var player_index=__IC.GetPlayerIndex(player_number);
+			var settings=__INPUTCANDY.players[player_index].settings;
+			if ( action.is_directional ) { // The binding just permits choosing a different source for this data.
+				
+			}
+			if ( action.forbid_rebinding or settings == none ) { // Hardwire the action since no binding is defined
+				var s;
+				if ( action.gamepad != IC_none  ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad);
+				if ( s != none ) return s;
+				if ( action.keyboard != IC_none ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard);
+				if ( s != none ) return s;
+				if ( action.mouse != IC_none    ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_mouse);
+				if ( s != none ) return s;
+			} else {
+				var setting=__INPUTCANDY.settings[settings];
+				var binding=__ICI.BindingForAction( settings, action_index );
+				if ( binding == none ) { // Couldn't find a binding
+					var s;
+					if ( action.gamepad != IC_none  ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad);
+					if ( s != none ) return s;
+					if ( action.keyboard != IC_none ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard);
+					if ( s != none ) return s;
+					if ( action.mouse != IC_none    ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_mouse);
+					if ( s != none ) return s;
+				} else { // Action, setting and binding are all permitted and available
+					return __ICI.InterpretAction(player_number,action,binding,settings,setting);
+				}
+			}
+			return none;
+		},
+		// Checks that an action was recently stopped ("released")
+		CheckReleased: function ( player_number, action_index ) {
+		},
+		// Checks _any_ player for an action
+		CheckAny: function ( action_index ) {
+		},
+		// Checks _any_ player for an action was recently stopped ("released")
+		CheckReleasedAny: function ( action_index ) {
+		},
+		KeyHeld: function ( ic_code ) {
+			var len=array_length(__INPUTCANDY.keys);
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.keys[i].button == ic_code
+			  and __INPUTCANDY.keys[i].is_held ) return __INPUTCANDY.keys[i].held_for;
+			return 0;
 		},
 		KeyDown: function ( ic_code ) {
+			var len=array_length(__INPUTCANDY.keys);
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.keys[i].button == ic_code
+			  and __INPUTCANDY.keys[i].is_held ) return true;
+			return false;
 		},
 		KeyUp: function ( ic_code ) {
+			var len=array_length(__INPUTCANDY.keys);
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.keys[i].button == ic_code
+			  and __INPUTCANDY.keys[i].is_held ) return false;
+			return true;
 		},
 		KeyReleased: function ( ic_code ) {
+			var len=array_length(__INPUTCANDY.keys);
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.keys[i].button == ic_code
+			  and !__INPUTCANDY.keys[i].is_held
+			  and __INPUTCANDY.keys[i].was_held ) return true;
+			return false;
 		},
+		KeyPressed: function ( ic_code ) {
+			var len=array_length(__INPUTCANDY.keys);
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.keys[i].button == ic_code
+			  and __INPUTCANDY.keys[i].is_held
+			  and !__INPUTCANDY.key[i].was_held
+			  and __INPUTCANDY.key[i].held_for == 1 ) return true;
+			return false;
+		},
+		MouseLeftHeld: function () {
+			var len=array_length(__INPUTCANDY.mouseStates);
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.mouseStates[i].button == IC_mouse_left
+			  and __INPUTCANDY.mouseStates[i].is_held ) return __INPUTCANDY.mouseStates[i].held_for;
+			return 0;
+		},
+		MouseRightHeld: function () {
+			var len=array_length(__INPUTCANDY.mouseStates);
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.mouseStates[i].button == IC_mouse_right
+			  and __INPUTCANDY.mouseStates[i].is_held ) return __INPUTCANDY.mouseStates[i].held_for;
+			return 0;
+		},
+		MouseMiddleHeld: function () {
+			var len=array_length(__INPUTCANDY.mouseStates);
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.mouseStates[i].button == IC_mouse_middle
+			  and __INPUTCANDY.mouseStates[i].is_held ) return __INPUTCANDY.mouseStates[i].held_for;
+			return 0;
+		},
+		MouseScrolledUp: function () { return mouse_wheel_up(); },
+		MouseScrolledDown: function () { return mouse_wheel_down(); },
+		MouseWheelUp: function () { return mouse_wheel_up(); },
+		MouseWheelDown: function () { return mouse_wheel_down(); },
 		// Directly checks a signal, bypassing the Actions system, -1 means "none", otherwise # of frames its been held for
 		Signal: function ( player_number, button_id ) {
 			var device=__INPUTCANDY.players[player_number-1].device;
 			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) return 0;
 			var len=array_length(__INPUTCANDY.states[device].signals);
-			for ( var i=0; i<len; i++ ) {
-				if ( __INPUTCANDY.states[device].signals[i].button == button_id and __INPUTCANDY.states[device].signals[i].is_held ) return __INPUTCANDY.states[device].signals[i].held_for;
-			}
+			for ( var i=0; i<len; i++ )
+			 if ( __INPUTCANDY.states[device].signals[i].button == button_id
+			  and __INPUTCANDY.states[device].signals[i].is_held )
+			   return __INPUTCANDY.states[device].signals[i].held_for;
+			return 0;
 		},
 		// Directly checks signals from any device, bypassing the Actions system
 		SignalAny: function ( button_id ) {
 			var len=array_length(__INPUTCANDY.devices);
 			for ( var i=0; i<len; i++ ) {
 				var sigs=array_length(__INPUTCANDY.states[i].signals);
-				for ( var j=0; j<sigs; j++ ) {
-					if ( __INPUTCANDY.states[i].signals[j].button == button_id and __INPUTCANDY.states[i].signals[j].is_held ) return __INPUTCANDY.states[i].signals[j].held_for;
-				}
+				for ( var j=0; j<sigs; j++ )
+				 if ( __INPUTCANDY.states[i].signals[j].button == button_id
+				  and __INPUTCANDY.states[i].signals[j].is_held )
+				   return __INPUTCANDY.states[i].signals[j].held_for;
 			}
 			return 0;
 		},
@@ -651,12 +793,14 @@ function New_InputCandy() {
 			for ( var i=0; i<max_players; i++ ) {
 			  if ( i < len ) player_list[i]=__INPUTCANDY.players[i];
 			  else player_list[i]=__ICI.New_ICPlayer();
+			  player_list[i].index=i;
 			}
 			__INPUTCANDY.max_players=max_players;
 			__INPUTCANDY.players=player_list;
 		},
 		// Returns the number of active players
 		GetPlayers: function () { return __ICI.GetActivePlayers(); },
+		GetPlayerIndex: function ( player_number ) { return player_number-1; },
 		// Returns 1 if the player has been activated, 2 if the player doesn't exist or 3 was already active
 		ActivatePlayer: function ( player_number ) {
 			var player_index=player_number-1;
@@ -739,10 +883,10 @@ function New_InputCandy_Private() {
 //		__INPUTCANDY.previous_devices = ds_list_create(); TODO
 	 },
 	 UpdateNetwork: function() { /* TODO */ },
-	 WritePlayerSettings: function( player_number, settings_name ) {
+	 WritePlayerSettings: function( player_number, settings_number ) {
 		 __IC.e_save_settings_file( { settings: __INPUTCANDY.settings, setups: __INPUTCANDY.setups } );
 	 },
-	 ReadPlayerSettings: function( player_number, settings_name ) {
+	 ReadPlayerSettings: function( player_number, settings_number ) {
 		 var data = __INPUTCANDY.e_load_settings_file( { settings:[], setups:[] } );
 		 __INPUTCANDY.settings = data.settings;
 		 __INPUTCANDY.setups = data.setups;
@@ -1347,17 +1491,109 @@ function New_InputCandy_Private() {
 			name: "New Action",
 			group: "None",
 			gamepad: IC_none,
+			gamepad_combo: true,
 			keyboard: IC_none,
+			keyboard_combo: true,
 			mouse: IC_none,
+			mouse_combo: false,
+			mouse_keyboard_combo: true,
 			is_directional: false,
 			requires_angle: false,
-			enabled: true
+			held_for_seconds: 0.0,
+			fire_limit: 1,
+			released: false,
+			enabled: true,
+			forbid_rebinding: false,
 		};
+	},
+	MatchSignal: function ( player_number, action, ic_code ) {
+		if ( action.released ) {
+			return __IC.SignalReleased(player_number,ic_code) ? true : false;
+		} else {
+			var s=__IC.Signal(player_number,ic_code);
+			if ( s == 0 ) return false;
+			var frames=floor(action.held_for_seconds * room_speed);
+			if ( fire_limit == 1 and s == frames ) return true;
+			else if ( s % frames == 0 ) {
+				var fired_times=floor(s/frames);
+				if ( fired_times <= fire_limit ) return true;
+				else return false;
+			}
+		}
+	},
+	MatchButtonList: function ( player_number, action, is_combo, buttonlist ) {
+	 var len=array_length(buttonlist);
+	 if ( is_combo ) {
+	 	 var allMatch=true;
+	 	 for ( var i=0; i<len; i++ )
+			 if ( __ICI.MatchSignal( player_number, action, buttonlist[i]) == false ) { allMatch=false; break; }
+		 return allMatch;
+	 } else {
+	 	 for ( var i=0; i<len; i++ )
+			 if ( __ICI.MatchSignal( player_number, action, buttonlist[i]) == false ) return true;
+		 return false;
+	 }
+	},
+	MatchBinding: function ( player_number, action, binding ) {
+	},
+	InterpretAction: function ( player_number, action, binding_or_type ) {
+		if ( action.enabled == false ) return false;
+		var setting_index=unknown,setting=unknown;
+		if ( argument_count > 3 ) { // Only required for situations where a binding is being used, and even then these parameters are only useful for reporting debug information.
+			setting_index=argument4;
+			if ( argument_count > 4 ) setting=argument5;
+			else setting=__INPUTCANDY.settings[setting_index];
+		}
+		if ( is_struct(binding_or_type) ) { // binding (action buttons/list override)
+			return MatchBinding( player_number, action, binding, setting_index, setting );
+		} else {
+			switch ( binding_or_type ) { // type not binding
+				case ICDeviceType_gamepad:
+				 if ( is_array(action.gamepad) ) {
+					 return __ICI.MatchButtonList( player_number, action, action.gamepad_combo, action.gamepad );
+				 } else {
+					 if ( action.gamepad != IC_none ) return __ICI.MatchSignal( player_number, action, action.gamepad );
+					 return false;
+				 }
+				break;
+				case ICDeviceType_keyboard:
+				 if ( is_array(action.keyboard) ) {
+					 return __ICI.MatchButtonList( player_number, action, action.keyboard_combo, action.keyboard );
+				 } else {
+					 if ( action.keyboard != IC_none ) return __ICI.MatchSignal( player_number, action, action.keyboard );
+					 return false;
+				 }
+				break;
+				case ICDeviceType_mouse:
+				 if ( is_array(action.mouse) ) {
+					 if ( action.mouse_keyboard_combo ) {
+						 var matched_mouse=__ICI.MatchButtonList( player_number, action, action.mouse_keyboard_combo, action.mouse );
+						 var matched_keyboard=__ICI.MatchButtonList( player_number, action, action.mouse_keyboard_combo, action.keyboard );
+						 return matched_mouse && matched_keyboard;
+					 } else return __ICI.MatchButtonList( player_number, action, action.mouse_combo, action.mouse );
+				 } else {
+					 if ( action.mouse != IC_none and __ICI.MatchSignal( player_number, action, action.mouse ) ) {
+						 if ( !action.mouse_keyboard_combo ) {
+							 return true;
+						 } else {
+							 if ( is_array(action.keyboard) ) {
+								 return __ICI.MatchButtonList( player_number, action, action.keyboard_combo, action.keyboard );
+							 } else {
+								 if ( action.keyboard != IC_none ) return __ICI.MatchSignal( player_number, action, action.keyboard );
+								 return false;
+							 }
+						 }
+					 }
+				 }
+				break;
+			}
+		}
 	},
 	
 	//// PLAYERS
 	New_ICPlayer: function () {
 		return {
+			index: none,
 			settings: none,   // Index for settings profile
 			device: none,
 			active: false,    // It's up to you to maintain this.  Set to true once a player is "in the game", and false once they are "out of the game"
@@ -1377,8 +1613,17 @@ function New_InputCandy_Private() {
 	New_ICSettings: function () {
 		return {
 			index: none,
-			bindings: []
+			deviceInfo: none,
+			bindings: [],
+			binding_count: 0
 		};
+	},
+	
+	BindingForAction: function ( settings, action_index ) {
+		for ( var i=0; i<settings.binding_count; i++ ) {
+			if ( settings.bindings[i].action == action_index ) return settings.bindings[i];
+		}
+		return none;
 	},
 	
 	/// WIP Network	
