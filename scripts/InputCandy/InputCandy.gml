@@ -568,11 +568,23 @@ function New_InputCandy() {
 			}
 			return result;
 		},
-		// Checks a specific player&device&binding pairing for presence of a provided action
+		// Checks a specific player&device&binding pairing for presence of a provided action currently
 		Check: function ( player_number, action ) {
+		},
+		// Checks that an action was recently stopped ("released")
+		CheckReleased: function ( player_number, action ) {
 		},
 		// Checks _any_ player for an action
 		CheckAny: function ( action ) {
+		},
+		// Checks _any_ player for an action was recently stopped ("released")
+		CheckReleasedAny: function ( action ) {
+		},
+		KeyDown: function ( ic_code ) {
+		},
+		KeyUp: function ( ic_code ) {
+		},
+		KeyReleased: function ( ic_code ) {
 		},
 		// Directly checks a signal, bypassing the Actions system, -1 means "none", otherwise # of frames its been held for
 		Signal: function ( player_number, button_id ) {
@@ -733,6 +745,7 @@ function New_InputCandy_Private() {
 	//// DEVICE
 	New_ICDevice: function() {
 		return {
+			index: none,
 			type: ICDeviceType_nothing,
 			slot_id: none,
 			hat_count: 0,
@@ -743,9 +756,10 @@ function New_InputCandy_Private() {
 			guid: "none",
 			desc: "",
 			sdl: { index: -1, guid: "none", name: "Unknown", remapping: "", platform: "" },
-			index: -1
+			SDL_Mapping: "None"
 		};
 	},
+	
 	ICDevicePrintDiagnostics: function( device ) {
 	 return "T: "+ICDeviceTypeString(device.type)+"("+int(device.type)+") gpSlot: "+int(device.slot_id)+" Hats: "+int(device.hat_count)+" Bs: "+int(device.button_count)+" As: "+int(device.axis_count);
 	},
@@ -857,7 +871,7 @@ function New_InputCandy_Private() {
 		 // Get the latest list and make it available.
 		 __INPUTCANDY.devices=devices_list;
 	 },
-	 AssignUnusedDevices: function() {
+	AssignUnusedDevices: function() {
 	 	// TODO: Load Previously Saved Device Assignment Settings here...
 	 	var device_count=array_length(__INPUTCANDY.devices);
 	 	for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
@@ -885,19 +899,19 @@ function New_InputCandy_Private() {
 	 			}
 			}
 	 	}
-	 },
-	 GuessBestDeviceIcon: function ( device ) {
-		 if ( device == none or device == 0 ) return 9;
-		 if ( device.type == ICDeviceType_keyboard ) return 10;
-		 if ( device.type == ICDeviceType_mouse ) return 11;
-		 if ( device.desc == "Classic Controller" ) return 7; // ATARI VCS Classic Controller
-		 if ( device.guid == "5032021000000000000504944564944" ) return 8; // ATARI VCS Modern Controller
-		 if ( device.axis_count == 5 and device.button_count == 17 ) return 4;
-		 if ( device.axis_count == 4 and device.button_count == 17 ) return 3;
-		 if ( device.axis_count == 2 and device.button_count == 10 ) return 2;
-		 if ( device.axis_count == 2 and device.button_count == 8 ) return 1;
-		 return 5;
-	 },
+	},
+	GuessBestDeviceIcon: function ( device ) {
+		if ( device == none or device == 0 ) return 9;
+		if ( device.type == ICDeviceType_keyboard ) return 10;
+		if ( device.type == ICDeviceType_mouse ) return 11;
+		if ( device.desc == "Classic Controller" ) return 7; // ATARI VCS Classic Controller
+		if ( device.guid == "5032021000000000000504944564944" ) return 8; // ATARI VCS Modern Controller
+		if ( device.axis_count == 5 and device.button_count == 17 ) return 4;
+		if ( device.axis_count == 4 and device.button_count == 17 ) return 3;
+		if ( device.axis_count == 2 and device.button_count == 10 ) return 2;
+		if ( device.axis_count == 2 and device.button_count == 8 ) return 1;
+		return 5;
+	},
 	 //// BUTTONSTATE
 	New_ICButtonState: function() {
 		return {
@@ -1129,39 +1143,6 @@ function New_InputCandy_Private() {
 		}
 	},
 	
-	
-	//// PLAYERS
-	New_ICPlayer: function () {
-		return {
-			settings: none,
-			device: none,
-			active: false,    // It's up to you to maintain this.  Set to true once a player is "in the game", and false once they are "out of the game"
-			data: {}          // This is left here so you can add additional values yourself to a player, like if they are on a high score screen, or in character select mode, etc.
-		};
-	},	
-	
-	//// BINDING
-	New_ICBinding: function() {
-		return {
-			action: none,
-			button_id: none
-		};
-	},
-	New_ICSetup: function() {
-		return {
-			player_index: none,
-			settings_index: none,
-			deviceType: ICDeviceType_nothing
-		};
-	},
-	New_ICSettings: function () {
-		return {
-			autodetect_device: true,
-			use_keyboard_mouse: false,
-			use_gamepad: false,
-			mappings: [],
-		};
-	},
 	New_ICAction: function () {
 		return {
 			index: none,
@@ -1175,42 +1156,40 @@ function New_InputCandy_Private() {
 			enabled: true
 		};
 	},
-	New_ICDevice: function () {
+	
+	//// PLAYERS
+	New_ICPlayer: function () {
+		return {
+			settings: none,   // Index for settings profile
+			device: none,
+			active: false,    // It's up to you to maintain this.  Set to true once a player is "in the game", and false once they are "out of the game"
+			data: {}          // This is left here so you can add additional values yourself to a player, like if they are on a high score screen, or in character select mode, etc.
+		};
+	},	
+	
+	//// BINDING
+	New_ICBinding: function() {
+		return {
+			action: none,     // Saves as a string, loads as an int
+			group: "",        // Group string
+			button_id: none   // IC_ button code
+		};
+	},
+	
+	New_ICSettings: function () {
 		return {
 			index: none,
-			type: ICDeviceType_nothing,
-			name: "Unnamed",
-			slot_id: none,
-			SDL_Mapping: "None"
+			bindings: []
 		};
 	},
-	New_ICButtonActivity: function () {
-		return {
-			button_id: none,
-			held_for: 0,
-		};
-	},
+	
+	/// WIP Network	
 	New_ICNetwork: function() {
 		return {
 			peers: [],
 			hosting: true
 		};
 	},
-
-	// SDL Game Controller DB support
-	// Will attempt to load the latest SDL text from a remote server
-	Initiate_Get_SDL_GameControllerDB_FromWeb: function () {
-		return http_get("https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt");
-	},
-	// Call this in the Async Event
-	Async_Event_Get_SDL_GameControllerDB_FromWeb: function () {
-		if (ds_map_find_value(async_load, "id") == get) {
-		   if ds_map_find_value(async_load, "status") == 0 {
-		      var r_str = ds_map_find_value(async_load, "result");
-			  if ( string_length(r_str) > 1000 ) global.SDL_GameControllerDB = Process_SDL_GameControllerDB(r_str);	  
-		   } else {
-		   }
-		 }
-	}	 
+ 
  };	 
 }
