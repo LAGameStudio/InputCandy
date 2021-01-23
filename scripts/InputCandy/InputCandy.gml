@@ -280,7 +280,7 @@ function ICDeviceTypeString(i) {
 #macro __FIRST_MOUSE_SIGNAL 24
 #macro __LAST_MOUSE_SIGNAL_PLUS_1 28
 #macro __FIRST_KEYBOARD_SIGNAL 29
-#macro __LAST_KEYBOARD_SIGNAL_PLUS_1 124
+#macro __LAST_KEYBOARD_SIGNAL_PLUS_1 128
 
 #macro ICKeyboardMethod_none 0
 #macro ICKeyboardMethod_keycheck 1
@@ -309,6 +309,10 @@ global._INPUTCANDY_DEFAULTS_ = {
  actions: [],                             // A list of Designer-defined actions ("verbs"), set by the interface
  devices: [],                             // A list of detected devices and their capabilities and remappings
  states: [],                              // A list of device states detected each frame that correspond in index to their associated device
+ keys: [],                                // Keyboard key states
+ mouseStates: [],                         // Mouse button states
+ mouse: { x: none, y: none, left: false, middle: false, right: false, up: false, down: false },
+ wasMouse: { x: none, y: none, left: false, middle: false, right: false, up: false, down: false },
  previous_devices: [],                    // A list of previous devices known about particular slots but not currently connected.  Init() establishes this as a stack. TODO
  signals: [],                             // Master collection of signals from all device types supported.
  players: [],                             // A list of player "slots", active setting info, and their status and device association, device state
@@ -363,10 +367,10 @@ __INPUTCANDY.signals = [
  {  index:26,   code: IC_mouse_middle,	 name: "MMB",         deviceType: ICDeviceType_mouse },
  {  index:27,   code: IC_mouse_scrollup, name: "Scroll Up",   deviceType: ICDeviceType_mouse },
  {  index:28,   code: IC_mouse_scrolldown,  name: "Scroll Down", deviceType: ICDeviceType_mouse },
- {	index:29,   code: IC_key_arrow_L,	 name: "Left Arrow",     azerty_name: "Left Arrow",  qwertz_name:"Left Arrow",  deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck },
- {	index:30,   code: IC_key_arrow_R,	 name: "Right Arrow",    azerty_name: "Right Arrow", qwertz_name:"Right Arrow", deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck },
- {	index:31,   code: IC_key_arrow_U,	 name: "Up Arrow",       azerty_name: "Up Arrow",    qwertz_name:"Up Arrow",    deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck },
- {	index:32,   code: IC_key_arrow_D,	 name: "Down Arrow",     azerty_name: "Down Arrow",  qwertz_name:"Down Arrow",  deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck },
+ {	index:29,   code: IC_key_arrow_L,	 name: "Left Arrow",     azerty_name: "Left Arrow",  qwertz_name:"Left Arrow",  deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_left },
+ {	index:30,   code: IC_key_arrow_R,	 name: "Right Arrow",    azerty_name: "Right Arrow", qwertz_name:"Right Arrow", deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_right  },
+ {	index:31,   code: IC_key_arrow_U,	 name: "Up Arrow",       azerty_name: "Up Arrow",    qwertz_name:"Up Arrow",    deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_up },
+ {	index:32,   code: IC_key_arrow_D,	 name: "Down Arrow",     azerty_name: "Down Arrow",  qwertz_name:"Down Arrow",  deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_down },
  {  index:33,   code: IC_backspace,      name: "BKSP",    azerty_name: "BKSP",    qwertz_name: "BKSP",    deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_backspace },
  {	index:34,   code: IC_any_alt,		 name: "ALT",     azerty_name: "ALT",     qwertz_name: "ALT",     deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_alt  },
  {	index:35,   code: IC_any_shift,		 name: "SHIFT",   azerty_name: "SHIFT",   qwertz_name: "SHIFT",   deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_shift },
@@ -502,7 +506,7 @@ function New_InputCandy() {
 		// verb_string - the name of your action you will look it up by
 		// default_gamepad - this expects an IC_ button code, like IC_dpad_U, for gamepad default suggestion, IC_none otherwise/default
 		// default_keyboard - this expects an IC_ button code, like IC_key_A, for gamepad default suggestion, IC_none otherwise/default
-		// default_mouse   - IC_LMB, IC_RMB, IC_MMB or IC_none (default)
+		// default_mouse   - IC_mouse_left, IC_mouse_right, IC_mouse_middle, IC_mouse_scrollup, IC_mouse_scrolldown or IC_none (default)
 		// group - another string that groups actions together (optional)
 		// is_directional - a true/false value indicating this is for a dpad, hat or axis (false by default)
 		// requires_angle - a true/false value that further specifies we are expecting a vert/horiz axis to be used (false by default)
@@ -631,6 +635,15 @@ function New_InputCandy() {
 			return 0;
 		},
 		AxisToAngle: function ( H, V ) { return point_direction(0, 0, H, V); },
+		AxisToHat: function ( H, V ) {
+			var angle=__IC.AxisToAngle( H, V );
+			var result=0;
+			if ( angle >= 360-45 and angle <= 45 ) result |= ICGamepad_Hat_R;
+			if ( angle >= 45 and angle <= 45+90 ) result |= ICGamepad_Hat_U;
+			if ( angle >= 45+90 and angle <= 45+180 ) result |= ICGamepad_Hat_L;
+			if ( angle >= 45+180 and angle <= 45+270 ) result |= ICGamepad_Hat_D;
+			return result;
+		},
 		// Allocates a series of player profiles.  This is where you set your game's max players.  14 is a device maximum on Linux, 12 of Windows, 4 on Mac
 		SetMaxPlayers: function ( max_players ) {
 			var player_list=[];
@@ -870,7 +883,7 @@ function New_InputCandy_Private() {
 		 }
 		 // Get the latest list and make it available.
 		 __INPUTCANDY.devices=devices_list;
-	 },
+	},
 	AssignUnusedDevices: function() {
 	 	// TODO: Load Previously Saved Device Assignment Settings here...
 	 	var device_count=array_length(__INPUTCANDY.devices);
@@ -1141,8 +1154,192 @@ function New_InputCandy_Private() {
 			}
 			__INPUTCANDY.states[array_length(__INPUTCANDY.states)]=state;
 		}
+		if ( __INPUTCANDY.allow_keyboard_mouse && __INPUTCANDY.platform.keyboard_mouse_supported ) {
+			GetKeyboardMouseStates();
+		}
 	},
-	
+	ButtonStateIn: function ( code, keys, len ) {
+		for ( var i=0; i<len; i++ ) if ( keys[i].button == code ) return keys[i];
+		return none;
+	},
+	GetKeyboardMouseStates: function() {
+		var previous_keys=__INPUTCANDY.keys;
+		var previous_keys_length=array_length(__INPUTCANDY.keys);
+		__INPUTCANDY.keys=[];
+		var j=0;
+		for ( var k=__FIRST_KEYBOARD_SIGNAL; k<__LAST_KEYBOARD_SIGNAL_PLUS_1; k++ ) {
+			var signal=__INPUTCANDY.signals[k];
+			var prev=ButtonStateIn(signal.code,previous_keys,previous_keys_length);
+			var detected=false;
+			switch ( signal.keyboardMethod ) {
+				case ICKeyboardMethod_keycheck: detected = keyboard_check(signal.keycode); break;
+				case ICKeyboardMethod_keycheck_direct: detected = keyboard_check_direct(signal.keycode); break;
+				case ICKeyboardMethod_lastkey: if ( keyboard_key != 0 and keyboard_key == signal.keychar ) detected=true; break;
+				case ICKeyboardMethod_ord: detected = keyboard_check(ord(signal.keychar)); break;
+				default: show_debug_message("Invalid entry in INPUTCANDY's signals table! Index: "+int(k)); break;
+			}
+			if ( detected ) {
+				var state=__ICI.New_ICButtonState();
+				state.button=__INPUTCANDY.signals[k].code;
+				state.signal_index=k;
+				state.is_held = true;
+				if ( prev != none ) {
+					state.held_for = prev.held_for+1;
+					state.was_held = true;
+				} else state.held_for = 1;
+				__INPUTCANDY.keys[j]=state;
+			} else if ( prev != none and prev.is_held == true ) {
+				var state=__ICI.New_ICButtonState();
+				state.button=__INPUTCANDY.signals[k].code;
+				state.signal_index=k;
+				state.is_held = false;
+				state.was_held = true;
+				state.held_for = prev.held_for+1;
+				__INPUTCANDY.keys[j]=state;
+			}
+			j++;
+		}
+		//MOUSE
+		var previous_mouse=__INPUTCANDY.mouseStates;
+		var previous_mouse_len=array_length(__INPUTCANDY.mouseStates);
+		__INPUTCANDY.wasMouse=__INPUTCANDY.mouse;
+		__INPUTCANDY.mouse={ left: false, middle: false, right: false, up: false, down: false };
+		__INPUTCANDY.mouseStates=[];
+		j=0;
+		k=__FIRST_MOUSE_SIGNAL;
+		prev=ButtonStateIn(IC_mouse_left,previous_mouse,previous_mouse_len);
+		if ( mouse_check_button(mb_left) ) {
+			__INPUTCANDY.mouse.left=true;
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = true;
+			if ( prev != none ) {
+				state.held_for = prev.held_for+1;
+				state.was_held = true;
+			} else state.held_for = 1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		} else if ( prev != none and prev.is_held == true ) {
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = false;
+			state.was_held = true;
+			state.held_for = prev.held_for+1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		}
+		k++;
+		prev=ButtonStateIn(IC_mouse_right,previous_mouse,previous_mouse_len);
+		if ( mouse_check_button(mb_right) ) {
+			__INPUTCANDY.mouse.right=true;
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = true;
+			if ( prev != none ) {
+				state.held_for = prev.held_for+1;
+				state.was_held = true;
+			} else state.held_for = 1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		} else if ( prev != none and prev.is_held == true ) {
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = false;
+			state.was_held = true;
+			state.held_for = prev.held_for+1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		}
+		k++;
+		prev=ButtonStateIn(IC_mouse_middle,previous_mouse,previous_mouse_len);
+		if ( mouse_check_button(mb_middle) ) {
+			__INPUTCANDY.mouse.middle=true;
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = true;
+			if ( prev != none ) {
+				state.held_for = prev.held_for+1;
+				state.was_held = true;
+			} else state.held_for = 1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		} else if ( prev != none and prev.is_held == true ) {
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = false;
+			state.was_held = true;
+			state.held_for = prev.held_for+1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		}
+		k++;
+		prev=ButtonStateIn(IC_mouse_scrollup,previous_mouse,previous_mouse_len);
+		if ( mouse_wheel_up() ) {
+			__INPUTCANDY.mouse.up=true;
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = true;
+			if ( prev != none ) {
+				state.held_for = prev.held_for+1;
+				state.was_held = true;
+			} else state.held_for = 1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		} else if ( prev != none and prev.is_held == true ) {
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = false;
+			state.was_held = true;
+			state.held_for = prev.held_for+1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		}
+		k++;
+		prev=ButtonStateIn(IC_mouse_scrolldown,previous_mouse,previous_mouse_len);
+		if ( mouse_wheel_down() ) {
+			__INPUTCANDY.mouse.down=true;
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = true;
+			if ( prev != none ) {
+				state.held_for = prev.held_for+1;
+				state.was_held = true;
+			} else state.held_for = 1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		} else if ( prev != none and prev.is_held == true ) {
+			var state=__ICI.New_ICButtonState();
+			state.button=__INPUTCANDY.signals[k].code;
+			state.signal_index=k;
+			state.is_held = false;
+			state.was_held = true;
+			state.held_for = prev.held_for+1;
+			__INPUTCANDY.mouseStates[j]=state;
+			j++;
+		}
+		__INPUTCANDY.mouse.x=mouse_x;
+		__INPUTCANDY.mouse.y=mouse_y;
+	},
+	KeyboardMouseDiagnosticString: function () {
+		var out="";
+		if ( !__INPUTCANDY.allow_keyboard_mouse ) out += "Mouse and keyboard disabled\n";
+		if ( !__INPUTCANDY.keyboard_mouse_gamepad1_same ) out+="Player 1 uses Mouse and keyboard\n";
+		else out+="Player 1 uses Mouse and Keyboard AND/OR Gamepad\n";
+		out+="Mouse:     "+json_stringify(__INPUTCANDY.mouse)+"\n";
+		out+="wasMouse: "+json_stringify(__INPUTCANDY.wasMouse)+"\n";
+		out+="Mouse Button States:\n"+json_stringify(__INPUTCANDY.mouseStates)+"\n";
+		out+="Keyboard States:\n"+json_stringify(__INPUTCANDY.keys)+"\n";
+		return out;
+	},
 	New_ICAction: function () {
 		return {
 			index: none,
