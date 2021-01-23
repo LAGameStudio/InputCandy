@@ -710,8 +710,8 @@ function New_InputCandy() {
 			else out+="Player 1 uses Mouse and Keyboard AND/OR Gamepad\n";
 			out+="Mouse:     "+json_stringify(__INPUTCANDY.mouse)+"\n";
 			out+="wasMouse: "+json_stringify(__INPUTCANDY.wasMouse)+"\n";
-			out+="Mouse Button States:\n"+string_replace_all(json_stringify(__INPUTCANDY.mouseStates),",",",\n")+"\n";
-			out+="Keyboard States:\n"+string_replace_all(json_stringify(__INPUTCANDY.keys),",",",\n")+"\n";
+			out+="Mouse Button States:\n"+string_replace_all(json_stringify(__INPUTCANDY.mouseStates),"},","},\n")+"\n";
+			out+="Keyboard States:\n"+string_replace_all(json_stringify(__INPUTCANDY.keys),"},","},\n")+"\n";
 			return out;
 		}
 		
