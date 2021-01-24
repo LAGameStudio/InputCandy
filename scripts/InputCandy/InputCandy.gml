@@ -728,7 +728,7 @@ function New_InputCandy() {
 			var settings=__INPUTCANDY.players[player_index].settings;
 			if ( action.is_directional ) {
 				// The binding just permits choosing a different source for this data.
-				return __ICI.MatchDirectional(player_number,settings,action_index,action);
+				return __ICI.MatchDirectional(player_index,action_index,action);
 			}
 			if ( action.forbid_rebinding or settings == none ) { // Hardwire the action since no binding is defined
 				var s;
@@ -1666,11 +1666,11 @@ function New_InputCandy_Private() {
 	},
 	MatchSignal: function ( player_number, action, ic_code ) {
 		if ( action.released ) {
-			return __IC.SignalReleased(player_number,ic_code) ? true : false;
+			return __IC.SignalReleased(player_number,ic_code);
 		} else {
 			var s=__IC.Signal(player_number,ic_code);
 			if ( s == 0 ) return false;
-			if ( action.fire_limit == 0 ) return true;
+			if ( action.fire_limit == 0 ) return s;
 			var frames=1+floor(action.held_for_seconds * room_speed);
 			if ( action.fire_limit == 1 and s == frames ) return true;
 			else if ( frames > 0 and s % frames == 0 ) {
@@ -2025,8 +2025,9 @@ function New_InputCandy_Private() {
 		return moving;
 	},
 	// Call only on actions that are is_directional
-	MatchDirectional: function (player_number,device,settings_index,action_index,action) {
-		var player_index=__IC.GetPlayerIndex(player_number);
+	MatchDirectional: function (player_index,action_index,action) {
+		var settings_index = __INPUTCANDY.players[player_index].settings;
+		var device_index = __INPUTCANDY.players[player_index].device;
 		var moving={ up: false, down: false, left: false, right: false, angle: AXIS_NO_VALUE }
 		var first_found=false;
 		if ( settings_index >= 0 ) {

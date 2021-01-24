@@ -1,4 +1,6 @@
-draw_sprite_ext( sprite_index, 0, x, y, 1, 1, 0, player_tint, 1.0 );
+image_angle+=0.1;
+
+draw_sprite_ext( sprite_index, 0, x, y, 1, 1, image_angle, player_tint, 1.0 );
 
 var oldha=draw_get_halign();
 
