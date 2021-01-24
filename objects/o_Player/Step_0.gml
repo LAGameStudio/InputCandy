@@ -1,9 +1,9 @@
 
-if ( IC_Match( player_number, "Jump" ) ) 
+if ( IC_Match( player_number, _Jump ) ) 
 
-if ( IC_Match( player_number, "Shoot" ) ) audio_play_sound(a_ICUI_tone,100,0);
+if ( IC_Match( player_number, _Shoot ) ) audio_play_sound(a_ICUI_tone,100,0);
 
-var moving=IC_Match( player_number, "Move" );
+var moving=IC_Match( player_number, _Move );
 if ( moving.up ) {
 	y-=1;
 }

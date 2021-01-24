@@ -5,7 +5,7 @@ for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
 	 draw_text( 16, (i+1)*16, str );
  } else if ( i != 0 and __INPUTCANDY.players[i].device != none ) {
 	 draw_text( 16, (i+1)*16, "Player "+int(i+1)+" press Jump" );
-	 if ( __IC.Match(i+1,"Jump") ) {
+	 if ( __IC.Match(i+1,_Jump) ) {
 		 __INPUTCANDY.players[i].active=true;
 		 var p = instance_create_layer(room_width/2,room_height/2,"Instances",o_Player);
 		 p.player_number=i+1;

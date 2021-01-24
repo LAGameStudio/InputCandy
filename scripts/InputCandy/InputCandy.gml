@@ -40,12 +40,27 @@ function Init_InputCandy_Advanced() { __Private_Init_InputCandy(); }
 
 
 // The following functions map the internal object methods to externalized IC_* functions.
+// They are here for convenience and to emphasize commonly used entry points to InputCandy.
 // This can help remind you of the parameters, since GMS 2.3.1.542 doesn't autofill the
 // parameters for object methods.  Some of them add complexity, so avoiding them is also
 // a good idea, but use as reference.  (Use IC_Fun... then change to __IC.Fun)
 
 function IC_Step() { __IC.Step(); }
 function IC_ClearActions() { __IC.ClearActions(); }
+
+function IC_ActionPush( action_in ) { return __IC.ActionPush( action_in ); }
+
+function IC_Action_ext( n, g, gp, gpcombo, kb, kcombo, m, mcombo, kmcombo, UDLR, angled, held_s, flimit, on_rel, enabled, forbid ) {
+ return __IC.Action_ext( n, g, gp, gpcombo, kb, kcombo, m, mcombo, kmcombo, UDLR, angled, held_s, flimit, on_rel, enabled, forbid );
+}
+
+function IC_GetAction( action_name ) {
+	if ( argument_count > 1 ) return __IC.GetAction(action_name,argument1);
+	else return __IC.GetAction(action_name);
+}
+
+function IC_Match( player_number, action_index ) { return __IC.Match( player_number, action_index ); }
+
 function IC_Action( verb_string, default_gamepad, default_keyboard /*mouse, group, is_directional, requires_angle, enabled*/ ) {
  var mouse=none;
  var group="";
@@ -59,19 +74,6 @@ function IC_Action( verb_string, default_gamepad, default_keyboard /*mouse, grou
  if ( argument_count >= 8 ) enabled=argument[7];
  return __IC.Action( verb_string, default_gamepad, default_keyboard, mouse, group, is_directional, requires_angle, enabled );	
 }
-function IC_ActionPush( action_in ) {
-	return __IC.ActionPush( action_in );
-}
-function IC_Action_ext( name, group,	gamepad, gamepad_combo, keyboard, keyboard_combo, mouse, mouse_combo, mouse_keyboard_combo, is_directional,
-			requires_angle,	held_for_seconds, fire_limit, released, enabled, forbid_rebinding ) {
- return __IC.Action_ext( name, group,	gamepad, gamepad_combo, keyboard, keyboard_combo, mouse, mouse_combo, mouse_keyboard_combo, is_directional,
-			requires_angle,	held_for_seconds, fire_limit, released, enabled, forbid_rebinding );
-}
-function IC_GetAction( action_name ) {
-	if ( argument_count > 1 ) return __IC.GetAction(action_name,argument1);
-	else return __IC.GetAction(action_name);
-}
-function IC_Match( player_number, action_index ) { return __IC.Match( player_number, action_index ); }
 
 
 ////////// enumerations and global macros
@@ -720,7 +722,7 @@ function New_InputCandy() {
 		},
 		// Checks a specific player&device&binding pairing for presence of a provided action currently
 		Match: function ( player_number, action_index ) {
-			var action=__IC.actions[action_index];
+			var action=__INPUTCANDY.actions[action_index];
 			if ( !action.enabled ) return none;
 			var player_index=__IC.GetPlayerIndex(player_number);
 			var settings=__INPUTCANDY.players[player_index].settings;
@@ -1656,7 +1658,7 @@ function New_InputCandy_Private() {
 			is_directional: false,
 			requires_angle: false,
 			held_for_seconds: 0.0,
-			fire_limit: 1,
+			fire_limit: 0,
 			released: false,
 			enabled: true,
 			forbid_rebinding: false,
@@ -1668,9 +1670,10 @@ function New_InputCandy_Private() {
 		} else {
 			var s=__IC.Signal(player_number,ic_code);
 			if ( s == 0 ) return false;
-			var frames=floor(action.held_for_seconds * room_speed);
-			if ( fire_limit == 1 and s == frames ) return true;
-			else if ( s % frames == 0 ) {
+			if ( action.fire_limit == 0 ) return true;
+			var frames=1+floor(action.held_for_seconds * room_speed);
+			if ( action.fire_limit == 1 and s == frames ) return true;
+			else if ( frames > 0 and s % frames == 0 ) {
 				var fired_times=floor(s/frames);
 				if ( fired_times <= fire_limit ) return true;
 				else return false;

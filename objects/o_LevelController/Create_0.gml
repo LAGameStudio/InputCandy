@@ -17,3 +17,5 @@ player_colors=[
  c_maroon,
  c_blue
 ];
+
+_Jump = IC_GetAction("Jump");
