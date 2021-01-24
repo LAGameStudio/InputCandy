@@ -347,6 +347,9 @@ function ICDeviceTypeString(i) {
 // Called "once" to initialize everything.
 
 function __Private_Init_InputCandy() {
+	
+global.SDLDB_Entries=0;
+global.SDLDB=[];
 
 global._INPUTCANDY_DEFAULTS_ = {
  //// Global Settings ////
@@ -785,6 +788,16 @@ function New_InputCandy() {
 			  and __INPUTCANDY.keys[i].is_held
 			  and !__INPUTCANDY.key[i].was_held
 			  and __INPUTCANDY.key[i].held_for == 1 ) return true;
+			return false;
+		},
+		GetMouseState: function ( ic_code ) {
+			switch ( ic_code ) {
+				case IC_mouse_left: return __IC.MouseLeftHeld();
+				case IC_mouse_right: return __IC.MouseRightHeld();
+				case IC_mouse_middle: return __IC.MouseMiddleHeld();
+				case IC_mouse_scrollup: return __IC.MouseScrolledUp();
+				case IC_mouse_scrolldown: return __IC.MouseScrolledDown();
+			}
 			return false;
 		},
 		MouseLeftHeld: function () {
@@ -1668,7 +1681,8 @@ function New_InputCandy_Private() {
 		if ( action.released ) {
 			return __IC.SignalReleased(player_number,ic_code);
 		} else {
-			var s=__IC.Signal(player_number,ic_code);
+			var s=ic_code >= __FIRST_KEYBOARD_SIGNAL and ic_code < __LAST_KEYBOARD_SIGNAL_PLUS_1 ? __IC.KeyHeld(ic_code)
+			 : (ic_code >= __FIRST_MOUSE_SIGNAL and ic_code < __LAST_MOUSE_SIGNAL_PLUS_1 ? __IC.GetMouseState(ic_code) : __IC.Signal(player_number,ic_code));
 			if ( s == 0 ) return false;
 			if ( action.fire_limit == 0 ) return s;
 			var frames=1+floor(action.held_for_seconds * room_speed);
@@ -1966,28 +1980,28 @@ function New_InputCandy_Private() {
 			break;
 			case IC_arrows:
 			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
-				 moving.up=__IC.Signal( player_number, IC_key_arrow_U );
-				 moving.down=__IC.Signal( player_number, IC_key_arrow_U );
-				 moving.left=__IC.Signal( player_number, IC_key_arrow_U );
-				 moving.right=__IC.Signal( player_number, IC_key_arrow_U );
+				 moving.up=__IC.KeyHeld( player_number, IC_key_arrow_U );
+				 moving.down=__IC.KeyHeld( player_number, IC_key_arrow_U );
+				 moving.left=__IC.KeyHeld( player_number, IC_key_arrow_U );
+				 moving.right=__IC.KeyHeld( player_number, IC_key_arrow_U );
 				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
 			 }
 			break;
 			case IC_wasd:
 			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
-				 moving.up=__IC.Signal( player_number, IC_key_W );
-				 moving.down=__IC.Signal( player_number, IC_key_S );
-				 moving.left=__IC.Signal( player_number, IC_key_A );
-				 moving.right=__IC.Signal( player_number, IC_key_D );
+				 moving.up=__IC.KeyHeld( player_number, IC_key_W );
+				 moving.down=__IC.KeyHeld( player_number, IC_key_S );
+				 moving.left=__IC.KeyHeld( player_number, IC_key_A );
+				 moving.right=__IC.KeyHeld( player_number, IC_key_D );
 				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
 			 }
 			break;
 			case IC_numpad:
 			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
-				 moving.up=__IC.Signal( player_number, IC_numpad8 );
-				 moving.down=__IC.Signal( player_number, IC_numpad2 );
-				 moving.left=__IC.Signal( player_number, IC_numpad4 );
-				 moving.right=__IC.Signal( player_number, IC_numpad6 );
+				 moving.up=__IC.KeyHeld( player_number, IC_numpad8 );
+				 moving.down=__IC.KeyHeld( player_number, IC_numpad2 );
+				 moving.left=__IC.KeyHeld( player_number, IC_numpad4 );
+				 moving.right=__IC.KeyHeld( player_number, IC_numpad6 );
 				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
 			 }
 			break;
