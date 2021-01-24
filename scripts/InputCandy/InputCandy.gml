@@ -39,6 +39,41 @@ function Init_InputCandy_Advanced() { __Private_Init_InputCandy(); }
 */  
 
 
+// The following functions map the internal object methods to externalized IC_* functions.
+// This can help remind you of the parameters, since GMS 2.3.1.542 doesn't autofill the
+// parameters for object methods.  Some of them add complexity, so avoiding them is also
+// a good idea, but use as reference.  (Use IC_Fun... then change to __IC.Fun)
+
+function IC_Step() { __IC.Step(); }
+function IC_ClearActions() { __IC.ClearActions(); }
+function IC_Action( verb_string, default_gamepad, default_keyboard /*mouse, group, is_directional, requires_angle, enabled*/ ) {
+ var mouse=none;
+ var group="";
+ var is_directional=false;
+ var requires_angle=false;
+ var enabled=false;
+ if ( argument_count >= 4 ) mouse=argument[3];
+ if ( argument_count >= 5 ) group=argument[4];
+ if ( argument_count >= 6 ) is_directional=argument[5];
+ if ( argument_count >= 7 ) requires_angle=argument[6];
+ if ( argument_count >= 8 ) enabled=argument[7];
+ return __IC.Action( verb_string, default_gamepad, default_keyboard, mouse, group, is_directional, requires_angle, enabled );	
+}
+function IC_ActionPush( action_in ) {
+	return __IC.ActionPush( action_in );
+}
+function IC_Action_ext( name, group,	gamepad, gamepad_combo, keyboard, keyboard_combo, mouse, mouse_combo, mouse_keyboard_combo, is_directional,
+			requires_angle,	held_for_seconds, fire_limit, released, enabled, forbid_rebinding ) {
+ return __IC.Action_ext( name, group,	gamepad, gamepad_combo, keyboard, keyboard_combo, mouse, mouse_combo, mouse_keyboard_combo, is_directional,
+			requires_angle,	held_for_seconds, fire_limit, released, enabled, forbid_rebinding );
+}
+function IC_GetAction( action_name ) {
+	if ( argument_count > 1 ) return __IC.GetAction(action_name,argument1);
+	else return __IC.GetAction(action_name);
+}
+function IC_Match( player_number, action_index ) { return __IC.Match( player_number, action_index ); }
+
+
 ////////// enumerations and global macros
 
 
@@ -276,6 +311,18 @@ function ICDeviceTypeString(i) {
 #macro IC_axis8 408
 #macro IC_axis9 409
 
+// Arrow keys, a movement option
+#macro IC_arrows 500
+#macro IC_wasd   501
+#macro IC_numpad 502
+
+// Mouse movement.  Not used but could be.
+/*
+#macro IC_mouse_move 601
+#macro IC_mouse_move_as_directional 602
+#macro IC_mouse_trackball 603
+*/
+
 
 #macro __FIRST_GAMEPAD_SIGNAL 6
 #macro __LAST_GAMEPAD_SIGNAL_PLUS_1 24
@@ -304,14 +351,13 @@ global._INPUTCANDY_DEFAULTS_ = {
  ready: false,                            // Has IC been initialized?
  max_players: 8,                          // Default value for SetMaxPlayers()
  allow_keyboard_mouse: true,              // If the platform supports it, setting this true will use keyboard_and_mouse as an input device (false = hide on consoles w/o keyboard)
- keyboard_layout: ICKeyboardLayout_qwerty,                // Changing to Azerty or Qwertz provides a remapping for keyboards
- keyboard_mouse_gamepad1_same: true,	  // A global setting that treats the keyboard, mouse and controller 1 as a single device.
+ keyboard_mouse_gamepad1_same: true,	  // True means "player 1 gets to use a gamepad too"
+ keyboard_layout: ICKeyboardLayout_qwerty,   // Changing to Azerty or Qwertz provides a sorta-remapping for keyboards, but there isn't a good way to detect what keyboard
  skip_simplified_axis: false,             // Set this value to true to stop IC from registering simplified axis movements.
- sdl_mapping_default: "None",             // Set this default from a line from the SDL_GameControllerDB, or let the player choose, "none" means "GameMaker's Default"
  use_network: false,                      // Turn this on if you are going to be using network transmits
- player_selectable_devices: { nothing: false, keyboard: false, gamepad: true, mouse: false, keyboard_mouse: true, any: false },  // Leave this alone probably.
  interface: New_InputCandy(),             // Public - the programmer interface used in your game.  All you need to know.
  internal: New_InputCandy_Private(),      // Functions used internally, generally not to be called, use interface instead, "private"
+ //// Device, player, etc., states
  actions: [],                             // A list of Designer-defined actions ("verbs"), set by the interface
  devices: [],                             // A list of detected devices and their capabilities and remappings
  states: [],                              // A list of device states detected each frame that correspond in index to their associated device
@@ -502,6 +548,7 @@ __INPUTCANDY.ready=true;
 __Init_ICUI();
 }
 
+
 // This function is invoked and stored in __IC.interface, but you can call it anywhere to grab an "instance" of all
 // of the InputCandy functions.
 function New_InputCandy() {
@@ -518,19 +565,67 @@ function New_InputCandy() {
 		// requires_angle - a true/false value that further specifies we are expecting a vert/horiz axis to be used (false by default)
 		// enabled - optional, a true/false (true is default) that starts this action as deactivated or activated
 		// @returns integer index of new action from __INPUTCANDY.actions[] array
+		ClearActions: function () { __INPUTCANDY.actions=[]; },
 		Action: function ( verb_string, default_gamepad, default_keyboard ) {
 			var a=__ICI.New_ICAction();
 			a.name=verb_string;
 			a.gamepad=default_gamepad;
 			a.keyboard=default_keyboard;
-			if ( argument_count > 4 ) a.mouse=argument[4];
-			if ( argument_count > 5 ) a.group=argument[5];
-			if ( argument_count > 6 ) a.is_directional=argument[6];
-			if ( argument_count > 7 ) a.requires_angle=argument[7];
-			if ( argument_count > 8 ) a.enabled=argument[8];
+			if ( argument_count >= 4 ) a.mouse=argument[3];
+			if ( argument_count >= 5 ) a.group=argument[4];
+			if ( argument_count >= 6 ) a.is_directional=argument[5];
+			if ( argument_count >= 7 ) a.requires_angle=argument[6];
+			if ( argument_count >= 8 ) a.enabled=argument[7];
 			a.index = array_length(__INPUTCANDY.actions);
 			__INPUTCANDY.actions[a.index]=a;
 			return a.index;
+		},
+		ActionPush: function ( in ) {
+			var index=array_length(__INPUTCANDY.actions);
+			__INPUTCANDY.actions[index]={
+				index:index,
+				name:in.name,
+				group:in.group,
+				gamepad:in.gamepad,
+				gamepad_combo:in.gamepad_combo,
+				keyboard:in.keyboard,
+				keyboard_combo:in.keyboard_combo,
+				mouse:in.mouse,
+				mouse_combo:in.mouse_combo,
+				mouse_keyboard_combo:in.mouse_keyboard_combo,
+				is_directional:in.is_directional,
+				requires_angle:in.requires_angle,
+				held_for_seconds:in.held_for_seconds,
+				fire_limit:in.fire_limit,
+				released:in.released,
+				enabled:in.enabled,
+				forbid_rebinding:in.forbid_rebinding
+			};
+			return index;
+		},
+		Action_ext: function ( name, group,	gamepad, gamepad_combo, keyboard, keyboard_combo, mouse, mouse_combo, mouse_keyboard_combo, is_directional,
+			requires_angle,	held_for_seconds, fire_limit, released, enabled, forbid_rebinding ) {
+			var index=array_length(__INPUTCANDY.actions);
+			__INPUTCANDY.actions[index]={
+				index:index,
+				name:name,
+				group:group,
+				gamepad:gamepad,
+				gamepad_combo:gamepad_combo,
+				keyboard:keyboard,
+				keyboard_combo:keyboard_combo,
+				mouse:mouse,
+				mouse_combo:mouse_combo,
+				mouse_keyboard_combo:mouse_keyboard_combo,
+				is_directional:is_directional,
+				requires_angle:requires_angle,
+				held_for_seconds:held_for_seconds,
+				fire_limit:fire_limit,
+				released:released,
+				enabled:enabled,
+				forbid_rebinding:forbid_rebinding
+			};
+			return index;
 		},
 		// Alternatively, you can install an action list from an array of struct source
 		// using the template for actions defined in New_ICAction()
@@ -624,47 +719,33 @@ function New_InputCandy() {
 			return __IC.CheckReleasedAny( index );
 		},
 		// Checks a specific player&device&binding pairing for presence of a provided action currently
-		Check: function ( player_number, action_index ) {
+		Match: function ( player_number, action_index ) {
 			var action=__IC.actions[action_index];
 			if ( !action.enabled ) return none;
 			var player_index=__IC.GetPlayerIndex(player_number);
 			var settings=__INPUTCANDY.players[player_index].settings;
-			if ( action.is_directional ) { // The binding just permits choosing a different source for this data.
-				
+			if ( action.is_directional ) {
+				// The binding just permits choosing a different source for this data.
+				return __ICI.MatchDirectional(player_number,settings,action_index,action);
 			}
 			if ( action.forbid_rebinding or settings == none ) { // Hardwire the action since no binding is defined
 				var s;
-				if ( action.gamepad != IC_none  ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad);
-				if ( s != none ) return s;
-				if ( action.keyboard != IC_none ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard);
-				if ( s != none ) return s;
-				if ( action.mouse != IC_none    ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_mouse);
-				if ( s != none ) return s;
+				if ( action.gamepad != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad) ) return true;
+				if ( action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard) ) return true;
+				if ( action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse) ) return true;
 			} else {
 				var setting=__INPUTCANDY.settings[settings];
 				var binding=__ICI.BindingForAction( settings, action_index );
 				if ( binding == none ) { // Couldn't find a binding
 					var s;
-					if ( action.gamepad != IC_none  ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad);
-					if ( s != none ) return s;
-					if ( action.keyboard != IC_none ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard);
-					if ( s != none ) return s;
-					if ( action.mouse != IC_none    ) s= __ICI.InterpretAction(player_number,action,ICDeviceType_mouse);
-					if ( s != none ) return s;
+					if ( action.gamepad != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad) ) return true;
+					if ( action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard) ) return true;
+					if ( action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse) ) return true;
 				} else { // Action, setting and binding are all permitted and available
 					return __ICI.InterpretAction(player_number,action,binding,settings,setting);
 				}
 			}
-			return none;
-		},
-		// Checks that an action was recently stopped ("released")
-		CheckReleased: function ( player_number, action_index ) {
-		},
-		// Checks _any_ player for an action
-		CheckAny: function ( action_index ) {
-		},
-		// Checks _any_ player for an action was recently stopped ("released")
-		CheckReleasedAny: function ( action_index ) {
+			return false;
 		},
 		KeyHeld: function ( ic_code ) {
 			var len=array_length(__INPUTCANDY.keys);
@@ -775,6 +856,81 @@ function New_InputCandy() {
 				}
 			}
 			return 0;
+		},
+		GetHatSignal: function ( player_number, hat_number ) {
+			var hat={ up: false, down: false, left: false, right: false, not_available: false };
+			var device=__INPUTCANDY.players[player_number-1].device;
+			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) {
+				hat.not_available=true;
+				return hat;
+			}
+			if ( hat_number >= __INPUTCANDY.devices[device].hat_count ) {
+				hat.not_available=true;
+				return hat;
+			}
+			if ( hat_number <= 4 ) {
+				switch ( hat_number ) {
+					case 0:
+						hat.up=__IC.Signal(player_number,IC_hat0_U);
+						hat.down=__IC.Signal(player_number,IC_hat0_D);
+						hat.left=__IC.Signal(player_number,IC_hat0_L);
+						hat.right=__IC.Signal(player_number,IC_hat0_R);
+					break;
+					case 1:
+						hat.up=__IC.Signal(player_number,IC_hat1_U);
+						hat.down=__IC.Signal(player_number,IC_hat1_D);
+						hat.left=__IC.Signal(player_number,IC_hat1_L);
+						hat.right=__IC.Signal(player_number,IC_hat1_R);
+					break;
+					case 2:
+						hat.up=__IC.Signal(player_number,IC_hat2_U);
+						hat.down=__IC.Signal(player_number,IC_hat2_D);
+						hat.left=__IC.Signal(player_number,IC_hat2_L);
+						hat.right=__IC.Signal(player_number,IC_hat2_R);
+					break;
+					case 3:
+						hat.up=__IC.Signal(player_number,IC_hat3_U);
+						hat.down=__IC.Signal(player_number,IC_hat3_D);
+						hat.left=__IC.Signal(player_number,IC_hat3_L);
+						hat.right=__IC.Signal(player_number,IC_hat3_R);
+					break;
+					case 4:
+						hat.up=__IC.Signal(player_number,IC_hat4_U);
+						hat.down=__IC.Signal(player_number,IC_hat4_D);
+						hat.left=__IC.Signal(player_number,IC_hat4_L);
+						hat.right=__IC.Signal(player_number,IC_hat4_R);
+					break;
+				}
+				return hat;
+			}
+			var hat_value = gamepad_hat_value( __INPUTCANDY.devices[device].slot_id, hat_number );
+			hat.up=hat_value & ICGamepad_Hat_U;
+			hat.down=hat_value & ICGamepad_Hat_D;
+			hat.left=hat_value & ICGamepad_Hat_L;
+			hat.right=hat_value & ICGamepad_Hat_R;
+			return hat;
+		},
+		GetAxisSignal: function ( player_number, axis_number ) {
+			var axis={ up: false, down: false, left: false, right: false, value: AXIS_NO_VALUE, angle: AXIS_NO_VALUE, H: AXIS_NO_VALUE, V: AXIS_NO_VALUE, not_available: false };
+			var device=__INPUTCANDY.players[player_number-1].device;
+			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) {
+				axis.not_available=true;
+				return axis;
+			}
+			if ( axis_number >= __INPUTCANDY.devices[device].axis_count ) {
+				axis.not_available=true;
+				return axis;
+			}
+			axis.values=gamepad_axis_value(0, axis_number);
+			axis.H=gamepad_axis_value(0, gp_axislh);
+			axis.V=gamepad_axis_value(0, gp_axislv);
+			axis.angle=__IC.AxisToAngle( axis.H, axis.V );
+			var hat_value=__IC.AxisToHat( axis.H, axis.V );
+			axis.up=hat_value & ICGamepad_Hat_U;
+			axis.down=hat_value & ICGamepad_Hat_D;
+			axis.left=hat_value & ICGamepad_Hat_L;
+			axis.right=hat_value & ICGamepad_Hat_R;
+			return axis;
 		},
 		AxisToAngle: function ( H, V ) { return point_direction(0, 0, H, V); },
 		AxisToHat: function ( H, V ) {
@@ -1536,12 +1692,16 @@ function New_InputCandy_Private() {
 	},
 	MatchBinding: function ( player_number, action, binding ) {
 	},
-	InterpretAction: function ( player_number, action, binding_or_type ) {
+	InterpretAction: function () {
+		if ( argument_count < 2 ) return false;
+		var player_number=argument0;
+		var action=argument1;
+		var binding_or_type=argument2;
 		if ( action.enabled == false ) return false;
 		var setting_index=unknown,setting=unknown;
 		if ( argument_count > 3 ) { // Only required for situations where a binding is being used, and even then these parameters are only useful for reporting debug information.
-			setting_index=argument4;
-			if ( argument_count > 4 ) setting=argument5;
+			setting_index=argument3;
+			if ( argument_count > 4 ) setting=argument4;
 			else setting=__INPUTCANDY.settings[setting_index];
 		}
 		if ( is_struct(binding_or_type) ) { // binding (action buttons/list override)
@@ -1589,6 +1749,332 @@ function New_InputCandy_Private() {
 			}
 		}
 	},
+	GetDirectional: function ( player_index, moving, type ) {
+		var player_number=player_index+1;
+		if ( __INPUTCANDY.players[player_index].device == none ) return moving;
+		switch ( type ) {
+			default: break;
+			case IC_dpad:
+			 moving.up=__IC.Signal(player_number,IC_padu);
+			 moving.down=__IC.Signal(player_number,IC_padd);
+			 moving.left=__IC.Signal(player_number,IC_padl);
+			 moving.right=__IC.Signal(player_number,IC_padr);
+			 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			break;
+			case IC_hat0:
+			 var sig=__IC.GetHatSignal( player_number, 0 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat1:
+			 var sig=__IC.GetHatSignal( player_number, 1 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat2:
+			 var sig=__IC.GetHatSignal( player_number, 2 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat3:
+			 var sig=__IC.GetHatSignal( player_number, 3 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat4:
+			 var sig=__IC.GetHatSignal( player_number, 4 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat5:
+			 var sig=__IC.GetHatSignal( player_number, 5 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat6:
+			 var sig=__IC.GetHatSignal( player_number, 6 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat7:
+			 var sig=__IC.GetHatSignal( player_number, 7 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat8:
+			 var sig=__IC.GetHatSignal( player_number, 8 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_hat9:
+			 var sig=__IC.GetHatSignal( player_number, 9 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_axis0:
+			 var sig=__IC.GetAxisSignal( player_number, 0 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis1:
+			 var sig=__IC.GetAxisSignal( player_number, 1 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis2:
+			 var sig=__IC.GetAxisSignal( player_number, 2 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis3:
+			 var sig=__IC.GetAxisSignal( player_number, 3 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis4:
+			 var sig=__IC.GetAxisSignal( player_number, 4 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis5:
+			 var sig=__IC.GetAxisSignal( player_number, 5 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis6:
+			 var sig=__IC.GetAxisSignal( player_number, 6 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis7:
+			 var sig=__IC.GetAxisSignal( player_number, 7 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis8:
+			 var sig=__IC.GetAxisSignal( player_number, 8 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_axis9:
+			 var sig=__IC.GetAxisSignal( player_number, 9 );
+			 if ( !sig.not_available ) {
+				 moving.up=sig.up;
+				 moving.down=sig.down;
+				 moving.left=sig.left;
+				 moving.right=sig.right;
+				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+			 }
+			break;
+			case IC_arrows:
+			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
+				 moving.up=__IC.Signal( player_number, IC_key_arrow_U );
+				 moving.down=__IC.Signal( player_number, IC_key_arrow_U );
+				 moving.left=__IC.Signal( player_number, IC_key_arrow_U );
+				 moving.right=__IC.Signal( player_number, IC_key_arrow_U );
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_wasd:
+			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
+				 moving.up=__IC.Signal( player_number, IC_key_W );
+				 moving.down=__IC.Signal( player_number, IC_key_S );
+				 moving.left=__IC.Signal( player_number, IC_key_A );
+				 moving.right=__IC.Signal( player_number, IC_key_D );
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+			case IC_numpad:
+			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
+				 moving.up=__IC.Signal( player_number, IC_numpad8 );
+				 moving.down=__IC.Signal( player_number, IC_numpad2 );
+				 moving.left=__IC.Signal( player_number, IC_numpad4 );
+				 moving.right=__IC.Signal( player_number, IC_numpad6 );
+				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 }
+			break;
+		}
+		return moving;
+	},
+	_MovingOr: function ( moving, or_moving ) {
+		if ( or_moving.up ) {
+			moving.up=true;
+			if ( or_moving.angle != AXIS_NO_VALUE ) moving.angle=or_moving.angle;
+		}
+		if ( or_moving.down ) {
+			moving.down=true;
+			if ( or_moving.angle != AXIS_NO_VALUE ) moving.angle=or_moving.angle;
+		}
+		if ( or_moving.left ) {
+			moving.left=true;
+			if ( or_moving.angle != AXIS_NO_VALUE ) moving.angle=or_moving.angle;
+		}
+		if ( or_moving.right ) {
+			moving.right=true;
+			if ( or_moving.angle != AXIS_NO_VALUE ) moving.angle=or_moving.angle;
+		}
+		return moving;
+	},
+	_MovingAnd: function ( moving, and_moving ) {
+		moving.up=    moving.up and and_moving.up;
+		moving.down=  moving.down and and_moving.down;
+		moving.left=  moving.left and and_moving.left;
+		moving.right= moving.right and and_moving.right;		
+		if ( and_moving.angle != AXIS_NO_VALUE ) {
+			if ( moving.angle == AXIS_NO_VALUE ) moving.angle=and_moving.angle;
+			else moving.angle=(moving.angle+and_moving.angle)/2;
+		}
+		return moving;
+	},
+	// Call only on actions that are is_directional
+	MatchDirectional: function (player_number,device,settings_index,action_index,action) {
+		var player_index=__IC.GetPlayerIndex(player_number);
+		var moving={ up: false, down: false, left: false, right: false, angle: AXIS_NO_VALUE }
+		var first_found=false;
+		if ( settings_index >= 0 ) {
+		 var settings=__INPUTCANDY.settings[settings_index];
+		 var binding=__ICI.BindingForAction( settings, action_index );
+		 if ( binding != none ) {
+			 
+			 return moving;
+		 }
+		}
+		// No binding found.
+		if ( is_array(action.gamepad) ) {
+			var len=array_length(action.gamepad);
+			for ( var i=0; i<len; i++ ) {
+				if ( action.gamepad == IC_dpad
+				  or (action.gamepad >= IC_hat0 and action.gamepad <= IC_hat9)
+				  or (action.gamepad >= IC_axis0 and action.gamepad <= IC_axis9) ) {
+				  var value=__ICI.GetDirectional(player_index,moving,action.gamepad);
+				  if ( !first_found ) moving=value;
+				  else if ( action.gamepad_combo ) moving=__ICI._MovingAnd(moving,value);
+				  else moving=__ICI._MovingOr(moving,value);
+				}
+			}
+		} else {
+			if ( action.gamepad == IC_dpad
+			  or (action.gamepad >= IC_hat0 and action.gamepad <= IC_hat9)
+			  or (action.gamepad >= IC_axis0 and action.gamepad <= IC_axis9) ) {
+				  return __ICI.GetDirectional(player_index,moving,action.gamepad);
+			}
+		}
+		if ( is_array(action.keyboard) ) {
+			var len=array_length(action.keyboard);
+			for ( var i=0; i<len; i++ ) {
+				if ( action.keyboard == IC_arrows
+				  or action.keyboard == IC_numpad
+				  or action.keyboard == IC_wasd ) {
+				  var value=__ICI.GetDirectional(player_index,moving,action.keyboard);
+				  if ( !first_found ) moving=value;
+				  else if ( action.keyboard_combo ) moving=__ICI._MovingAnd(moving,value);
+				  else moving=__ICI._MovingOr(moving,value);
+				}
+			}
+		} else if ( action.keyboard != IC_none ) {				
+			if ( action.keyboard == IC_arrows
+			  or action.keyboard == IC_numpad
+			  or action.keyboard == IC_wasd ) {
+				return __ICI.GetDirectional(player_index,moving,action.keyboard);
+			}
+		}
+		return moving;
+	},	
 	
 	//// PLAYERS
 	New_ICPlayer: function () {

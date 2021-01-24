@@ -24,7 +24,7 @@
 
 function __Init_ICUI() {
 	__INPUTCANDY.ui={
-		exit_to: rm_InputCandy_fakegamemenu,
+		exit_to: rm_InputCandy_testgame,
 	    region: rectangle(128,128,room_width-256,room_height-256),   // Area of the screen for UI		
 		mode: function () { // Query the UI's current mode, or set its mode
 			 if ( argument_count <1 ) {
