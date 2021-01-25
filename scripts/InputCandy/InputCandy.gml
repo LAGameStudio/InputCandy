@@ -1672,12 +1672,12 @@ function New_InputCandy_Private() {
 			name: "New Action",
 			group: "None",
 			gamepad: IC_none,
-			gamepad_combo: true,
+			gamepad_combo: false,
 			keyboard: IC_none,
-			keyboard_combo: true,
+			keyboard_combo: false,
 			mouse: IC_none,
 			mouse_combo: false,
-			mouse_keyboard_combo: true,
+			mouse_keyboard_combo: false,
 			is_directional: false,
 			requires_angle: false,
 			held_for_seconds: 0.0,
@@ -1716,7 +1716,7 @@ function New_InputCandy_Private() {
 		 return allMatch;
 	 } else {
 	 	 for ( var i=0; i<len; i++ )
-			 if ( __ICI.MatchSignal( player_number, action, buttonlist[i]) == false ) return true;
+			 if ( __ICI.MatchSignal( player_number, action, buttonlist[i]) != false ) return true;
 		 return false;
 	 }
 	},

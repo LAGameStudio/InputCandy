@@ -16,3 +16,9 @@ for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
 	 }
  }
 }
+
+draw_text( room_width-room_width/3, 16,
+ string_replace_all(json_stringify(__INPUTCANDY.actions),",",",\n")
+);
+
+draw_text( 16, room_height/4+room_height/2, "Keyboard/mouse: \n"+__IC.KeyboardMouseDiagnosticString());
