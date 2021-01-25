@@ -736,16 +736,20 @@ function New_InputCandy() {
 			if ( action.forbid_rebinding or settings == none ) { // Hardwire the action since no binding is defined
 				var s;
 				if ( action.gamepad != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad) ) return true;
-				if ( action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard) ) return true;
-				if ( action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse) ) return true;
+				if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
+				 and action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard) ) return true;
+				if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
+				 and action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse) ) return true;
 			} else {
 				var setting=__INPUTCANDY.settings[settings];
 				var binding=__ICI.BindingForAction( settings, action_index );
 				if ( binding == none ) { // Couldn't find a binding
 					var s;
 					if ( action.gamepad != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad) ) return true;
-					if ( action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard) ) return true;
-					if ( action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse) ) return true;
+					if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
+					 and action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard) ) return true;
+					if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
+					 and action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse) ) return true;
 				} else { // Action, setting and binding are all permitted and available
 					return __ICI.InterpretAction(player_number,action,binding,settings,setting);
 				}
@@ -1028,7 +1032,13 @@ function New_InputCandy() {
 			out+="Mouse Button States:\n"+string_replace_all(json_stringify(__INPUTCANDY.mouseStates),"},","},\n")+"\n";
 			out+="Keyboard States:\n"+string_replace_all(json_stringify(__INPUTCANDY.keys),"},","},\n")+"\n";
 			return out;
+		},
+		PlayerDiagnosticString: function( player_number ) {
+			var device=__INPUTCANDY.players[player_number-1].device;
+			if ( device == none ) return "No device";
+			return string_replace_all( json_stringify(__INPUTCANDY.states[device].signals), "},", "},\n" )+"\n";
 		}
+		
 		
 	};
 }
@@ -1681,8 +1691,11 @@ function New_InputCandy_Private() {
 		if ( action.released ) {
 			return __IC.SignalReleased(player_number,ic_code);
 		} else {
-			var s=ic_code >= __FIRST_KEYBOARD_SIGNAL and ic_code < __LAST_KEYBOARD_SIGNAL_PLUS_1 ? __IC.KeyHeld(ic_code)
-			 : (ic_code >= __FIRST_MOUSE_SIGNAL and ic_code < __LAST_MOUSE_SIGNAL_PLUS_1 ? __IC.GetMouseState(ic_code) : __IC.Signal(player_number,ic_code));
+			var s= (ic_code >= __FIRST_KEYBOARD_SIGNAL and ic_code < __LAST_KEYBOARD_SIGNAL_PLUS_1) ? __IC.KeyHeld(ic_code)
+			 : ((ic_code >= __FIRST_MOUSE_SIGNAL and ic_code < __LAST_MOUSE_SIGNAL_PLUS_1) ? __IC.GetMouseState(ic_code)
+			 : __IC.Signal(player_number,ic_code));
+            if ( s == false ) return false;
+			if ( s == none ) return false;
 			if ( s == 0 ) return false;
 			if ( action.fire_limit == 0 ) return s;
 			var frames=1+floor(action.held_for_seconds * room_speed);
@@ -1710,7 +1723,7 @@ function New_InputCandy_Private() {
 	MatchBinding: function ( player_number, action, binding ) {
 	},
 	InterpretAction: function () {
-		if ( argument_count < 2 ) return false;
+		if ( argument_count < 3 ) return false;
 		var player_number=argument0;
 		var action=argument1;
 		var binding_or_type=argument2;
@@ -1979,29 +1992,29 @@ function New_InputCandy_Private() {
 			 }
 			break;
 			case IC_arrows:
-			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
-				 moving.up=__IC.KeyHeld( player_number, IC_key_arrow_U );
-				 moving.down=__IC.KeyHeld( player_number, IC_key_arrow_U );
-				 moving.left=__IC.KeyHeld( player_number, IC_key_arrow_U );
-				 moving.right=__IC.KeyHeld( player_number, IC_key_arrow_U );
+			 if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1 ) {
+				 moving.up=__IC.KeyHeld( IC_key_arrow_U );
+				 moving.down=__IC.KeyHeld( IC_key_arrow_D );
+				 moving.left=__IC.KeyHeld( IC_key_arrow_L );
+				 moving.right=__IC.KeyHeld( IC_key_arrow_R );
 				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
 			 }
 			break;
 			case IC_wasd:
-			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
-				 moving.up=__IC.KeyHeld( player_number, IC_key_W );
-				 moving.down=__IC.KeyHeld( player_number, IC_key_S );
-				 moving.left=__IC.KeyHeld( player_number, IC_key_A );
-				 moving.right=__IC.KeyHeld( player_number, IC_key_D );
+			 if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1 ) {
+				 moving.up=__IC.KeyHeld( IC_key_W );
+				 moving.down=__IC.KeyHeld( IC_key_S );
+				 moving.left=__IC.KeyHeld( IC_key_A );
+				 moving.right=__IC.KeyHeld( IC_key_D );
 				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
 			 }
 			break;
 			case IC_numpad:
-			 if ( __INPUTCANDY.allow_mouse_keyboard and player_index == 0 ) {
-				 moving.up=__IC.KeyHeld( player_number, IC_numpad8 );
-				 moving.down=__IC.KeyHeld( player_number, IC_numpad2 );
-				 moving.left=__IC.KeyHeld( player_number, IC_numpad4 );
-				 moving.right=__IC.KeyHeld( player_number, IC_numpad6 );
+			 if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1 ) {
+				 moving.up=__IC.KeyHeld( IC_numpad8 );
+				 moving.down=__IC.KeyHeld( IC_numpad2 );
+				 moving.left=__IC.KeyHeld( IC_numpad4 );
+				 moving.right=__IC.KeyHeld( IC_numpad6 );
 				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
 			 }
 			break;
@@ -2060,7 +2073,7 @@ function New_InputCandy_Private() {
 				  or (action.gamepad >= IC_hat0 and action.gamepad <= IC_hat9)
 				  or (action.gamepad >= IC_axis0 and action.gamepad <= IC_axis9) ) {
 				  var value=__ICI.GetDirectional(player_index,moving,action.gamepad);
-				  if ( !first_found ) moving=value;
+				  if ( !first_found ) { moving=value; first_found=true; }
 				  else if ( action.gamepad_combo ) moving=__ICI._MovingAnd(moving,value);
 				  else moving=__ICI._MovingOr(moving,value);
 				}
@@ -2069,26 +2082,31 @@ function New_InputCandy_Private() {
 			if ( action.gamepad == IC_dpad
 			  or (action.gamepad >= IC_hat0 and action.gamepad <= IC_hat9)
 			  or (action.gamepad >= IC_axis0 and action.gamepad <= IC_axis9) ) {
-				  return __ICI.GetDirectional(player_index,moving,action.gamepad);
+				  first_found=true;
+				  moving=__ICI.GetDirectional(player_index,moving,action.gamepad);
 			}
 		}
-		if ( is_array(action.keyboard) ) {
-			var len=array_length(action.keyboard);
-			for ( var i=0; i<len; i++ ) {
+		if ( player_index == 0 ) {
+			if ( is_array(action.keyboard) ) {
+				var len=array_length(action.keyboard);
+				for ( var i=0; i<len; i++ ) {
+					if ( action.keyboard == IC_arrows
+					  or action.keyboard == IC_numpad
+					  or action.keyboard == IC_wasd ) {
+					  var value=__ICI.GetDirectional(player_index,moving,action.keyboard);
+					  if ( !first_found ) { moving=value; first_found=true; }
+					  else if ( action.keyboard_combo ) moving=__ICI._MovingAnd(moving,value);
+					  else moving=__ICI._MovingOr(moving,value);
+					}
+				}
+			} else if ( action.keyboard != IC_none ) {				
 				if ( action.keyboard == IC_arrows
 				  or action.keyboard == IC_numpad
 				  or action.keyboard == IC_wasd ) {
-				  var value=__ICI.GetDirectional(player_index,moving,action.keyboard);
-				  if ( !first_found ) moving=value;
-				  else if ( action.keyboard_combo ) moving=__ICI._MovingAnd(moving,value);
-				  else moving=__ICI._MovingOr(moving,value);
+					if ( first_found ) {
+						moving=__ICI._MovingOr(moving,__ICI.GetDirectional(player_index,moving,action.keyboard));
+					} else moving=__ICI.GetDirectional(player_index,moving,action.keyboard);
 				}
-			}
-		} else if ( action.keyboard != IC_none ) {				
-			if ( action.keyboard == IC_arrows
-			  or action.keyboard == IC_numpad
-			  or action.keyboard == IC_wasd ) {
-				return __ICI.GetDirectional(player_index,moving,action.keyboard);
 			}
 		}
 		return moving;

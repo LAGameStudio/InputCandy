@@ -1,7 +1,11 @@
 
-if ( __IC.Match( player_number, _Jump ) ) 
+if ( __IC.Match( player_number, _Jump ) ) {
+	audio_play_sound(a_ICUI_tone,100,0);
+}
 
-if ( __IC.Match( player_number, _Shoot ) ) audio_play_sound(a_ICUI_tone,100,0);
+if ( __IC.Match( player_number, _Shoot ) ) {
+	audio_play_sound(a_ICUI_click,100,0);
+}
 
 var moving=__IC.Match( player_number, _Move );
 
