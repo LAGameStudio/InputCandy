@@ -8,7 +8,7 @@ For GMS 2.3.1+
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
 See a bug?  Submit an issue here, or better yet, a Pull Request.
 
-__If you like this library, please star the above Repo, it helps. :)__     If you use this library in your
+__If you download, use or just simply like this library, please star the above Repo, it helps. :)__     If you use this library in your
 game, please add the provided Lost Astronaut and Image Candy logos to your startup screen if you wish
 to give back a little credit to the creators of InputCandy.
 
