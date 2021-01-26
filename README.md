@@ -159,6 +159,7 @@ Planned Improvements
 - Complete UI
 - Bindings / Settings / Save-and-load
 - Advanced vibration options
+- Virtual thumbstick "axis couplers" for axis support other than just gp_axis_l and gp_axis_h
 - Networking support to transmit controller signals across the network
 
 
