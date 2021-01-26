@@ -112,13 +112,14 @@ and you want to also support the keyboard and mouse, this library is probably fo
 As an alternative, there are many on GitHub.
 You may like https://github.com/JujuAdams/input/ which purports to be "Comprehensive cross-platform input for GameMaker Studio 2.3.0"
 
-InputCandy's default settings panels for your games:
+InputCandy's default settings panels for your games can be accessed directly or by calling the base panel.  This allows you to divide up the UI as you desire.  The UI also smartly turns off features when they have no value.   You'll never see a menu with one option, for example.
 
-The more verbose way to use InputCandy is to include the o_InputCandy_settings and o_InputCandy_player_select
-objects into their respective "rooms", to allow players to set up their experience, then use the monolithic
-InputCandy interface struct (acquired with New_InputCandy()) to programattically test for actions,
-connects, disconnects.
+The default panels that are all interconnected are as follows:
 
+* Picking a player-device association that shows "best guess" image of your joystick or gamepad
+* Player-device menu (basic device info includes access to other sub-panels and options like choose your SDL DB string)
+* "Binding and re-binding the input" panel, which includes load/save bindings options
+* Gamepad simulator (TODO)
 
 
 Hardware Testing Notes
