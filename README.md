@@ -66,6 +66,26 @@ Buttons labeled by InputCandy (and GameMaker) don't always match, for example:
 The Retrolink N64-style controller makes A one of the yellow arrow buttons.  SNES-style controller may
 label its button "X" to "A"
 
+
+InputCandy "Advanced" is split into several components:
+* InputCandy, the main ball of wax that handles the major features of designer-provided Actions, player-provided Settings, trackable Players (did they start yet? which controller are they using?), Devices (gamepads, keyboard, mouse), Signals (from devices) and a few other useful things.
+* ICUI, the InputCandy User Interface, a style-able complete UI solution for selecting, configuring and simulating game control apparatus
+* SDLDB, a library for reading, parsing and providing access to SDL GameController DB files (a recent one is included, or you may update it)
+
+InputCandy comes with:
+* A simple version (with simple diagnostics) for quick use
+* A diagnostics screen that inspects game inputs
+* A single room with multiple panels that shows off ICUI
+* A test game
+
+InputCandy is good for:
+* Multiplayer hot-seat games that use controllers
+* Console games
+* PC games with USB SDL-compatible PC game controllers and mouse/keyboard games
+* Simplifying your work with control schemas
+* Allowing players to rebind controls
+* Allowing players to take advantage of the SDL Game Controller DB
+
 Feature List
 ------------
 
@@ -114,11 +134,18 @@ objects into their respective "rooms", to allow players to set up their experien
 InputCandy interface struct (acquired with New_InputCandy()) to programattically test for actions,
 connects, disconnects.
 
+Planned Testing
+---------------
+
+At some point we'll test on Xbox.  Right now it is mainly tested on PCs.  Volunteer to test for us!  File an Issue after you do so.
+
+
 Planned Improvements
 --------------------
 
 - Complete UI
 - Bindings / Settings / Save-and-load
+- Advanced vibration options
 - Networking support to transmit controller signals across the network
 
 
@@ -128,6 +155,10 @@ See the Notes > Note1.txt that is included in the project for more information o
 
 Input Device Control Concept Diagram
 ------------------------------------
-The following diagram illustrates the basic relationships of major concepts found in GameMaker, SDL and InputCandy.    It is not a complete architecture diagram, but is simple enough, yet complex enough, to illustrate how everything is connected in InputCandy.  __The bottom of the chart, specifically Actions, Settings, Players, is the surface that you, as a game developer, can choose to limit yourself to when implementing ImageCandy as your control layer.  You create Actions, monitor the activation and deactivation of Players, and if you use the packaged ICUI helper, the players create Settings (and bindings) as needed.  Your actions influence the behavior of your game, which is "fun" for the player.  A very dry way to explain user experience, but this is the gist of it.__
+The following diagram illustrates the basic relationships of major concepts found in GameMaker, SDL and InputCandy.    It is not a complete architecture diagram, but is simple enough, yet complex enough, to illustrate how everything is connected in InputCandy.  
 
 [![](https://mermaid.ink/img/eyJjb2RlIjoic3RhdGVEaWFncmFtLXYyXG4gICBbKl0gLS0-IFNETF9zbG90IDogKFVTQiBEZXZpY2UpXG4gICBbKl0gLS0-IE1vdXNlXG4gICBNb3VzZSAtLT4gU2lnbmFsIDogKG1vdXNlIHN0YXRlcylcbiAgIFsqXSAtLT4gS2V5Ym9hcmRcbiAgIEtleWJvYXJkIC0tPiBTaWduYWwgOiAoa2V5cylcbiAgIFsqXSAtLT4gR2FtZXBhZFxuICAgR2FtZXBhZCAtLT4gRGV2aWNlU3RhdGVcbiAgIERldmljZVN0YXRlIC0tPiBEcGFkXG4gICBEZXZpY2VTdGF0ZSAtLT4gQnV0dG9uXG4gICBEZXZpY2VTdGF0ZSAtLT4gQXhpc1xuICAgRGV2aWNlU3RhdGUgLS0-IEhhdFxuICAgQXhpcyAtLT4gU2lnbmFsXG4gICBTRExfc2xvdFxuICAgU0RMX3Nsb3QgLS0-IERldmljZVxuICAgU0RMX1JlbWFwcGluZyAtLT4gRGV2aWNlU3RhdGVcbiAgIFNETF9HYW1lY29udHJvbGxlcl9EQiAtLT4gU0RMX1JlbWFwcGluZyBcbiAgIFBsYXllciAtLT4gRGV2aWNlXG4gICBQbGF5ZXIgLS0-IFBsYXllcnNcbiAgIERldmljZSAtLT4gRGV2aWNlc1xuICAgRGV2aWNlU3RhdGUgLS0-IFRodW1ic3RpY2tcbiAgIFRodW1ic3RpY2sgLS0-IEF4aXMgOiBIXG4gICBUaHVtYnN0aWNrIC0tPiBBeGlzIDogVlxuICAgRHBhZCAtLT4gU2lnbmFsXG4gICBIYXQgLS0-IFNpZ25hbFxuICAgU2lnbmFsIC0tPiBTaWduYWxzXG4gICBCdXR0b24gLS0-IFNpZ25hbFxuICAgUGxheWVyIC0tPiBTZXR0aW5nXG4gICBTZXR0aW5nIC0tPiBTZXR0aW5nc1xuICAgQmluZGluZyAtLT4gQmluZGluZ3NcbiAgIFNpZ25hbCAtLT4gQmluZGluZyA6IGljX2NvZGVcbiAgIEJpbmRpbmdzIC0tPiBTZXR0aW5nXG4gICBCaW5kaW5nIC0tPiBBY3Rpb25cbiAgIFNpZ25hbHMgLS0-IEJpbmRpbmcgXG4gICBTaWduYWxzIC0tPiBBY3Rpb24gOiAobWF0Y2hpbmcgYWN0aW9uIGRlZmF1bHQpXG4gICBTaWduYWwgLS0-IEFjdGlvbiA6IGljX2NvZGVcbiAgIEFjdGlvbiAtLT4gQWN0aW9uc1xuICAgQWN0aW9uIC0tPiBCZWhhdmlvciA6IChpbiB0aGUgZ2FtZSlcbiAgIEJlaGF2aW9yIC0tPiBbKl0gOiAoR2FtZXBsYXkpIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZX0)](https://mermaid-js.github.io/mermaid-live-editor/#/edit/eyJjb2RlIjoic3RhdGVEaWFncmFtLXYyXG4gICBbKl0gLS0-IFNETF9zbG90IDogKFVTQiBEZXZpY2UpXG4gICBbKl0gLS0-IE1vdXNlXG4gICBNb3VzZSAtLT4gU2lnbmFsIDogKG1vdXNlIHN0YXRlcylcbiAgIFsqXSAtLT4gS2V5Ym9hcmRcbiAgIEtleWJvYXJkIC0tPiBTaWduYWwgOiAoa2V5cylcbiAgIFsqXSAtLT4gR2FtZXBhZFxuICAgR2FtZXBhZCAtLT4gRGV2aWNlU3RhdGVcbiAgIERldmljZVN0YXRlIC0tPiBEcGFkXG4gICBEZXZpY2VTdGF0ZSAtLT4gQnV0dG9uXG4gICBEZXZpY2VTdGF0ZSAtLT4gQXhpc1xuICAgRGV2aWNlU3RhdGUgLS0-IEhhdFxuICAgQXhpcyAtLT4gU2lnbmFsXG4gICBTRExfc2xvdFxuICAgU0RMX3Nsb3QgLS0-IERldmljZVxuICAgU0RMX1JlbWFwcGluZyAtLT4gRGV2aWNlU3RhdGVcbiAgIFNETF9HYW1lY29udHJvbGxlcl9EQiAtLT4gU0RMX1JlbWFwcGluZyBcbiAgIFBsYXllciAtLT4gRGV2aWNlXG4gICBQbGF5ZXIgLS0-IFBsYXllcnNcbiAgIERldmljZSAtLT4gRGV2aWNlc1xuICAgRGV2aWNlU3RhdGUgLS0-IFRodW1ic3RpY2tcbiAgIFRodW1ic3RpY2sgLS0-IEF4aXMgOiBIXG4gICBUaHVtYnN0aWNrIC0tPiBBeGlzIDogVlxuICAgRHBhZCAtLT4gU2lnbmFsXG4gICBIYXQgLS0-IFNpZ25hbFxuICAgU2lnbmFsIC0tPiBTaWduYWxzXG4gICBCdXR0b24gLS0-IFNpZ25hbFxuICAgUGxheWVyIC0tPiBTZXR0aW5nXG4gICBTZXR0aW5nIC0tPiBTZXR0aW5nc1xuICAgQmluZGluZyAtLT4gQmluZGluZ3NcbiAgIFNpZ25hbCAtLT4gQmluZGluZyA6IGljX2NvZGVcbiAgIEJpbmRpbmdzIC0tPiBTZXR0aW5nXG4gICBCaW5kaW5nIC0tPiBBY3Rpb25cbiAgIFNpZ25hbHMgLS0-IEJpbmRpbmcgXG4gICBTaWduYWxzIC0tPiBBY3Rpb24gOiAobWF0Y2hpbmcgYWN0aW9uIGRlZmF1bHQpXG4gICBTaWduYWwgLS0-IEFjdGlvbiA6IGljX2NvZGVcbiAgIEFjdGlvbiAtLT4gQWN0aW9uc1xuICAgQWN0aW9uIC0tPiBCZWhhdmlvciA6IChpbiB0aGUgZ2FtZSlcbiAgIEJlaGF2aW9yIC0tPiBbKl0gOiAoR2FtZXBsYXkpIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZX0)
+
+__The bottom of this chart (above), the nodes labeled Actions, Settings, Players, are the exposed surface of InputCandy that you, as a game developer, can choose to limit yourself to when implementing InputCandy as your control layer.  You create Actions, in turn you attempt to match them, and you choose when to go about the activation and deactivation of Players.  If you use the packaged ICUI helpers, then players create Settings (and bindings) as needed, and can access the SDLDB if you load that component.__
+
+__By matching "actions", players can influence the behavior of the game, which is "fun" for the player.  A very dry way to explain user experience, but this is the gist of it.__
