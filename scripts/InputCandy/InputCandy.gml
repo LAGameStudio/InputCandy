@@ -48,6 +48,8 @@ function Init_InputCandy_Advanced() { __Private_Init_InputCandy(); }
 function IC_Step() { __IC.Step(); }
 function IC_ClearActions() { __IC.ClearActions(); }
 
+// Returns an empty action struct you can modify, then push in.
+function IC_NewAction() {  return __ICI.New_ICAction(); }
 function IC_ActionPush( action_in ) { return __IC.ActionPush( action_in ); }
 
 function IC_Action_ext( n, g, gp, gpcombo, kb, kcombo, m, mcombo, kmcombo, UDLR, angled, held_s, flimit, on_rel, enabled, forbid ) {
@@ -74,6 +76,8 @@ function IC_Action( verb_string, default_gamepad, default_keyboard /*mouse, grou
  if ( argument_count >= 8 ) enabled=argument[7];
  return __IC.Action( verb_string, default_gamepad, default_keyboard, mouse, group, is_directional, requires_angle, enabled );	
 }
+
+
 
 
 ////////// enumerations and global macros
@@ -360,6 +364,9 @@ global._INPUTCANDY_DEFAULTS_ = {
  keyboard_layout: ICKeyboardLayout_qwerty,   // Changing to Azerty or Qwertz provides a sorta-remapping for keyboards, but there isn't a good way to detect what keyboard
  skip_simplified_axis: false,             // Set this value to true to stop IC from registering simplified axis movements.
  use_network: false,                      // Turn this on if you are going to be using network transmits
+ settings_filename: "settings.json",      // Where player-defined settings are saved.
+ setups_filename:  "setups.json",         // This file is saved and attempts to remember which settings go with which player and which device, and which SDL remappings are desired
+ //// External and Internal interface objects
  interface: New_InputCandy(),             // Public - the programmer interface used in your game.  All you need to know.
  internal: New_InputCandy_Private(),      // Functions used internally, generally not to be called, use interface instead, "private"
  //// Device, player, etc., states
@@ -419,10 +426,10 @@ __INPUTCANDY.signals = [
  {	index:21,   code: IC_padd,		 name: "Pad Down",       deviceType: ICDeviceType_gamepad, deviceCode: gp_padd },
  {	index:22,   code: IC_padl,		 name: "Pad Left",       deviceType: ICDeviceType_gamepad, deviceCode: gp_padl },
  {	index:23,   code: IC_padr,		 name: "Pad Right",      deviceType: ICDeviceType_gamepad, deviceCode: gp_padr },
- {  index:24,   code: IC_mouse_left,     name: "LMB",         deviceType: ICDeviceType_mouse }, //__FIRST_MOUSE_SIGNAL
- {  index:25,   code: IC_mouse_right,	 name: "RMB",         deviceType: ICDeviceType_mouse },
- {  index:26,   code: IC_mouse_middle,	 name: "MMB",         deviceType: ICDeviceType_mouse },
- {  index:27,   code: IC_mouse_scrollup, name: "Scroll Up",   deviceType: ICDeviceType_mouse },
+ {  index:24,   code: IC_mouse_left,     name: "LMB",            deviceType: ICDeviceType_mouse }, //__FIRST_MOUSE_SIGNAL
+ {  index:25,   code: IC_mouse_right,	 name: "RMB",            deviceType: ICDeviceType_mouse },
+ {  index:26,   code: IC_mouse_middle,	 name: "MMB",            deviceType: ICDeviceType_mouse },
+ {  index:27,   code: IC_mouse_scrollup, name: "Scroll Up",      deviceType: ICDeviceType_mouse },
  {  index:28,   code: IC_mouse_scrolldown,  name: "Scroll Down", deviceType: ICDeviceType_mouse },
  {	index:29,   code: IC_key_arrow_L,	 name: "Left Arrow",     azerty_name: "Left Arrow",  qwertz_name:"Left Arrow",  deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_left },
  {	index:30,   code: IC_key_arrow_R,	 name: "Right Arrow",    azerty_name: "Right Arrow", qwertz_name:"Right Arrow", deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_right  },
@@ -546,6 +553,8 @@ __INPUTCANDY.signals = [
 ];
 
 __INPUTCANDY.SDL_GameControllerDB = [];
+
+__ICI.LoadSettings();
 
 __ICI.Init();
 __INPUTCANDY.ready=true;
@@ -728,31 +737,25 @@ function New_InputCandy() {
 			var action=__INPUTCANDY.actions[action_index];
 			if ( !action.enabled ) return none;
 			var player_index=__IC.GetPlayerIndex(player_number);
-			var settings=__INPUTCANDY.players[player_index].settings;
+			var binding=unknown;
+			if ( action.forbid_rebinding ) binding=none;
+			else if ( argument_count > 2 ) binding=argument2;
 			if ( action.is_directional ) {
 				// The binding just permits choosing a different source for this data.
 				return __ICI.MatchDirectional(player_index,action_index,action);
 			}
-			if ( action.forbid_rebinding or settings == none ) { // Hardwire the action since no binding is defined
-				var s;
-				if ( action.gamepad != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad) ) return true;
+			if ( action.forbid_rebinding ) { // Hardwire the action since no binding is defined
+				if ( action.gamepad != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad,none) ) return true;
 				if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
-				 and action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard) ) return true;
+				 and action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard,none) ) return true;
 				if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
-				 and action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse) ) return true;
+				 and action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse,none) ) return true;
 			} else {
-				var setting=__INPUTCANDY.settings[settings];
-				var binding=__ICI.BindingForAction( settings, action_index );
-				if ( binding == none ) { // Couldn't find a binding
-					var s;
-					if ( action.gamepad != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad) ) return true;
-					if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
-					 and action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard) ) return true;
-					if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
-					 and action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse) ) return true;
-				} else { // Action, setting and binding are all permitted and available
-					return __ICI.InterpretAction(player_number,action,binding,settings,setting);
-				}
+				if ( action.gamepad != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_gamepad,binding) ) return true;
+				if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
+				 and action.keyboard != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_keyboard,binding) ) return true;
+				if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1
+				 and action.mouse != IC_none and __ICI.InterpretAction(player_number,action,ICDeviceType_mouse,binding) ) return true;
 			}
 			return false;
 		},
@@ -1687,6 +1690,27 @@ function New_InputCandy_Private() {
 			forbid_rebinding: false,
 		};
 	},
+	CopyOfAction: function( action ) {
+		return {
+			index: action.index,
+			name: action.name,
+			group: action.group,
+			gamepad: action.gamepad,
+			gamepad_combo: action.gamepad_combo,
+			keyboard: action.keyboard,
+			keyboard_combo: action.keyboard_combo,
+			mouse: action.mouse,
+			mouse_combo: action.mouse_combo,
+			mouse_keyboard_combo: action.keyboard_combo,
+			is_directional: action.is_directional,
+			requires_angle: action.requires_angle,
+			held_for_seconds: action.held_for_seconds,
+			fire_limit: action.fire_limit,
+			released: action.released,
+			enabled: action.enabled,
+			forbid_rebinding: action.forbid_rebinding
+		};
+	},
 	MatchSignal: function ( player_number, action, ic_code ) {
 		if ( action.released ) {
 			return __IC.SignalReleased(player_number,ic_code);
@@ -1720,64 +1744,60 @@ function New_InputCandy_Private() {
 		 return false;
 	 }
 	},
-	MatchBinding: function ( player_number, action, binding ) {
-	},
-	InterpretAction: function () {
-		if ( argument_count < 3 ) return false;
-		var player_number=argument0;
-		var action=argument1;
-		var binding_or_type=argument2;
-		if ( action.enabled == false ) return false;
-		var setting_index=unknown,setting=unknown;
-		if ( argument_count > 3 ) { // Only required for situations where a binding is being used, and even then these parameters are only useful for reporting debug information.
-			setting_index=argument3;
-			if ( argument_count > 4 ) setting=argument4;
-			else setting=__INPUTCANDY.settings[setting_index];
-		}
-		if ( is_struct(binding_or_type) ) { // binding (action buttons/list override)
-			return MatchBinding( player_number, action, binding, setting_index, setting );
-		} else {
-			switch ( binding_or_type ) { // type not binding
-				case ICDeviceType_gamepad:
-				 if ( is_array(action.gamepad) ) {
-					 return __ICI.MatchButtonList( player_number, action, action.gamepad_combo, action.gamepad );
-				 } else {
-					 if ( action.gamepad != IC_none ) return __ICI.MatchSignal( player_number, action, action.gamepad );
-					 return false;
-				 }
-				break;
-				case ICDeviceType_keyboard:
-				 if ( is_array(action.keyboard) ) {
-					 return __ICI.MatchButtonList( player_number, action, action.keyboard_combo, action.keyboard );
-				 } else {
-					 if ( action.keyboard != IC_none ) return __ICI.MatchSignal( player_number, action, action.keyboard );
-					 return false;
-				 }
-				break;
-				case ICDeviceType_mouse:
-				 if ( is_array(action.mouse) ) {
-					 if ( action.mouse_keyboard_combo ) {
-						 var matched_mouse=__ICI.MatchButtonList( player_number, action, action.mouse_keyboard_combo, action.mouse );
-						 var matched_keyboard=__ICI.MatchButtonList( player_number, action, action.mouse_keyboard_combo, action.keyboard );
-						 return matched_mouse && matched_keyboard;
-					 } else return __ICI.MatchButtonList( player_number, action, action.mouse_combo, action.mouse );
-				 } else {
-					 if ( action.mouse != IC_none and __ICI.MatchSignal( player_number, action, action.mouse ) ) {
-						 if ( !action.mouse_keyboard_combo ) {
-							 return true;
+	MatchAction: function ( player_number, action, type ) {
+		switch ( binding_or_type ) { // type not binding
+			case ICDeviceType_gamepad:
+			 if ( is_array(action.gamepad) ) {
+				 return __ICI.MatchButtonList( player_number, action, action.gamepad_combo, action.gamepad );
+			 } else {
+				 if ( action.gamepad != IC_none ) return __ICI.MatchSignal( player_number, action, action.gamepad );
+				 return false;
+			 }
+			break;
+			case ICDeviceType_keyboard:
+			 if ( is_array(action.keyboard) ) {
+				 return __ICI.MatchButtonList( player_number, action, action.keyboard_combo, action.keyboard );
+			 } else {
+				 if ( action.keyboard != IC_none ) return __ICI.MatchSignal( player_number, action, action.keyboard );
+			 }
+			break;
+			case ICDeviceType_mouse:
+			 if ( is_array(action.mouse) ) {
+				 if ( action.mouse_keyboard_combo ) {
+					 var matched_mouse=__ICI.MatchButtonList( player_number, action, action.mouse_keyboard_combo, action.mouse );
+					 var matched_keyboard=__ICI.MatchButtonList( player_number, action, action.mouse_keyboard_combo, action.keyboard );
+					 return matched_mouse && matched_keyboard;
+				 } else return __ICI.MatchButtonList( player_number, action, action.mouse_combo, action.mouse );
+			 } else {
+				 if ( action.mouse != IC_none and __ICI.MatchSignal( player_number, action, action.mouse ) ) {
+					 if ( !action.mouse_keyboard_combo ) {
+						 return true;
+					 } else {
+						 if ( is_array(action.keyboard) ) {
+							 return __ICI.MatchButtonList( player_number, action, action.keyboard_combo, action.keyboard );
 						 } else {
-							 if ( is_array(action.keyboard) ) {
-								 return __ICI.MatchButtonList( player_number, action, action.keyboard_combo, action.keyboard );
-							 } else {
-								 if ( action.keyboard != IC_none ) return __ICI.MatchSignal( player_number, action, action.keyboard );
-								 return false;
-							 }
+							 if ( action.keyboard != IC_none ) return __ICI.MatchSignal( player_number, action, action.keyboard );
 						 }
 					 }
 				 }
-				break;
-			}
+			 }
+			break;
 		}
+		return false;
+	},
+	InterpretAction: function (player_number,action,type,binding) {
+		if ( argument_count < 3 ) return false;
+		var player_number=argument0;
+		var player_index=argument0-1;
+		var action=argument1;
+		var type=argument2;
+		var binding=argument3;
+		if ( action.enabled == false ) return false;
+		if ( !action.forbid_rebinding and __INPUTCANDY.players[player_index].settings != none ) {
+			if ( binding == unknown ) binding=__ICI.GetBinding( __INPUTCANDY.players[player_index].settings, action.index );
+			if ( binding != none ) return __ICI.MatchAction( player_index, binding.bound_action, type );
+		}
+		return ___ICI.MatchAction(player_number,action,type);
 	},
 	GetDirectional: function ( player_index, moving, type ) {
 		var player_number=player_index+1;
@@ -2123,31 +2143,161 @@ function New_InputCandy_Private() {
 		};
 	},	
 	
-	//// BINDING
-	New_ICBinding: function() {
-		return {
-			action: none,     // Saves as a string, loads as an int
-			group: "",        // Group string
-			button_id: none   // IC_ button code
-		};
-	},
-	
+	//// SETTING	
 	New_ICSettings: function () {
 		return {
 			index: none,
 			deviceInfo: none,
-			bindings: [],
-			binding_count: 0
+			bindings: []
 		};
 	},
 	
-	BindingForAction: function ( settings, action_index ) {
-		for ( var i=0; i<settings.binding_count; i++ ) {
-			if ( settings.bindings[i].action == action_index ) return settings.bindings[i];
-		}
+	GetSettings: function( player_number ) {
+		var player_index=player_number-1;
+		if ( __INPUTCANDY.players[player_index].settings == none ) return none;
+		var len=array_length(__INPUTCANDY.settings);
+		if ( __INPUTCANDY.players[player_index].settings < len ) return __INPUTCANDY.settings[__INPUTCANDY.players[player_index].settings];
+		return none;
+	},
+
+	GetSettingsIndex: function( player_number ) {
+		var player_index=player_number-1;
+		if ( __INPUTCANDY.players[player_index].settings == none ) return none;
+		var len=array_length(__INPUTCANDY.settings);
+		if ( __INPUTCANDY.players[player_index].settings < len ) return __INPUTCANDY.players[player_index].settings;
 		return none;
 	},
 	
+	SetSettings: function (player_number, settings_index) {
+		var player_index=player_number-1;
+		__INPUTCANDY.players[player_index].settings=settings_index;
+	},
+	
+	AddSettings: function() {
+		var index=array_length(__INPUTCANDY.settings);
+		__INPUTCANDY.settings[index]=New_ICSettings();
+		__INPUTCANDY.settings[index].index=index;
+		if ( argument_count > 0 ) __ICI.SetSettings(argument0,index);
+	},
+	
+	RemoveSettings: function( settings_index ) {
+		// Players: Remove any direct references
+		// Players: Renumber other references
+		// Delete settings from list, reindexing the list.
+	},
+	
+	// Device info can be used to attempt to predict which device gets which bindings.
+	AssociateSettingsWithDevice: function( settings_index, device_index ) {
+		__INPUTCANDY.settings[settings_index].deviceInfo = __INPUTCANDY.devices[device_index];
+	},
+	
+	//// BINDING
+	New_ICBinding: function() {
+		return {
+			index: none,
+			action: none,     // Saves as a string, loads and is turned into an int
+			group: "",        // Used in the loading and saving process.
+			bound_action: none
+		};
+	},	
+	
+	AddBinding: function( setting_index, from_action_index ) {
+		var index=array_length(__INPUTCANDY.settings[setting_index].bindings);
+		__INPUTCANDY.settings[setting_index].bindings[index]= __ICI.New_ICBinding();
+		__INPUTCANDY.settings[setting_index].bindings[index].index=from_action_index;
+		__INPUTCANDY.settings[setting_index].bindings[index].group=__ICI.actions[from_action_index].group;
+		__INPUTCANDY.settings[setting_index].bindings[index].bound_action = __ICI.CopyOfAction( from_action_index );
+		return index;
+	},
+	
+	GetBinding: function ( settings_index, action_index ) {
+	 var bindings=array_length(__INPUTCANDY.settings[i].bindings);
+     for ( var i=0; i<bindings; i++ ) if ( __INPUTCANDY.settings[settings_index].bindings[i].action == action_index ) return j;
+	 return none;
+	},
+	
+	RemoveBinding: function ( settings_index, binding_index ) {
+	},
+	
+	// Call only to set Gamepad
+	SetBindingGamepad: function( settings_index, action_index, binding_index, gamepad ) {
+		if ( binding_index == none ) binding_index = __ICI.AddBinding( settings_index, action_index );
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].action=action_index;
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.gamepad=gamepad;
+	},
+
+    // Call only to set Keyboard
+	SetBindingKeyboard: function( settings_index, action_index, binding_index, keyboard ) {
+		if ( binding_index == none ) binding_index = __ICI.AddBinding( settings_index, action_index );
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].action=action_index;
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.keyboard=keyboard;
+	},
+
+    // Call only to set Mouse
+	SetBindingMouse: function( settings_index, action_index, binding_index, mouse ) {
+		if ( binding_index == none ) binding_index = __ICI.AddBinding( settings_index, action_index );
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].action=action_index;
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.mouse=mouse;
+	},
+
+    // Call only when it is a Keyboard-Mouse combo
+	SetBindingKeyboardMouse: function( settings_index, action_index, binding_index, keyboard, mouse ) {
+		if ( binding_index == none ) binding_index = __ICI.AddBinding( settings_index, action_index );
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].action=action_index;
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.mouse=mouse;
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.keyboard=mouse;
+	},	
+	
+	///// File saving and loading for settings and setups.
+	
+	
+	PostLoadBinding: function( json_struct ) {
+		var new_json=json_struct;
+		new_json.action = __ICI.GetAction( new_json.action, new_json.group );
+		return new_json;
+	},
+	
+	PreSaveBinding: function( binding ) {
+		var action=__ICI.actions[binding.action];
+		var new_jsonifiable=binding;
+		new_jsonifiable.action = action.name;
+		new_jsonifiable.group = action.group;
+		return new_jsonifiable;
+	},
+	
+	SaveSettings: function() {
+		var output=[];
+		var len=array_length(__INPUTCANDY.settings);
+		for ( var i=0; i<len; i++ ){
+			output[i]=__INPUTCANDY.settings[i];
+			var blen=array_length(output[i].bindings);
+			for ( var j=0; j<blen; j++ ) output[i].bindings[j]=__ICI.PreSaveBinding(output[i].bindings[j]);
+		}
+		string_as_file(__INPUTCANDY.settings_filename,json_stringify(output));
+	},
+	
+	LoadSettings: function() {
+		if ( !file_exists(__INPUTCANDY.settings_filename) ) return [];
+		var a=json_parse(file_as_string(__INPUTCANDY.settings_filename));
+		if ( !is_array(a) ) return;
+		var len=array_length(a);
+		__INPUTCANDY.settings=[];
+		for ( var i=0; i<len; i++ ) {
+			var s={ index:i };
+			s.deviceInfo=a[i].deviceInfo;
+			s.bindings=[];
+			var blen=array_length(a[i].bindings);
+			for ( var j=0; j<blen; j++ ) s.bindings[j]=__ICI.PostLoadBinding(a[i].binding[j]);
+			__INPUTCANDY.settings[i]=s;
+		}
+	},
+	
+	SaveSetups: function() {
+	},
+	
+	LoadSetups: function() {
+	},
+
 	/// WIP Network	
 	New_ICNetwork: function() {
 		return {

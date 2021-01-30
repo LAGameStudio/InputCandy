@@ -72,6 +72,7 @@ function point_line_perpendicular( c, time, distance, deltaAngle_or90 ) {
  }; 
 }
 
+// Draws a line of a certain thickness containing a certain texture centered around the midpoint of cartesian c
 function textured_line( c, middle_center_origin_sprite, subimage, line_tint, line_alpha, line_width ) {
  draw_sprite_ext(
   middle_center_origin_sprite,subimage,c.x,c.y,
@@ -83,6 +84,7 @@ function textured_line( c, middle_center_origin_sprite, subimage, line_tint, lin
  );
 }
 
+// Similar to the above but will further rotate the line.
 function textured_line_angle( c, angle, middle_center_origin_sprite, subimage, line_tint, line_alpha, line_width ) {
  draw_sprite_ext(
   middle_center_origin_sprite,subimage,c.x,c.y,
@@ -94,7 +96,7 @@ function textured_line_angle( c, angle, middle_center_origin_sprite, subimage, l
  );
 }
 
-
+// Chooses a random bright color.
 function choose_bright_rgb() {
 	var r=irandom(255);
 	var g=irandom(255);
@@ -110,6 +112,7 @@ function choose_bright_rgb() {
 	return make_color_rgb(r,g,b);
 }
 
+// Loads a file into a string.
 function file_as_string( filename ) {
  var buffer="",fp;
  if ( !file_exists(filename) ) return "";
@@ -120,12 +123,14 @@ function file_as_string( filename ) {
  return buffer;
 }
 
+// Saves a file out as a string.
 function string_as_file( filename, output ) {
  var fp=file_text_open_write(filename);
  file_text_write_string(fp,output);
  file_text_close(fp);
 }
 
+// Loads a JSON file
 function load_json( filename, defaultStruct ) {
  if ( !file_exists(filename) ) return defaultStruct;
  var buffer="";
@@ -135,28 +140,33 @@ function load_json( filename, defaultStruct ) {
  return json_parse(buffer);	
 }
 
+// Saves a struct as JSON
 function save_json( filename, dataOut ) {
  return string_as_file( filename, json_stringify(dataOut) );
 }
 
+// Random sign positive or negative times a magnitude argument0
 function random_posneg(argument0) {
 	return random(argument0)*randomsign();
 }
 
+// Randomly + or -
 function randomsign() {
 	if ( random(50000) % 2 == 1 ) return -1;
 	else return 1;
 }
 
+// A random range m-n, works in the positive case.  Ex rrange(1,5), whereas rrange(-2,2) is -2 to 0
 function rrange(m, n) {
 	return m+random(n-m);
 }
 
+// Here for legacy reasons.  See DikuMUDs.
 function number_range(m, n) {
 	return m+random(n-m);
 }
 
-
+// Returns a fuzzy number in a range r around a value a, example  fuzzy(50,25) returns numbers 25 to 75
 function fuzzy(a, r) {
 	return (a+(random(r*2)-r));
 }
@@ -170,6 +180,7 @@ function color_fuzzy(r1, r2, g1, g2, b1, b2) {
 	);
 }
 
+// Multiply color by a scale, where 1.0 is the original value and 0.5 is "half the original color"
 function color_mult(color,scale) {
 	var r=color_get_red(color) * scale;
 	var g=color_get_green(color) * scale;
@@ -180,6 +191,7 @@ function color_mult(color,scale) {
 	return make_color_rgb(r,g,b);
 }
 
+// Shorthand to turn a Real into a String
 function int(a) { return string_format(a,1,0); }
 
 /*  Usage: arr = string_split(data,sep);
@@ -203,6 +215,7 @@ function string_split(d,s) {
     return out;
 }
 
+// The C/C++ version of A % B with float/decimals.
 function fmod(a, b) {
   return (a/b - floor(a/b));
 }
