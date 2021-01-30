@@ -568,22 +568,10 @@ function ICUI_Draw_device_select() {
 }
 
 function ICUI_device_select_swapping() {
-	
-		ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
-
-		var sx=__INPUTCANDY.ui.region.x;
-		var sy=__INPUTCANDY.ui.region.y;
-		ICUI_text( false, "Player "+int(__INPUTCANDY.ui.device_select.influencing+1)+"\nChoose Gamepad", region.x+region.w/2, sy+eh );
 		
-		var device_count=array_length(__INPUTCANDY.devices);
-        var max_menuitem=device_count+1;
-
-		// Back Button
-		var r=rectangle(region.x, region.y, eh*2, eh*2);
-		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.swapping_select=max_menuitem;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.swapping_select == max_menuitem, "", r.x,r.y,r.w,r.h );
-		draw_sprite_ext(s_InputCandy_ICUI_icons,0,region.x+eh,region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
-
+	var device_count=array_length(__INPUTCANDY.devices);
+    var max_menuitem=device_count+1;
+	
 	var ox=__INPUTCANDY.ui.region.x;
 	var oy=__INPUTCANDY.ui.region.y;
 	var ew=__INPUTCANDY.ui.style.wide*__INPUTCANDY.ui.region.w;
@@ -598,7 +586,21 @@ function ICUI_device_select_swapping() {
 	draw_set_halign(fa_center);
 	draw_set_valign(fa_middle);
 	draw_set_font(__INPUTCANDY.ui.style.font);
-	
+		
+	// Draws a background
+	ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
+
+    // Title
+	var sx=__INPUTCANDY.ui.region.x;
+	var sy=__INPUTCANDY.ui.region.y;
+	ICUI_text( false, "Player "+int(__INPUTCANDY.ui.device_select.influencing+1)+"\nChoose Gamepad", __INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/2, sy+eh );
+
+	// Back Button
+	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.swapping_select=max_menuitem;
+	ICUI_labeled_button( __INPUTCANDY.ui.device_select.swapping_select == max_menuitem, "", r.x,r.y,r.w,r.h );
+	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
+
 	if ( __INPUTCANDY.ui.style.show_title ) {
 		oy+=eh;
 		ICUI_text( false, "Choose Device and Configure Controls", ox+__INPUTCANDY.ui.region.w/2, oy );
@@ -606,14 +608,15 @@ function ICUI_device_select_swapping() {
 	}	
 	
 	var rows=2,cols=2;
-	switch ( __INPUTCANDY.max_players ) {
+	switch ( device_count ) {
 		case 0: case 1: rows=1; cols=1; break;
 		case 2: rows=1; cols=2; break;
 		case 3: rows=1; cols=3; break;
 		case 4: rows=2; cols=2; break;
-		case 5: rows=3; cols=2; break;
-		case 6: rows=2; cols=3; break;
-		case 7: case 8: rows=2; cols=4; break;
+		case 5:
+		case 6:
+		case 7:
+		case 8:
 		case 9: rows=3; cols=3; break;
 		case 10: case 11:case 12: rows=4; cols=3; break;
 		case 13: case 14: case 15: case 16: rows=4; cols=4; break;
@@ -632,10 +635,9 @@ function ICUI_device_select_swapping() {
 	var r;
 	
 	for ( var k=0; k<device_count; k++ ) {
-		ICUI_text( false, "Player "+int(k+1), ox+cw/2, oy );
 	    r=rectangle(ox+cw/2-cw*0.375, oy+rh/2-rh*0.375, cw*0.75, rh*0.75);	
 		if ( cwithin(mouse_x,mouse_y,r) ) {__INPUTCANDY.ui.device_select.swapping_select=k;}
-		ICUI_surround_button( __INPUTCANDY.ui.device_select.select_swapping == k, r.x,r.y,r.w,r.h );
+		ICUI_surround_button( __INPUTCANDY.ui.device_select.swapping_select == k, r.x,r.y,r.w,r.h );
 		if ( __INPUTCANDY.keyboard_mouse_player1 and k==0 ) {
 			draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.devices[k]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.75, 0, c_white, 1.0 );
 			draw_sprite_ext( s_InputCandy_device_icons, 0,ox+cw/2+cw/4,oy+rh/2+rh/4, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.25, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.25, 0, c_white, 1.0 );
