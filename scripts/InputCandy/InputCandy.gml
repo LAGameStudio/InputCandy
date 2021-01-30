@@ -360,7 +360,7 @@ global._INPUTCANDY_DEFAULTS_ = {
  ready: false,                            // Has IC been initialized?
  max_players: 8,                          // Default value for SetMaxPlayers()
  allow_keyboard_mouse: true,              // If the platform supports it, setting this true will use keyboard_and_mouse as an input device (false = hide on consoles w/o keyboard)
- keyboard_mouse_gamepad1_same: true,	  // True means "player 1 gets to use a gamepad too"
+ keyboard_mouse_player1: true,	          // True means "player 1 gets to use a gamepad too"
  keyboard_layout: ICKeyboardLayout_qwerty,   // Changing to Azerty or Qwertz provides a sorta-remapping for keyboards, but there isn't a good way to detect what keyboard
  skip_simplified_axis: false,             // Set this value to true to stop IC from registering simplified axis movements.
  use_network: false,                      // Turn this on if you are going to be using network transmits
@@ -1028,7 +1028,7 @@ function New_InputCandy() {
 		KeyboardMouseDiagnosticString: function () {
 			var out="";
 			if ( !__INPUTCANDY.allow_keyboard_mouse ) out += "Mouse and keyboard disabled\n";
-			if ( !__INPUTCANDY.keyboard_mouse_gamepad1_same ) out+="Player 1 uses Mouse and keyboard\n";
+			if ( !__INPUTCANDY.keyboard_mouse_player1 ) out+="Player 1 uses Mouse and keyboard\n";
 			else out+="Player 1 uses Mouse and Keyboard AND/OR Gamepad\n";
 			out+="Mouse:     "+json_stringify(__INPUTCANDY.mouse)+"\n";
 			out+="wasMouse: "+json_stringify(__INPUTCANDY.wasMouse)+"\n";
@@ -1143,7 +1143,7 @@ function New_InputCandy_Private() {
 			 d.type=ICDeviceType_keyboard_mouse;
 			 d.index=j;
 			 devices_list[j]=d;
-			 if ( !__INPUTCANDY.keyboard_mouse_gamepad1_same ) j++;
+			 if ( !__INPUTCANDY.keyboard_mouse_player1 ) j++;
 		 }
 		 // Poll all gamepad slots for connected devices.
 		 var gamepads=gamepad_get_device_count();
@@ -1156,7 +1156,7 @@ function New_InputCandy_Private() {
 				// In the special case that keyboard_and_mouse are activated in settings, and we're allowing the player(s) to use it
 				if ( __INPUTCANDY.platform.keyboard_mouse_supported and __INPUTCANDY.allow_keyboard_mouse ) {
 					// If we're in the special case of the "Device 0" position, and it's not "Device 0" index we need to create a new device profile and give it an accurate type.
-					if ( __INPUTCANDY.keyboard_mouse_gamepad1_same and j != 0 ) {
+					if ( __INPUTCANDY.keyboard_mouse_player1 and j != 0 ) {
 						devices_list[j]=__ICI.New_ICDevice();
 						devices_list[j].type = ICDeviceType_gamepad;
 					} // otherwise we are writing to the "Device 0" position and the type is already set.
@@ -1195,7 +1195,7 @@ function New_InputCandy_Private() {
 			 if ( __INPUTCANDY.devices[i].slot_id != none ) {
 				 var connected=gamepad_is_connected(__INPUTCANDY.devices[i].slot_id);
 				 // If this device profile is connected to a valid slot_id we need to copy it to the new list.
-				 if ( connected or ( __INPUTCANDY.keyboard_mouse_gamepad1_same and i==0 ) ) {
+				 if ( connected or ( __INPUTCANDY.keyboard_mouse_player1 and i==0 ) ) {
 					 devices_list[j]=__INPUTCANDY.devices[i];
 					 devices_list[j].index = j;
 					 // Unless its a special case and the gamepad is disconnected, then we're removing it from the "Device 0" position which remains as a keyboard mouse primary input
@@ -1206,7 +1206,7 @@ function New_InputCandy_Private() {
 			 }
 		 }
 		 // If no gamepad is associated with "Device 0", and there's supposed to be at least one associated, assign the next available one to the "Device 0" position
-		 if ( __INPUTCANDY.keyboard_mouse_gamepad1_same and __INPUTCANDY.platform.keyboard_mouse_supported and __INPUTCANDY.allow_keyboard_mouse ) {
+		 if ( __INPUTCANDY.keyboard_mouse_player1 and __INPUTCANDY.platform.keyboard_mouse_supported and __INPUTCANDY.allow_keyboard_mouse ) {
 			 if ( devices_list[0].slot_id == none and array_length(devices_list) > 1 ) {
 				 var device_list_copy=[];
 				 var list_len=array_length(devices_list);
