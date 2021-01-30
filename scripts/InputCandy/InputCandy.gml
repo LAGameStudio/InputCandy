@@ -1788,7 +1788,7 @@ function New_InputCandy_Private() {
 	InterpretAction: function (player_number,action,type,binding) {
 		if ( argument_count < 3 ) return false;
 		var player_number=argument0;
-		var player_index=argument0-1;
+		var player_index=player_number-1;
 		var action=argument1;
 		var type=argument2;
 		var binding=argument3;
