@@ -116,10 +116,10 @@ function __Init_ICUI() {
 		// UI mode where we're selecting a device for each player, this is the default mode
 		device_select: {
 			mode: true,
-			selecting: false,  // Selecting next operation
+			inspecting: false, // Selecting next operation
 			swapping: false,   // Swap gamepad menu
-			influencing: 0,
-			menuitem: 0,
+			influencing: 0,    // Which player are you influencing?
+			menuitem: 0,       // Which menu item are you selecting?
 			allow_multiple_players: false  // Allows multiple players to use the same gamepad
 		},
 		// UI mode where we're selecting a remapping from the SDL database
@@ -151,13 +151,15 @@ function __Init_ICUI() {
 		// Assumptive UI signal check for global input on settings screens
 		input: function ( kind ) {
 			switch ( kind ) {
-				case ICUI_left:    return __IC.SignalAnyReleased( IC_padl ) or __IC.SignalAnyReleased( IC_key_A ) or __IC.SignalAnyReleased( IC_key_arrow_L ) or __IC.SignalAnyReleased( IC_hat0_L ) or __IC.SignalAnyReleased( IC_hat1_L ) or __IC.SignalAnyReleased( IC_hat2_L ) or __IC.SignalAnyReleased( IC_hat3_L ) or __IC.SignalAnyReleased( IC_hat4_L );
-				case ICUI_right:   return __IC.SignalAnyReleased( IC_padr ) or __IC.SignalAnyReleased( IC_key_D ) or __IC.SignalAnyReleased( IC_key_arrow_R ) or __IC.SignalAnyReleased( IC_hat0_R ) or __IC.SignalAnyReleased( IC_hat1_R ) or __IC.SignalAnyReleased( IC_hat2_R ) or __IC.SignalAnyReleased( IC_hat3_R ) or __IC.SignalAnyReleased( IC_hat4_R );
-				case ICUI_up:      return __IC.SignalAnyReleased( IC_padu ) or __IC.SignalAnyReleased( IC_key_W ) or __IC.SignalAnyReleased( IC_key_arrow_U ) or __IC.SignalAnyReleased( IC_hat0_U ) or __IC.SignalAnyReleased( IC_hat1_U ) or __IC.SignalAnyReleased( IC_hat2_U ) or __IC.SignalAnyReleased( IC_hat3_U ) or __IC.SignalAnyReleased( IC_hat4_U );
-				case ICUI_down:    return __IC.SignalAnyReleased( IC_padd ) or __IC.SignalAnyReleased( IC_key_S ) or __IC.SignalAnyReleased( IC_key_arrow_D ) or __IC.SignalAnyReleased( IC_hat0_D ) or __IC.SignalAnyReleased( IC_hat1_D ) or __IC.SignalAnyReleased( IC_hat2_D ) or __IC.SignalAnyReleased( IC_hat3_D ) or __IC.SignalAnyReleased( IC_hat4_D );
-				case ICUI_button:  return __IC.SignalAnyReleased( IC_A )    or __IC.SignalAnyReleased( IC_B )     or __IC.SignalAnyReleased( IC_rctrl )
-				                       or __IC.SignalAnyReleased( IC_lctrl) or __IC.SignalAnyReleased( IC_key_Z ) or __IC.SignalAnyReleased( IC_key_X )
-									   or __IC.SignalAnyReleased( IC_enter) or __IC.SignalAnyReleased( IC_space );
+				case ICUI_left:    return __IC.SignalAnyReleased( IC_padl ) or keyboard_check_released(ord("A")) or keyboard_check_released( vk_left  ) or __IC.SignalAnyReleased( IC_hat0_L ) or __IC.SignalAnyReleased( IC_hat1_L ) or __IC.SignalAnyReleased( IC_hat2_L ) or __IC.SignalAnyReleased( IC_hat3_L ) or __IC.SignalAnyReleased( IC_hat4_L );
+				case ICUI_right:   return __IC.SignalAnyReleased( IC_padr ) or keyboard_check_released(ord("D")) or keyboard_check_released( vk_right ) or __IC.SignalAnyReleased( IC_hat0_R ) or __IC.SignalAnyReleased( IC_hat1_R ) or __IC.SignalAnyReleased( IC_hat2_R ) or __IC.SignalAnyReleased( IC_hat3_R ) or __IC.SignalAnyReleased( IC_hat4_R );
+				case ICUI_up:      return __IC.SignalAnyReleased( IC_padu ) or keyboard_check_released(ord("W")) or keyboard_check_released( vk_up    ) or __IC.SignalAnyReleased( IC_hat0_U ) or __IC.SignalAnyReleased( IC_hat1_U ) or __IC.SignalAnyReleased( IC_hat2_U ) or __IC.SignalAnyReleased( IC_hat3_U ) or __IC.SignalAnyReleased( IC_hat4_U );
+				case ICUI_down:    return __IC.SignalAnyReleased( IC_padd ) or keyboard_check_released(ord("S")) or keyboard_check_released( vk_down  ) or __IC.SignalAnyReleased( IC_hat0_D ) or __IC.SignalAnyReleased( IC_hat1_D ) or __IC.SignalAnyReleased( IC_hat2_D ) or __IC.SignalAnyReleased( IC_hat3_D ) or __IC.SignalAnyReleased( IC_hat4_D );
+				case ICUI_button:  return __IC.SignalAnyReleased( IC_A )    or __IC.SignalAnyReleased( IC_B )
+				                       or keyboard_check_released( vk_control ) or keyboard_check_released(ord("Z"))
+									   or keyboard_check_released(ord("X"))     or keyboard_check_released(ord("C"))
+									   or keyboard_check_released( vk_enter )   or keyboard_check_released( vk_space )
+									   or mouse_check_button_released(mb_any);
 				default: return false;
 			}
 		}
@@ -345,10 +347,17 @@ function ICUI_Draw_device_select() {
 	
 	var cw=__INPUTCANDY.ui.region.w/cols;
 	var rh=(__INPUTCANDY.ui.region.y2-oy)/rows;
+	var r;
 	
 	for ( var k=0; k<__INPUTCANDY.max_players; k++ ) {
 		ICUI_text( false, "Player "+int(k+1), ox+cw/2, oy );
-		if ( !__INPUTCANDY.ui.device_select.selecting ) ICUI_surround_button( __INPUTCANDY.ui.device_select.influencing == k and __INPUTCANDY.ui.device_select.menuitem == 0, ox+cw/2-cw*0.375, oy+rh/2-rh*0.375, cw*0.75, rh*0.75 );
+		if ( !__INPUTCANDY.ui.device_select.inspecting ) {
+		    r=rectangle(ox+cw/2-cw*0.375, oy+rh/2-rh*0.375, cw*0.75, rh*0.75);	
+			if ( cwithin(mouse_x,mouse_y,r) ) {__INPUTCANDY.ui.device_select.menuitem=0; __INPUTCANDY.ui.device_select.influencing=k;}
+			ICUI_surround_button( 
+			 ( __INPUTCANDY.ui.device_select.influencing == k and __INPUTCANDY.ui.device_select.menuitem == 0 ),
+			 r.x,r.y,r.w,r.h );
+		}
 		if ( __INPUTCANDY.keyboard_mouse_gamepad1_same and k==0 ) {
 			draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.75, 0, c_white, 1.0 );
 			draw_sprite_ext( s_InputCandy_device_icons, 0,ox+cw/2+cw/4,oy+rh/2+rh/4, 1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.25, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.25, 0, c_white, 1.0 );
@@ -373,7 +382,9 @@ function ICUI_Draw_device_select() {
 		var sy=region.y;
 		ICUI_text( false, "Player "+int(__INPUTCANDY.ui.device_select.influencing+1), region.x+region.w/2, sy+eh );
 		
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 0, "", region.x, region.y, eh*2, eh*2 );
+		r=rectangle(region.x, region.y, eh*2, eh*2);
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=0;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 0, "", r.x,r.y,r.w,r.h );
 		draw_sprite_ext(s_InputCandy_ICUI_icons,0,region.x+eh,region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
 
         var max_menuitem=0;
@@ -403,7 +414,7 @@ function ICUI_Draw_device_select() {
 			}
 		}		
 		
-	} else if ( __INPUTCANDY.ui.device_select.selecting ) {	// This section is only drawn once you have selected a player
+	} else if ( __INPUTCANDY.ui.device_select.inspecting ) {	// This section is only drawn once you have selected a player
 		
 		var player_index=__INPUTCANDY.ui.device_select.influencing;
 		var player=__INPUTCANDY.players[player_index]
@@ -418,7 +429,9 @@ function ICUI_Draw_device_select() {
 		var sy=region.y;
 		ICUI_text( false, "Player "+int(__INPUTCANDY.ui.device_select.influencing+1), region.x+region.w/2, sy+eh );
 		
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 0, "", region.x, region.y, eh*2, eh*2 );
+		r=rectangle(region.x, region.y, eh*2, eh*2);
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=0;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 0, "", r.x,r.y,r.w,r.h );
 		draw_sprite_ext(s_InputCandy_ICUI_icons,0,region.x+eh,region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
 		
 		var menu_margin=0.1*region.w;
@@ -446,18 +459,24 @@ function ICUI_Draw_device_select() {
 			draw_set_halign(fa_center);
 		}
 		
-		
-		
 		sx = menu_margin+region.x;
 		var max_menuitem=4;
 		sy += 5*btn_height+btn_height/5;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 1, "Select Other Gamepad", sx, sy, btn_width, btn_height );
+		r =rectangle( sx, sy, btn_width, btn_height );
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=1;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 1, "Select Different Gamepad", r.x,r.y,r.w,r.h );
 		sy += btn_height+btn_height/5;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 2, "Gamepad Input Bindings", sx, sy, btn_width, btn_height );
+		r =rectangle( sx, sy, btn_width, btn_height );
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=2;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 2, "Customize Gamepad Input", r.x,r.y,r.w,r.h );
 		sy += btn_height+btn_height/5;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 3, "Pick Gamepad SDL Remapping", sx, sy, btn_width, btn_height );
+		r =rectangle( sx, sy, btn_width, btn_height );
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=3;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 3, "Pick Gamepad SDL Remapping", r.x,r.y,r.w,r.h );
 		sy += btn_height+btn_height/5;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 4, "Test on Gamepad Simulator", sx, sy, btn_width, btn_height );
+		r =rectangle( sx, sy, btn_width, btn_height );
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=4;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 4, "Test on Gamepad Simulator", r.x,r.y,r.w,r.h );
 		
 		if ( player_index == 0 ) {
 			var kms="Keyboard and Mouse Settings";
@@ -465,7 +484,9 @@ function ICUI_Draw_device_select() {
 			else if ( device.type == ICDeviceType_mouse ) kms="Mouse Settings";
 			max_menuitem=5;
 			sy += btn_height+btn_height/5;
-			ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 5, kms, sx, sy, btn_width, btn_height );
+			r =rectangle( sx, sy, btn_width, btn_height );
+			if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=5;
+			ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 5, kms, r.x,r.y,r.w,r.h );
 		}		
 
 		if ( __INPUTCANDY.ui.input(ICUI_right) ) {
@@ -493,12 +514,13 @@ function ICUI_Draw_device_select() {
 			switch ( __INPUTCANDY.ui.device_select.menuitem ) {
 				case 0:
 				audio_play_sound(a_ICUI_pageflip,100,0);
-			 	 __INPUTCANDY.ui.device_select.selecting=false;
+			 	 __INPUTCANDY.ui.device_select.inspecting=false;
 				break;
 				case 1:
 				audio_play_sound(a_ICUI_tone,100,0);
  				 __INPUTCANDY.ui.device_select.swapping=true;
 				 __INPUTCANDY.ui.device_select.menuitem=0;
+				break;
 				case 2:
 				audio_play_sound(a_ICUI_pageflip,100,0);
 				 __INPUTCANDY.ui.device_select.mode=false;
@@ -528,8 +550,10 @@ function ICUI_Draw_device_select() {
 		var max_menuitem=__INPUTCANDY.max_players;
 		
 		// Back Button for background area of device_select (returns to ui's exit area
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.influencing == max_menuitem, "",
-		  __INPUTCANDY.ui.region.x2-eh*2, __INPUTCANDY.ui.region.y, eh*2, eh*2 );
+		r=rectangle(__INPUTCANDY.ui.region.x2-eh*2, __INPUTCANDY.ui.region.y, eh*2, eh*2);
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.influencing=max_menuitem;		
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.influencing == max_menuitem, "", r.x,r.y,r.w,r.h );
+		
 		draw_sprite_ext(s_InputCandy_ICUI_icons,0,
 		  __INPUTCANDY.ui.region.x2-eh,__INPUTCANDY.ui.region.y+eh,
 		  icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
@@ -562,7 +586,7 @@ function ICUI_Draw_device_select() {
 		if( __INPUTCANDY.ui.input(ICUI_button) ) {
 			audio_play_sound(a_ICUI_tone,100,0);
 			if ( __INPUTCANDY.ui.device_select.influencing < __INPUTCANDY.max_players ) {
-			__INPUTCANDY.ui.device_select.selecting=true;
+			__INPUTCANDY.ui.device_select.inspecting=true;
 			__INPUTCANDY.ui.device_select.menuitem=0;
 			} else {
 				audio_play_sound(a_ICUI_pageflip,100,0);

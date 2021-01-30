@@ -18,6 +18,14 @@ function cartesian( x1_, y1_, x2_, y2_ ) {
  };
 }
 
+function cwithin( x_, y_, rc ) {
+	return ( rc.x < x_ and rc.x2 > x_ and rc.y < y_ and rc.y2 > y_ );
+}
+
+function cwithinEdges( x_, y_, rc ) {
+	return ( rc.x <= x_ and rc.x2 >= x_ and rc.y <= y_ and rc.y2 >= y_ );
+}
+
 function rectangle( x_, y_, w_, h_ ) {
  var x2_=x_+w_;
  var y2_=y_+h_;
@@ -34,6 +42,7 @@ function rectangle( x_, y_, w_, h_ ) {
   angle: point_direction(x_,y_,x2_,y2_)
  };	
 }
+
 
 // Get a point on the line at normalized 0-1 ratio (0 = start, 1=end)
 function point_on_line( c, time ) {
