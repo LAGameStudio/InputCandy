@@ -1786,6 +1786,7 @@ function New_InputCandy_Private() {
 		return false;
 	},
 	InterpretAction: function (player_number,action,type,binding) {
+		var player_index=player_number-1;
 		if ( action.enabled == false ) return false;
 		if ( !action.forbid_rebinding and __INPUTCANDY.players[player_index].settings != none ) {
 			if ( binding == unknown ) binding=__ICI.GetBinding( __INPUTCANDY.players[player_index].settings, action.index );
