@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "a_ICUI_tone.wav",
-  "duration": 0.251349,
+  "duration": 1.421599,
   "parent": {
     "name": "InputCandy",
     "path": "folders/Sounds/InputCandy.yy",

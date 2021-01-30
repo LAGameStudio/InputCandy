@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "a_ICUI_pageflip.wav",
-  "duration": 1.451961,
+  "duration": 1.711553,
   "parent": {
     "name": "InputCandy",
     "path": "folders/Sounds/InputCandy.yy",
