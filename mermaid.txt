@@ -1,0 +1,40 @@
+https://mermaid-js.github.io/mermaid-live-editor/#/edit/eyJjb2RlIjoic3RhdGVEaWFncmFtLXYyXG4gICBbKl0gLS0-IFNETF9zbG90IDogKFVTQiBEZXZpY2UpXG4gICBbKl0gLS0-IE1vdXNlXG4gICBNb3VzZSAtLT4gU2lnbmFsIDogKG1vdXNlIHN0YXRlcylcbiAgIFsqXSAtLT4gS2V5Ym9hcmRcbiAgIEtleWJvYXJkIC0tPiBTaWduYWwgOiAoa2V5cylcbiAgIFsqXSAtLT4gR2FtZXBhZFxuICAgR2FtZXBhZCAtLT4gRGV2aWNlU3RhdGVcbiAgIERldmljZVN0YXRlIC0tPiBEcGFkXG4gICBEZXZpY2VTdGF0ZSAtLT4gQnV0dG9uXG4gICBEZXZpY2VTdGF0ZSAtLT4gQXhpc1xuICAgRGV2aWNlU3RhdGUgLS0-IEhhdFxuICAgQXhpcyAtLT4gU2lnbmFsXG4gICBTRExfc2xvdFxuICAgU0RMX3Nsb3QgLS0-IERldmljZVxuICAgU0RMX1JlbWFwcGluZyAtLT4gRGV2aWNlU3RhdGVcbiAgIFNETCAtLT4gRGV2aWNlIDogc2xvdF9pZFxuICAgU0RMX0dhbWVjb250cm9sbGVyX0RCIC0tPiBTRExfUmVtYXBwaW5nIFxuICAgUGxheWVyIC0tPiBEZXZpY2UgOiBpbmRleFxuICAgUGxheWVyIC0tPiBQbGF5ZXJzXG4gICBEZXZpY2UgLS0-IERldmljZXNcbiAgIERldmljZVN0YXRlIC0tPiBUaHVtYnN0aWNrXG4gICBUaHVtYnN0aWNrIC0tPiBBeGlzIDogSFxuICAgVGh1bWJzdGljayAtLT4gQXhpcyA6IFZcbiAgIERwYWQgLS0-IFNpZ25hbFxuICAgSGF0IC0tPiBTaWduYWxcbiAgIFNpZ25hbCAtLT4gU2lnbmFsc1xuICAgQnV0dG9uIC0tPiBTaWduYWxcbiAgIFBsYXllciAtLT4gU2V0dGluZ3NcbiAgIEJpbmRpbmcgLS0-IEJpbmRpbmdzXG4gICBTaWduYWwgLS0-IEJpbmRpbmcgOiBpY19jb2RlXG4gICBCaW5kaW5ncyAtLT4gU2V0dGluZ3NcbiAgIEJpbmRpbmcgLS0-IEFjdGlvblxuICAgU2lnbmFscyAtLT4gQmluZGluZyBcbiAgIFNpZ25hbHMgLS0-IEFjdGlvbiA6IChtYXRjaGluZyBhY3Rpb24gZGVmYXVsdClcbiAgIFNpZ25hbCAtLT4gQWN0aW9uIDogaWNfY29kZVxuICAgQWN0aW9uIC0tPiBBY3Rpb25zXG4gICBBY3Rpb24gLS0-IEJlaGF2aW9yIDogKGluIHRoZSBnYW1lKVxuICAgQmVoYXZpb3IgLS0-IFsqXSA6IChHYW1lcGxheSkiLCJtZXJtYWlkIjp7InRoZW1lIjoiZGVmYXVsdCJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlfQ
+stateDiagram-v2
+   [*] --> SDL_slot : (USB Device)
+   [*] --> Mouse
+   Mouse --> Signal : (mouse states)
+   [*] --> Keyboard
+   Keyboard --> Signal : (keys)
+   [*] --> Gamepad
+   Gamepad --> DeviceState
+   DeviceState --> Dpad
+   DeviceState --> Button
+   DeviceState --> Axis
+   DeviceState --> Hat
+   Axis --> Signal
+   SDL_slot
+   SDL_slot --> Device
+   SDL_Remapping --> DeviceState
+   SDL --> Device : slot_id
+   SDL_Gamecontroller_DB --> SDL_Remapping 
+   Player --> Device : index
+   Player --> Players
+   Device --> Devices
+   DeviceState --> Thumbstick
+   Thumbstick --> Axis : H
+   Thumbstick --> Axis : V
+   Dpad --> Signal
+   Hat --> Signal
+   Signal --> Signals
+   Button --> Signal
+   Player --> Settings
+   Binding --> Bindings
+   Signal --> Binding : ic_code
+   Bindings --> Settings
+   Binding --> Action
+   Signals --> Binding 
+   Signals --> Action : (matching action default)
+   Signal --> Action : ic_code
+   Action --> Actions
+   Action --> Behavior : (in the game)
+   Behavior --> [*] : (Gameplay)
