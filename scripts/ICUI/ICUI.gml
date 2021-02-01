@@ -835,12 +835,14 @@ function ICUI_Draw_input_binding() {
 	  var sb_mid=rectangle(sb_up.x,sb_up.y2,sb_region.w,sb_region.h-sb_up.h*2);
 	  var dz1=rectangle(lines_region.x,sb_dn.y2,lines_region.w/2-eh/2,eh*2);
 	  var dz2=rectangle(dz1.x+lines_region.w/2+eh/2,dz1.y,dz1.w,dz1.h);
-	
+
+	var start_item=__INPUTCANDY.ui.input_binding.scrolled;
+	var end_item=min(bindable_actions-1,start_item+lines-1);
+
 	if ( bindable_actions > 0 ) {
 	    ox=lines_region.x;
 		oy=lines_region.y;
-		var start_i=__INPUTCANDY.ui.input_binding.scrolled;
-		for ( var i=start_i; (i<bindable_actions) and (i-start_i<lines); i++ ) {
+		for ( var i=start_item; (i<bindable_actions) and (i-start_item<lines); i++ ) {
 			var action=__INPUTCANDY.actions[bindable_action_index[i]];
 			ICUI_text_in_box( false, string_replace(action.group+" ","None ","")+action.name, ox,oy, lines_region.w/2-smidge/2, lineh );
 			ICUI_text_in_box( __INPUTCANDY.ui.input_binding.influencing == i, "", ox + lines_region.w/2 - smidge/4, oy, lines_region.w/2, lineh );
@@ -852,9 +854,9 @@ function ICUI_Draw_input_binding() {
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 2, sb_up.x, sb_up.y, sb_up.w, sb_up.h, c_white, 0.65, 0, 0.5 );
 		ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
 		var first_perc=(__INPUTCANDY.ui.input_binding.scrolled / bindable_actions);
-		var last_perc=min(1.0,__INPUTCANDY.ui.input_binding.scrolled+lines / bindable_actions);
+		var last_perc=min(1.0,(__INPUTCANDY.ui.input_binding.scrolled+lines) / bindable_actions);
 		var total_size=sb_mid.h-smidge*2;
-		ICUI_tinted_box(__INPUTCANDY.ui.style.knob1,__INPUTCANDY.ui.style.knob2, sb_mid.x+smidge, sb_mid.y+smidge + total_size*first_perc, sb_mid.w-smidge*2, total_size*last_perc );
+		ICUI_tinted_box(__INPUTCANDY.ui.style.knob1,__INPUTCANDY.ui.style.knob2, sb_mid.x+smidge, sb_mid.y+smidge + total_size*first_perc, sb_mid.w-smidge*2, (total_size*last_perc)-(total_size*first_perc) );
 	}
 
 	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
@@ -883,25 +885,20 @@ function ICUI_Draw_input_binding() {
 	
 	
 	
-	if ( __INPUTCANDY.ui.input(ICUI_right) ) {
+	if ( __INPUTCANDY.ui.input(ICUI_right) or __INPUTCANDY.ui.input(ICUI_down) ) {
 		audio_play_sound(a_ICUI_click,100,0);
 		__INPUTCANDY.ui.input_binding.influencing++;
-		if ( __INPUTCANDY.ui.input_binding.influencing > max_menuitem ) __INPUTCANDY.ui.input_binding.influencing=0;
+		if ( __INPUTCANDY.ui.input_binding.influencing == end_item+1 and end_item < bindable_actions ) __INPUTCANDY.ui.input_binding.influencing=mi_scrdn;
+		if ( __INPUTCANDY.ui.input_binding.influencing > max_menuitem ) {
+			__INPUTCANDY.ui.input_binding.influencing=__INPUTCANDY.ui.input_binding.scrolled;
+		}
 	}
-	if ( __INPUTCANDY.ui.input(ICUI_left) ) {
+	if ( __INPUTCANDY.ui.input(ICUI_left) or __INPUTCANDY.ui.input(ICUI_up) ) {
 		audio_play_sound(a_ICUI_click,100,0);
 		__INPUTCANDY.ui.input_binding.influencing--;
 		if ( __INPUTCANDY.ui.input_binding.influencing < 0 ) __INPUTCANDY.ui.input_binding.influencing=max_menuitem;
-	}
-	if ( __INPUTCANDY.ui.input(ICUI_up) ) {
-		audio_play_sound(a_ICUI_click,100,0);
-		__INPUTCANDY.ui.input_binding.influencing--;
-		if ( __INPUTCANDY.ui.input_binding.influencing < 0 ) __INPUTCANDY.ui.input_binding.influencing=max_menuitem;
-	}
-	if ( __INPUTCANDY.ui.input(ICUI_down) ) {
-		audio_play_sound(a_ICUI_click,100,0);
-		__INPUTCANDY.ui.input_binding.influencing++;
-		if ( __INPUTCANDY.ui.input_binding.influencing > max_menuitem ) __INPUTCANDY.ui.input_binding.influencing=0;
+		if ( __INPUTCANDY.ui.input_binding.scrolled > 0 and __INPUTCANDY.ui.input_binding.influencing == __INPUTCANDY.ui.input_binding.scrolled-1 ) __INPUTCANDY.ui.input_binding.influencing=mi_scrup;
+		if ( __INPUTCANDY.ui.input_binding.influencing == mi_back-1 ) __INPUTCANDY.ui.input_binding.influencing=end_item;
 	}
 	if( __INPUTCANDY.ui.input(ICUI_button) ) {
 	 	audio_play_sound(a_ICUI_tone,100,0);
