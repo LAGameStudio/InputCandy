@@ -317,6 +317,50 @@ function ICDeviceTypeString(i) {
 #macro IC_axis8 408
 #macro IC_axis9 409
 
+
+/// BUTTONS
+
+#macro IC_btn0   440
+#macro IC_btn1   441
+#macro IC_btn2   442
+#macro IC_btn3   443
+#macro IC_btn4   444
+#macro IC_btn5   445
+#macro IC_btn6   446
+#macro IC_btn7   447
+#macro IC_btn8   448
+#macro IC_btn9   449
+#macro IC_btn10  450
+#macro IC_btn11  451
+#macro IC_btn12  452
+#macro IC_btn13  453
+#macro IC_btn14  454
+#macro IC_btn15  455
+#macro IC_btn16  456
+#macro IC_btn17  457
+#macro IC_btn18  458
+#macro IC_btn19  459
+#macro IC_btn20  460
+#macro IC_btn21  461
+#macro IC_btn22  462
+#macro IC_btn23  463
+#macro IC_btn24  464
+#macro IC_btn25  465
+#macro IC_btn26  466
+#macro IC_btn27  467
+#macro IC_btn28  468
+#macro IC_btn29  469
+#macro IC_btn30  470
+#macro IC_btn31  471
+#macro IC_btn32  472
+#macro IC_btn33  473
+#macro IC_btn34  474
+#macro IC_btn35  475
+#macro IC_btn36  476
+#macro IC_btn37  477
+#macro IC_btn38  478
+#macro IC_btn39  479
+
 // Arrow keys, a movement option
 #macro IC_arrows 500
 #macro IC_wasd   501
@@ -2213,7 +2257,7 @@ function New_InputCandy_Private() {
 	 return none;
 	},
 	
-	RemoveBinding: function ( settings_index, binding_index ) {
+	RemoveBinding: function ( settings_index, action_index ) {
 	},
 	
 	// Call only to set Gamepad

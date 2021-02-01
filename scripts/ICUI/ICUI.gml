@@ -146,6 +146,8 @@ function __Init_ICUI() {
 			choosing_pick_scrolled: 0,
 			choosing_capture: false,
 			choosing_capture_expired: 0.0,			
+			choosing_capture_confirming: false,
+			choosing_capture_select: 0,
 			loading: false,          // Set profile from list
 			loading_select: 0,
 			loading_scrolled: 0,
@@ -212,6 +214,13 @@ function ICUI_text( is_focused, text, x, y ) {
 		draw_text_color( x, y, text, __INPUTCANDY.ui.style.text1, __INPUTCANDY.ui.style.text2, __INPUTCANDY.ui.style.text3, __INPUTCANDY.ui.style.text4, 1.0 );
 	}
 }
+
+// Draws text is centered/middle
+function ICUI_text_color( c1,c2,c3,c4, text, x, y ) {
+	if ( string_length(text) == 0 ) return;
+	draw_text_color( x, y, text, c1,c2,c3,c4, 1.0 );
+}
+	
 	
 function ICUI_box( x, y, w, h ) {
 	draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.box2,__INPUTCANDY.ui.style.box1,false);
@@ -294,7 +303,407 @@ function ICUI_labeled_button( is_focused, labeltext, x, y, w, h ) {
 
 
 // Draws a "button description" like A,B,X,Y,hat0_L,a key
-function ICUI_draw_ICbutton( is_focused, label ) {
+function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mouse_combo, r ) {
+	
+	var c=codes;
+	
+	if ( !is_array(c) ) {
+		c=[c];
+	}
+	
+	var fontsize = font_get_size(__INPUTCANDY.ui.style.font);
+	
+	var len=array_length(c);
+	
+	var swh=r.h;
+	var spacing=swh/4;
+	
+	var sx=r.x;
+	var sy=r.y+r.w/2;
+	
+	for( var i=0; i<len; i++ ) {
+		var code=(!is_directional and c[i] < array_length(__INPUTCANDY.signals)) ? __INPUTCANDY.signals[c[i]].code : c[i];
+		switch ( deviceType ) {
+			case ICDeviceType_gamepad:
+				if ( is_directional ) {
+					if ( code == IC_dpad ) {
+					  ICUI_image( s_InputCandy_ICUI_icons, 4, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					  ICUI_image( s_InputCandy_ICUI_icons, 5, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					  ICUI_image( s_InputCandy_ICUI_icons, 6, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					  ICUI_image( s_InputCandy_ICUI_icons, 7, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					  ICUI_image( s_InputCandy_ICUI_icons, 8, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					  sx+=swh+spacing;
+					} else if ( code >= IC_hat0 and code <= IC_hat9 ) {
+                      var hatnum=code-IC_hat0;
+					  ICUI_image( s_InputCandy_ICUI_icons, 16, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					  if( hatnum > 0 ) ICUI_text_color( c_white, c_white, c_white, c_white, "#"+int(hatnum), sx+swh+spacing+fontsize, sy);
+					  sx+=swh+spacing+fontsize*2;
+					} else if ( code >= IC_axis0 and code <= IC_axis9 ) {
+                      var axisnum=code-IC_axis0;
+					  ICUI_image( s_InputCandy_ICUI_icons, 17, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					  if( axisnum > 0 ) ICUI_text_color( c_white, c_white, c_white, c_white, "#"+int(axisnum), sx+swh+spacing+fontsize, sy);
+					  sx+=swh+spacing+fontsize*2;
+					}
+				} else if ( code == IC_padl ) {
+				  ICUI_image( s_InputCandy_ICUI_icons, 4, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+				  ICUI_image( s_InputCandy_ICUI_icons, 5, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+				  sx+=swh+spacing;
+				} else if ( code == IC_padr ) {
+				  ICUI_image( s_InputCandy_ICUI_icons, 4, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+				  ICUI_image( s_InputCandy_ICUI_icons, 6, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+				  sx+=swh+spacing;
+				} else if ( code == IC_padu ) {
+				  ICUI_image( s_InputCandy_ICUI_icons, 4, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+				  ICUI_image( s_InputCandy_ICUI_icons, 7, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+				  sx+=swh+spacing;
+				} else if ( code == IC_padd ) {
+				  ICUI_image( s_InputCandy_ICUI_icons, 4, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+				  ICUI_image( s_InputCandy_ICUI_icons, 8, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+				  sx+=swh+spacing;
+				} else if ( code >= IC_hat0_U and code <= IC_hat4_U ) {
+					var d=(code-IC_hat0_U) % 4;
+					var index=5;
+					var hatnum=(code-d)/4;
+					switch ( d ) {
+						case 0: break;
+						case 1: index=6; break;
+						case 2: index=7; break;
+						case 3: index=8; break;
+					}
+					ICUI_image( s_InputCandy_ICUI_icons, 17, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					ICUI_image( s_InputCandy_ICUI_icons, index, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+                    if( hatnum > 0 ) ICUI_text_color( c_white, c_white, c_white, c_white, "#"+int(hatnum), sx+swh+spacing+fontsize, sy);
+					sx+=swh+spacing+fontsize*2;
+				} else if ( code == IC_Lshoulder ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 20, sx, r.y, swh, r.h, c_white, 0, 1.0 );					
+					sx+=swh+spacing;
+				} else if ( code == IC_Rshoulder ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 21, sx, r.y, swh, r.h, c_white, 0, 1.0 );					
+					sx+=swh+spacing;
+				} else if ( code == IC_Ltrigger ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 18, sx, r.y, swh, r.h, c_white, 0, 1.0 );					
+					sx+=swh+spacing;
+				} else if ( code == IC_Rtrigger ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 19, sx, r.y, swh, r.h, c_white, 0, 1.0 );					
+					sx+=swh+spacing;
+				} else if ( code == IC_Lstick ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 52, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+                    ICUI_text_color( c_white, c_white, c_white, c_white, "L", sx+swh+spacing+fontsize, sy);
+					sx+=swh+spacing+fontsize*2;
+				} else if ( code == IC_Rstick ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 52, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+                    ICUI_text_color( c_white, c_white, c_white, c_white, "R", sx+swh+spacing+fontsize, sy);
+					sx+=swh+spacing+fontsize*2;
+				} else if ( code == IC_A ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 12, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					sx+=swh+spacing;					
+				} else if ( code == IC_B ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 13, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					sx+=swh+spacing;					
+				} else if ( code == IC_X ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 10, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					sx+=swh+spacing;					
+				} else if ( code == IC_Y ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 11, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					sx+=swh+spacing;					
+				} else if ( code == IC_back_select ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 53, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					sx+=swh+spacing;					
+				} else if ( code == IC_start ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 14, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					sx+=swh+spacing;					
+				} else if ( code >= IC_btn0 and code <= IC_btn39 ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 9, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					sx+=swh+spacing;					
+                    ICUI_text_color( c_white, c_white, c_white, c_white, int(code-IC_btn0), sx+swh+spacing+fontsize, sy);
+					sx+=swh+spacing+fontsize*2;
+				}
+			break;
+			case ICDeviceType_mouse:
+				if ( is_directional ) {
+				} else {
+					switch ( code ) {
+						case IC_mouse_left:
+							ICUI_image( s_InputCandy_ICUI_icons, 24, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						break;
+						case IC_mouse_right:
+							ICUI_image( s_InputCandy_ICUI_icons, 26, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						break;
+						case IC_mouse_middle:
+							ICUI_image( s_InputCandy_ICUI_icons, 25, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						break;
+						case IC_mouse_scrollup:
+							ICUI_image( s_InputCandy_ICUI_icons, 27, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						break;
+						case IC_mouse_scrolldown:
+							ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						break;
+					}
+					sx+=swh+spacing;
+				}
+			break;
+			case ICDeviceType_keyboard:
+				if ( is_directional ) {
+					if ( code == IC_wasd ) {
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,"W",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,"A",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,"S",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,"D",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						sx+=swh+spacing;
+					} else if ( code == IC_arrows ) {
+						ICUI_image( s_InputCandy_ICUI_icons, 49, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 48, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 51, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 52, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						sx+=swh+spacing;
+					} else if ( code == IC_numpad ) { 
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,"8",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,"2",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,"4",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,"6",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						sx+=swh+spacing;
+					}
+				} else if ( code >= IC_key_A and code <= IC_key_9 ) {
+					ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					switch ( __INPUTCANDY.keyboard_layout ) {
+						case ICKeyboardLayout_qwerty:
+							draw_text_transformed_color(sx+swh/2,sy+swh/2,string_replace(__INPUTCANDY.signals[code].name,"Key ",""), 1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						break;
+						case ICKeyboardLayout_azerty:
+							draw_text_transformed_color(sx+swh/2,sy+swh/2,string_replace(__INPUTCANDY.signals[code].azerty_name,"Key ",""), 1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						break;
+						case ICKeyboardLayout_qwertz:
+							draw_text_transformed_color(sx+swh/2,sy+swh/2,string_replace(__INPUTCANDY.signals[code].qwertz_name,"Key ",""), 1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						break;
+					}
+					sx+=swh+spacing;
+				} else if ( code >= IC_backspace and code <= IC_f12 ) {
+					switch ( code ) {
+						case IC_backspace:     
+							ICUI_image( s_InputCandy_ICUI_icons, 31, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_any_alt:		
+							ICUI_image( s_InputCandy_ICUI_icons, 39, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_any_shift:		
+							ICUI_image( s_InputCandy_ICUI_icons, 33, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_any_control:	
+							ICUI_image( s_InputCandy_ICUI_icons, 36, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_lalt:			
+							ICUI_image( s_InputCandy_ICUI_icons, 41, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_ralt:			
+							ICUI_image( s_InputCandy_ICUI_icons, 40, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_lctrl:			
+							ICUI_image( s_InputCandy_ICUI_icons, 37, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_rctrl:			
+							ICUI_image( s_InputCandy_ICUI_icons, 38, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_lshift:		
+							ICUI_image( s_InputCandy_ICUI_icons, 34, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_rshift:		
+							ICUI_image( s_InputCandy_ICUI_icons, 35, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_tab:			
+							ICUI_image( s_InputCandy_ICUI_icons, 43, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_pause:			
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_print:			
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_pgup:			
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_pgdn:			
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_home:			
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_end:			
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_insert:		
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_delete:		
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad0:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad1:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad2:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad3:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad4:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad5:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad6:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad7:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad8:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad9:		
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad_multiply:
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad_divide:  
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad_subtract:
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_numpad_decimal: 
+							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f1:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f2:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f3:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f4:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f5:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f6:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f7:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f8:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f9:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f10:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f11:		     
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_f12:
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+					}
+				} else if ( code >= IC_key_backtick and code <= IC_key_apostrophe ) {
+						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+swh/2,sy+swh/2,__INPUTCANDY.signals[code].keychar,1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						sx+=swh+spacing;
+				} else if ( code >= IC_enter and code <= IC_key_escape ) {
+					switch ( code ) {
+						case IC_enter:
+							ICUI_image( s_InputCandy_ICUI_icons, 45, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_space:
+							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_key_escape:
+							ICUI_image( s_InputCandy_ICUI_icons, 46, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+					}
+				}
+			break;
+		}
+		if ( i+1 != len ) {
+			ICUI_text( false, (is_combo or key_mouse_combo) ? "and" : "or", sx + ( spacing*2 + fontsize*5 ) /2, sy + swh/2 );
+			sx += spacing+fontsize*5+spacing;
+		}
+	}	
 }
 
 
@@ -411,7 +820,7 @@ function ICUI_Draw_device_select() {
 	if ( __INPUTCANDY.ui.device_select.inspecting ) {	// This section is only drawn once you have selected a player
 		
 		var player_index=__INPUTCANDY.ui.device_select.influencing;
-		var player=__INPUTCANDY.players[player_index]
+		var player=__INPUTCANDY.players[player_index];
 		var device=player.device == none ? none : __INPUTCANDY.devices[player.device];
 		
 		var subwindow_margin=0.1*__INPUTCANDY.ui.region.h;
@@ -936,9 +1345,10 @@ function ICUI_Draw_input_binding() {
              audio_play_sound(a_ICUI_tone,100,0);
 			break;
 			default:
-//				__INPUTCANDY.ui.input_binding.choosing=true;
-				__INPUTCANDY.ui.input_binding.choosing_capture=false;
+				__INPUTCANDY.ui.input_binding.choosing=true;
 				__INPUTCANDY.ui.input_binding.choosing_select=0;
+				__INPUTCANDY.ui.input_binding.choosing_capture=false;
+				__INPUTCANDY.ui.input_binding.choosing_pick=false;
 				audio_play_sound(a_ICUI_tone,100,0);
 			break;
 		}
@@ -950,12 +1360,137 @@ function ICUI_Draw_input_binding() {
 }
 
 
+function ICUI_Draw_input_binding_choice() {
+	
+	var region=__INPUTCANDY.ui.region;
+	ICUI_text_in_box( false, "", region.x, region.y, region.w, region.h );
+	
+	var ox=region.x;
+	var oy=region.y;
+	var ew=__INPUTCANDY.ui.style.wide*__INPUTCANDY.ui.region.w;
+	var eh=__INPUTCANDY.ui.style.high*__INPUTCANDY.ui.region.h;
+	var smidge=__INPUTCANDY.ui.region.w*__INPUTCANDY.ui.style.smidge;
+	var icon_sprite_wh=sprite_get_width(s_InputCandy_device_icons);
+	var icon_scale=1.0/icon_sprite_wh;
+	var fontsize=eh;
+	var oldfont = draw_get_font();
+	var oldhalign = draw_get_halign();
+	var oldvalign = draw_get_valign();
+	draw_set_halign(fa_center);
+	draw_set_valign(fa_middle);
+	draw_set_font(__INPUTCANDY.ui.style.font);
+	
+	var player_index=__INPUTCANDY.ui.device_select.influencing;
+	var settings_index=__INPUTCANDY.players[player_index].settings;
+	var player=__INPUTCANDY.players[player_index];
+	var device=player.device == none ? none : __INPUTCANDY.devices[player.device];
+    var action_count=array_length(__INPUTCANDY.actions);
+	var bindable_action_index=[];
+	var bindable_actions=0;
+	for ( var i=0; i<action_count; i++ ) {
+		if ( __INPUTCANDY.actions[i].forbid_rebinding ) continue;
+		bindable_action_index[array_length(bindable_action_index)]=i;
+		bindable_actions++;
+	}	
+	var action_index=bindable_action_index[__INPUTCANDY.ui.input_binding.influencing];
+	var action=__INPUTCANDY.actions[action_index];
+	
+	oy+=eh;
+	ICUI_text( false,
+		"Player #"+int(player_index+1)+" Input Settings #"+int(settings_index+1),
+		ox+__INPUTCANDY.ui.region.w/2, oy
+	);
+	oy+=smidge+eh*2;
+	ICUI_text( false,
+		"Set Binding for "+string_replace(action.group+" ","None ","")+action.name,
+		ox+__INPUTCANDY.ui.region.w/2, oy
+	);
+	oy+=smidge+eh*2;
+
+	var sx=region.x;
+	var sy=region.y;	
+	
+	var menu_margin=0.1*region.w;
+	var btn_width=region.w-menu_margin*2;
+	var btn_height=region.h/12;
+	
+	var max_menuitem=3;
+	var mi_back=0;
+	var mi_select_from_list=1;
+	var mi_capture_input=2;
+	var mi_set_to_default=3;
+
+	// Back button
+	r=rectangle(region.x, region.y, eh*2, eh*2);
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_back;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_select == mi_back, "", r.x,r.y,r.w,r.h );
+	draw_sprite_ext(s_InputCandy_ICUI_icons,0,region.x+eh,region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
+	sy+=btn_height;
+
+	sx = menu_margin+region.x;
+	var max_menuitem=4;
+	sy += 5*btn_height+btn_height/5;
+	r =rectangle( sx, sy, btn_width, btn_height );
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_select_from_list;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_select == mi_select_from_list, "Select From List", r.x,r.y,r.w,r.h );
+	sy += btn_height+btn_height/5;
+	r =rectangle( sx, sy, btn_width, btn_height );
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_capture_input;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_select == mi_capture_input, "Capture Input", r.x,r.y,r.w,r.h );
+	sy += btn_height+btn_height/5;
+	r =rectangle( sx, sy, btn_width, btn_height );
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_set_to_default;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_select == mi_set_to_default, "Set to Default", r.x,r.y,r.w,r.h );
+
+	if ( __INPUTCANDY.ui.input(ICUI_right) or __INPUTCANDY.ui.input(ICUI_down) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.input_binding.choosing_select++;
+		if ( __INPUTCANDY.ui.input_binding.choosing_select > max_menuitem ) __INPUTCANDY.ui.device_select.menuitem=0;
+	}
+	if ( __INPUTCANDY.ui.input(ICUI_left) or __INPUTCANDY.ui.input(ICUI_up) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.input_binding.choosing_select--;
+		if ( __INPUTCANDY.ui.input_binding.choosing_select < 0 ) __INPUTCANDY.ui.input_binding.choosing_select=max_menuitem;
+	}
+	if( __INPUTCANDY.ui.input(ICUI_button) ) {
+	 	audio_play_sound(a_ICUI_tone,100,0);
+		switch ( __INPUTCANDY.ui.input_binding.choosing_select ) {
+			case mi_back: // Back
+				audio_play_sound(a_ICUI_pageflip,100,0);
+		 		__INPUTCANDY.ui.input_binding.choosing=false;
+			break;
+			case mi_select_from_list:
+				audio_play_sound(a_ICUI_pageflip,100,0);
+		 		__INPUTCANDY.ui.input_binding.choosing=false;
+				__INPUTCANDY.ui.input_binding.choosing_pick=true;
+				__INPUTCANDY.ui.input_binding.choosing_pick_select=0;
+				__INPUTCANDY.ui.input_binding.choosing_pick_scrolled=0;
+			break;
+			case mi_capture_input:
+				audio_play_sound(a_ICUI_pageflip,100,0);
+				__INPUTCANDY.ui.input_binding.choosing_capture=false;
+				__INPUTCANDY.ui.input_binding.choosing_capture_expired=0.0;
+				__INPUTCANDY.ui.input_binding.choosing_capture_confirming=false;
+				__INPUTCANDY.ui.input_binding.choosing_capture_select=0;				
+			break;
+			case mi_set_to_default:
+				audio_play_sound(a_ICUI_tone,100,0);
+				__ICI.RemoveBinding( settings_index, action_index );
+		 		__INPUTCANDY.ui.input_binding.choosing=false;
+			break;
+		}
+	}
+	
+	draw_set_font(oldfont);
+	draw_set_halign(oldhalign);
+	draw_set_valign(oldvalign);
+	
+}
+
+
 function ICUI_Draw_input_binding_set_profile() {
 }
 
-
-function ICUI_Draw_input_binding_choice() {
-}
 
 
 function ICUI_Draw_SDLDB_select() {
