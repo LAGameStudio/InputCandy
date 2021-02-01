@@ -217,6 +217,23 @@ function ICUI_box( x, y, w, h ) {
 	draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.box2,__INPUTCANDY.ui.style.box1,false);
 }
 
+function ICUI_tinted_box( tint1, tint2, x, y, w, h ) {
+	draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,tint1,tint2,false);
+}
+
+function ICUI_fit_image( sprite, index, x, y, w, h, tint, scale, rotation, alpha ) {
+	var swh=min(w,h);
+	draw_sprite_ext( sprite, index, x+w/2, y+h/2, 1.0/sprite_get_width(sprite)*swh*scale, 1.0/sprite_get_height(sprite)*swh*scale, rotation, tint, alpha );
+}
+
+function ICUI_image( sprite, index, x, y, w, h, tint, rotation, alpha ) {
+	draw_sprite_ext( sprite, index, x+w/2, y+h/2, 1.0/sprite_get_width(sprite)*w, 1.0/sprite_get_height(sprite)*h, rotation, tint, alpha );
+}
+
+function ICUI_margin_image( sprite, index, x, y, w, h, tint, margin, alpha ) {
+	draw_sprite_ext( sprite, index, x+w/2, y+h/2, 1.0/sprite_get_width(sprite)*w*margin, 1.0/sprite_get_height(sprite)*h*margin, 0, tint, alpha );
+}
+
 // Draws "text in a box"
 function ICUI_text_in_box( is_focused, text, x, y, w, h ) {
 	if ( is_focused ) {
@@ -804,33 +821,42 @@ function ICUI_Draw_input_binding() {
 	oy+=smidge+eh*2;
 
       var buttons_region=rectangle( __INPUTCANDY.ui.region.x+eh, oy-eh, __INPUTCANDY.ui.region.w-(eh*5), eh );
+	  
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_new, "New Profile", buttons_region.x, buttons_region.y, buttons_region.w/2-smidge, buttons_region.h );
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_load, "Choose Profile", buttons_region.x + buttons_region.w/2, buttons_region.y, buttons_region.w/2, buttons_region.h );  
+	  
 	  var lines_region=rectangle(__INPUTCANDY.ui.region.x+eh,oy+smidge,__INPUTCANDY.ui.region.w-(eh*5),__INPUTCANDY.ui.region.y2-oy-eh*3);
 	  var lineh=eh*2;
 	  var lineskip=smidge;
-	  var lines=lines_region.h / (lineh+lineskip);
+	  var lines=floor(lines_region.h / (lineh+lineskip));
 	  var sb_region=rectangle(lines_region.x2+eh/2,lines_region.y,eh*2,lines_region.h);
 	  var sb_up=rectangle(sb_region.x,sb_region.y,sb_region.w,sb_region.w);
 	  var sb_dn=rectangle(sb_region.x,sb_region.y+sb_region.h-sb_up.h,sb_up.w,sb_up.h);
 	  var sb_mid=rectangle(sb_up.x,sb_up.y2,sb_region.w,sb_region.h-sb_up.h*2);
 	  var dz1=rectangle(lines_region.x,sb_dn.y2,lines_region.w/2-eh/2,eh*2);
 	  var dz2=rectangle(dz1.x+lines_region.w/2+eh/2,dz1.y,dz1.w,dz1.h);
-
-    ox=lines_region.x;
-	oy=lines_region.y;
-	for ( var i=0; i<bindable_actions; i++ ) {
-		var action=__INPUTCANDY.actions[bindable_action_index[i]];
-		ICUI_text_in_box( false, string_replace(action.group+" ","None ","")+action.name, ox,oy, lines_region.w/2-smidge, lineh );
-		ICUI_text_in_box( __INPUTCANDY.ui.input_binding.influencing == i, "", ox + lines_region.w/2, oy, lines_region.w/2, lineh );
-		oy+=lineh+lineskip;
+	
+	if ( bindable_actions > 0 ) {
+	    ox=lines_region.x;
+		oy=lines_region.y;
+		var start_i=__INPUTCANDY.ui.input_binding.scrolled;
+		for ( var i=start_i; (i<bindable_actions) and (i-start_i<lines); i++ ) {
+			var action=__INPUTCANDY.actions[bindable_action_index[i]];
+			ICUI_text_in_box( false, string_replace(action.group+" ","None ","")+action.name, ox,oy, lines_region.w/2-smidge/2, lineh );
+			ICUI_text_in_box( __INPUTCANDY.ui.input_binding.influencing == i, "", ox + lines_region.w/2 - smidge/4, oy, lines_region.w/2, lineh );
+			oy+=lineh+lineskip;
+		}
+		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);
+		ICUI_fit_image( s_InputCandy_ICUI_icons, 3, sb_dn.x, sb_dn.y, sb_dn.w, sb_dn.h, c_white, 0.65, 0, 0.5 );
+		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrup, "", sb_up.x,sb_up.y,sb_up.w,sb_up.h);
+		ICUI_fit_image( s_InputCandy_ICUI_icons, 2, sb_up.x, sb_up.y, sb_up.w, sb_up.h, c_white, 0.65, 0, 0.5 );
+		ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
+		var first_perc=(__INPUTCANDY.ui.input_binding.scrolled / bindable_actions);
+		var last_perc=min(1.0,__INPUTCANDY.ui.input_binding.scrolled+lines / bindable_actions);
+		var total_size=sb_mid.h-smidge*2;
+		ICUI_tinted_box(__INPUTCANDY.ui.style.knob1,__INPUTCANDY.ui.style.knob2, sb_mid.x+smidge, sb_mid.y+smidge + total_size*first_perc, sb_mid.w-smidge*2, total_size*last_perc );
 	}
-	
-	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);
-	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrup, "", sb_up.x,sb_up.y,sb_up.w,sb_up.h);
-	ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
 
-	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_new, "New Profile", buttons_region.x, buttons_region.y, buttons_region.w/2-smidge, buttons_region.h );
-	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_load, "Choose Profile", buttons_region.x + buttons_region.w/2, buttons_region.y, buttons_region.w/2, buttons_region.h );
-	
 	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
 		ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz1, dz1.x, dz1.y, dz1.w, dz1.h );
 	}
@@ -896,7 +922,7 @@ function ICUI_Draw_input_binding() {
              audio_play_sound(a_ICUI_click,100,0);
 			break;
 			case mi_scrdn: // Scroll down
-			 if ( __INPUTCANDY.ui.input_binding.scrolled < bindable_actions - (lines - 1) ) __INPUTCANDY.ui.input_binding.scrolled--;
+			 if ( __INPUTCANDY.ui.input_binding.scrolled < bindable_actions - (lines - 1) ) __INPUTCANDY.ui.input_binding.scrolled++;
 			 if ( __INPUTCANDY.ui.input_binding.scrolled < 0 ) __INPUTCANDY.ui.input_binding.scrolled=0;
              audio_play_sound(a_ICUI_click,100,0);
 			break;
