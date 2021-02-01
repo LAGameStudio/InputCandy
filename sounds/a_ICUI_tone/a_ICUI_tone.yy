@@ -2,7 +2,7 @@
   "compression": 0,
   "volume": 1.0,
   "preload": false,
-  "bitRate": 192,
+  "bitRate": 320,
   "sampleRate": 44100,
   "type": 1,
   "bitDepth": 1,
@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "a_ICUI_tone.wav",
-  "duration": 1.421599,
+  "duration": 0.231395,
   "parent": {
     "name": "InputCandy",
     "path": "folders/Sounds/InputCandy.yy",

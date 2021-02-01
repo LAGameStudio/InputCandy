@@ -90,11 +90,11 @@ function __Init_ICUI() {
 			box2: c_black,		// Box interior color2
 			  //////// Slider
 			slider_knob: 0.1,   // How wide the slider knob should be horizontally, 0.1 is good
-			slider_groove: 0.8, // How tall the slider groove should be horizontally, 0.1-1.0
-			slider1: c_white,   // Slider groove color1 for sliders
-			slider2: c_gray,    // Slider groove color2
-			knob1: c_green,     // Slider knob color1 for slider knobs
-			knob2: c_green,     // Slider knob color2
+			slider_groove: 0.5, // How tall the slider groove should be horizontally, 0.1-1.0
+			slider1: c_black,   // Slider groove color1 for sliders
+			slider2: c_dkgray,  // Slider groove color2
+			knob1: c_white,     // Slider knob color1 for slider knobs
+			knob2: c_dkgray,    // Slider knob color2
 			gp1: c_yellow,      // Gamepad highlight color1
 			gp2: c_orange,      // Gamepad highlight color2
 			backing1: c_aqua,   // UI button backing color1
@@ -139,8 +139,16 @@ function __Init_ICUI() {
 			mode: false,
 			influencing: 0,
 			keyboard_and_mouse: false,
-			loading: false,
-			saving: false,
+			choosing: false,         // Set to default?  Pick input from list?  Capture input?  Cancel?
+			choosing_select: 0,
+			choosing_pick: false,
+			choosing_pick_select: 0,
+			choosing_pick_scrolled: 0,
+			choosing_capture: false,
+			choosing_capture_expired: 0.0,			
+			loading: false,          // Set profile from list
+			loading_select: 0,
+			loading_scrolled: 0,
 			scrolled: 0         // How many elements we've scrolled down the list.
 		},
 		// Special mode where we're capturing input.
@@ -171,23 +179,21 @@ function __Init_ICUI() {
 function ICUI_slider( is_focused, value, increment, x, y, w, h ) {
 	var knob_w=w*__INPUTCANDY.ui.style.slider_knob;
 	var groove_h=h*__INPUTCANDY.ui.style.slider_groove;
-	var groove_h_padding=(h-groove_h)/2.0;
-	var knob_x=x+(w*value);
+	var groove_pad=(h-groove_h)/2.0;
+	var knob_x=(w*value);
+	var smidge=w*__INPUTCANDY.ui.style.highlight_thickness/2;
 	if ( is_focused ) {
-		var thickness=w*__INPUTCANDY.ui.style.highlight_thickness;
 		if ( __INPUTCANDY.ui.style.pulse_highlight ) {
 			var pulse = __INPUTCANDY.ui.expired % __INPUTCANDY.ui.style.pulse_speed_s / __INPUTCANDY.ui.style.pulse_speed_s;
 			var rgb1=color_mult( __INPUTCANDY.ui.style.highlight1, pulse );
 			var rgb2=color_mult( __INPUTCANDY.ui.style.highlight2, pulse );
-			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness*2,y+h+thickness*2,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,rgb1,rgb2,false);
+			draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,rgb1,rgb2,false);
 		} else {
-			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness*2,y+h+thickness*2,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.highlight1,__INPUTCANDY.ui.style.highlight2,false);
+			draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.highlight1,__INPUTCANDY.ui.style.highlight2,false);
 		}
-		if ( __INPUTCANDY.ui.input(ICUI_left) ) value -= increment;
-		if ( __INPUTCANDY.ui.input(ICUI_right) ) value += increment;
 	}
-	draw_roundrect_color_ext(x,y+groove_h_padding,x+w,y+h-groove_h_padding*2,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.slider1,__INPUTCANDY.ui.style.slider2,false);
-	draw_roundrect_color_ext(x+knob_x-knob_w/2,y,x+knob_x+knob_w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.knob1,__INPUTCANDY.ui.style.knob2,false);
+	draw_roundrect_color_ext(x,y+groove_pad,x+w,y+groove_pad+groove_h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.slider1,__INPUTCANDY.ui.style.slider2,false);
+	draw_roundrect_color_ext(x+knob_x-knob_w/2,y,x+knob_x+knob_w/2,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.knob1,__INPUTCANDY.ui.style.knob2,false);
 	return value;
 }
 
@@ -205,6 +211,10 @@ function ICUI_text( is_focused, text, x, y ) {
 	} else {
 		draw_text_color( x, y, text, __INPUTCANDY.ui.style.text1, __INPUTCANDY.ui.style.text2, __INPUTCANDY.ui.style.text3, __INPUTCANDY.ui.style.text4, 1.0 );
 	}
+}
+	
+function ICUI_box( x, y, w, h ) {
+	draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.box2,__INPUTCANDY.ui.style.box1,false);
 }
 
 // Draws "text in a box"
@@ -493,6 +503,8 @@ function ICUI_Draw_device_select() {
 				audio_play_sound(a_ICUI_pageflip,100,0);
 				 __INPUTCANDY.ui.device_select.mode=false;
 				 __INPUTCANDY.ui.input_binding.mode=true;
+				 __INPUTCANDY.ui.input_binding.influencing=-1;
+				 __INPUTCANDY.ui.input_binding.scrolled=0;
 				 __INPUTCANDY.ui.input_binding.keyboard_mouse=false;
 				break;
 				case 3:
@@ -503,12 +515,14 @@ function ICUI_Draw_device_select() {
 				case 4:
 				audio_play_sound(a_ICUI_pageflip,100,0);
 				 __INPUTCANDY.ui.device_select.mode=false;
-				 __INPUTCANDY.ui.gamepad_test=true;
+				 __INPUTCANDY.ui.gamepad_test.mode=true;
 				break;
 				case 5:
 				audio_play_sound(a_ICUI_pageflip,100,0);
 				 __INPUTCANDY.ui.device_select.mode=false;
 				 __INPUTCANDY.ui.input_binding.mode=true;
+				 __INPUTCANDY.ui.input_binding.influencing=-1;
+				 __INPUTCANDY.ui.input_binding.scrolled=0;
 				 __INPUTCANDY.ui.input_binding.keyboard_mouse=true;
 				break;
 			}
@@ -673,6 +687,7 @@ function ICUI_device_select_swapping() {
 		switch ( __INPUTCANDY.ui.device_select.swapping_select ) {
 			case max_menuitem: // Abort / go back / cancel
 		 	 __INPUTCANDY.ui.device_select.swapping=false;
+			 audio_play_sound(a_ICUI_pageflip,100,0);
 			break;
 			default:
 				var device_in_use_by=none;
@@ -693,12 +708,232 @@ function ICUI_device_select_swapping() {
 		}
 	}		
 	
+	draw_set_font(oldfont);
+	draw_set_halign(oldhalign);
+	draw_set_valign(oldvalign);
 }
 
 function ICUI_Draw_input_binding() {
-	if ( __INPUTCANDY.ui.style.show_title ) {
+
+    // Create new settings if none exist, otherwise let the player choose existing settings or create new.
+	if ( __INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings == none ) {
+		if ( __INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].device == none ) {
+			if ( __INPUTCANDY.ui.device_select.influencing != 0 or !__INPUTCANDY.ui.input_binding.keyboard_mouse ) { // Return to previous screen
+				__INPUTCANDY.ui.device_select.mode=true;
+				__INPUTCANDY.ui.input_binding.mode=false;
+				return;
+			} else if (array_length(__INPUTCANDY.settings) == 0 and __INPUTCANDY.ui.input_binding.keyboard_mouse) {
+			__INPUTCANDY.settings[0]=__ICI.New_ICSettings();
+			__INPUTCANDY.settings[0].deviceInfo=__ICI.New_ICDevice();
+			__INPUTCANDY.settings[0].deviceInfo.desc="Keyboard and Mouse";
+			__INPUTCANDY.settings[0].deviceInfo.type=ICDeviceType_keyboard_mouse;
+			__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings = 0;				
+			}
+		} else if ( array_length(__INPUTCANDY.settings) == 0 ) {
+			__INPUTCANDY.settings[0]=__ICI.New_ICSettings();
+			__INPUTCANDY.settings[0].deviceInfo=__INPUTCANDY.devices[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].device];
+			__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings = 0;
+			__INPUTCANDY.settings[0].deadzone1=gamepad_get_axis_deadzone(__INPUTCANDY.settings[0].deviceInfo.slot_id);
+			__INPUTCANDY.settings[0].deadzone2=gamepad_get_button_threshold(__INPUTCANDY.settings[0].deviceInfo.slot_id);
+		} else __INPUTCANDY.ui.input_binding.loading=true;
 	}
+	
+	if ( __INPUTCANDY.ui.input_binding.loading ) {
+		ICUI_Draw_input_binding_set_profile();
+		return;
+	}
+	
+	
+    if ( __INPUTCANDY.ui.input_binding.choosing == true ) {
+		ICUI_Draw_input_binding_choice();
+		return;
+	}
+	 
+    var action_count=array_length(__INPUTCANDY.actions);
+	var bindable_action_index=[];
+	var bindable_actions=0;
+	for ( var i=0; i<action_count; i++ ) {
+		if ( __INPUTCANDY.actions[i].forbid_rebinding ) continue;
+		bindable_action_index[array_length(bindable_action_index)]=i;
+		bindable_actions++;
+	}
+	
+    var max_menuitem=bindable_actions+6;  // 0 Back button, 1 New Settings Profile, 2 Choose Settings Profile, 3/4 Up/Down Scroll, Deadzone1, Deadzone2
+	var mi_back=max_menuitem-6;  // Back
+	var mi_new=max_menuitem-5;   // New Profile
+	var mi_load=max_menuitem-4;  // Choose profile
+	var mi_dz1=max_menuitem-3;   // Deadzone 1
+	var mi_dz2=max_menuitem-2;     // Deadzone 2
+	var mi_scrup=max_menuitem-1; // Up
+	var mi_scrdn=max_menuitem; // Down
+	if ( __INPUTCANDY.ui.input_binding.influencing < 0 ) {
+		__INPUTCANDY.ui.input_binding.influencing=mi_back;
+	}
+	
+	var ox=__INPUTCANDY.ui.region.x;
+	var oy=__INPUTCANDY.ui.region.y;
+	var ew=__INPUTCANDY.ui.style.wide*__INPUTCANDY.ui.region.w;
+	var eh=__INPUTCANDY.ui.style.high*__INPUTCANDY.ui.region.h;
+	var smidge=__INPUTCANDY.ui.region.w*__INPUTCANDY.ui.style.smidge;
+	var icon_sprite_wh=sprite_get_width(s_InputCandy_device_icons);
+	var icon_scale=1.0/icon_sprite_wh;
+	var fontsize=eh;
+	var oldfont = draw_get_font();
+	var oldhalign = draw_get_halign();
+	var oldvalign = draw_get_valign();
+	draw_set_halign(fa_center);
+	draw_set_valign(fa_middle);
+	draw_set_font(__INPUTCANDY.ui.style.font);
+		
+	// Draws a background
+	ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
+
+	var sx=__INPUTCANDY.ui.region.x;
+	var sy=__INPUTCANDY.ui.region.y;
+
+	// Back Button
+	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.influencing=max_menuitem;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_back, "", r.x,r.y,r.w,r.h );
+	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
+
+    // Title
+	oy+=eh;
+	ICUI_text( false, "Input Settings #"+int(__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings+1), ox+__INPUTCANDY.ui.region.w/2, oy );
+	ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	oy+=smidge+eh*2;
+
+      var buttons_region=rectangle( __INPUTCANDY.ui.region.x+eh, oy-eh, __INPUTCANDY.ui.region.w-(eh*5), eh );
+	  var lines_region=rectangle(__INPUTCANDY.ui.region.x+eh,oy+smidge,__INPUTCANDY.ui.region.w-(eh*5),__INPUTCANDY.ui.region.y2-oy-eh*3);
+	  var lineh=eh*2;
+	  var lineskip=smidge;
+	  var lines=lines_region.h / (lineh+lineskip);
+	  var sb_region=rectangle(lines_region.x2+eh/2,lines_region.y,eh*2,lines_region.h);
+	  var sb_up=rectangle(sb_region.x,sb_region.y,sb_region.w,sb_region.w);
+	  var sb_dn=rectangle(sb_region.x,sb_region.y+sb_region.h-sb_up.h,sb_up.w,sb_up.h);
+	  var sb_mid=rectangle(sb_up.x,sb_up.y2,sb_region.w,sb_region.h-sb_up.h*2);
+	  var dz1=rectangle(lines_region.x,sb_dn.y2,lines_region.w/2-eh/2,eh*2);
+	  var dz2=rectangle(dz1.x+lines_region.w/2+eh/2,dz1.y,dz1.w,dz1.h);
+
+    ox=lines_region.x;
+	oy=lines_region.y;
+	for ( var i=0; i<bindable_actions; i++ ) {
+		var action=__INPUTCANDY.actions[bindable_action_index[i]];
+		ICUI_text_in_box( false, string_replace(action.group+" ","None ","")+action.name, ox,oy, lines_region.w/2-smidge, lineh );
+		ICUI_text_in_box( __INPUTCANDY.ui.input_binding.influencing == i, "", ox + lines_region.w/2, oy, lines_region.w/2, lineh );
+		oy+=lineh+lineskip;
+	}
+	
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrup, "", sb_up.x,sb_up.y,sb_up.w,sb_up.h);
+	ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
+
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_new, "New Profile", buttons_region.x, buttons_region.y, buttons_region.w/2-smidge, buttons_region.h );
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_load, "Choose Profile", buttons_region.x + buttons_region.w/2, buttons_region.y, buttons_region.w/2, buttons_region.h );
+	
+	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
+		ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz1, dz1.x, dz1.y, dz1.w, dz1.h );
+	}
+	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2 != none ) {
+		ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz2, dz2.x, dz2.y, dz2.w, dz2.h );
+	}
+
+	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
+		ICUI_text( false, 
+			"Axis DeadZone: "+string_format(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1,1,2),
+			dz1.x+dz1.w/4, dz1.y+dz1.h/2 );
+		ICUI_slider( __INPUTCANDY.ui.input_binding.influencing == mi_dz1, 
+			__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1,
+			0.05, dz1.x+dz1.w/2,dz1.y,dz1.w/2,dz1.h );
+	}
+	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2 != none ) {
+		ICUI_text( false,
+			"Btn Threshold: "+string_format(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2,1,2),
+			dz2.x+dz2.w/4, dz2.y+dz2.h/2 );
+		ICUI_slider( __INPUTCANDY.ui.input_binding.influencing == mi_dz2, 
+			__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2,
+			0.05, dz2.x+dz2.w/2,dz2.y,dz2.w/2,dz2.h );
+	}
+	
+	
+	
+	if ( __INPUTCANDY.ui.input(ICUI_right) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.input_binding.influencing++;
+		if ( __INPUTCANDY.ui.input_binding.influencing > max_menuitem ) __INPUTCANDY.ui.input_binding.influencing=0;
+	}
+	if ( __INPUTCANDY.ui.input(ICUI_left) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.input_binding.influencing--;
+		if ( __INPUTCANDY.ui.input_binding.influencing < 0 ) __INPUTCANDY.ui.input_binding.influencing=max_menuitem;
+	}
+	if ( __INPUTCANDY.ui.input(ICUI_up) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.input_binding.influencing--;
+		if ( __INPUTCANDY.ui.input_binding.influencing < 0 ) __INPUTCANDY.ui.input_binding.influencing=max_menuitem;
+	}
+	if ( __INPUTCANDY.ui.input(ICUI_down) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.input_binding.influencing++;
+		if ( __INPUTCANDY.ui.input_binding.influencing > max_menuitem ) __INPUTCANDY.ui.input_binding.influencing=0;
+	}
+	if( __INPUTCANDY.ui.input(ICUI_button) ) {
+	 	audio_play_sound(a_ICUI_tone,100,0);
+		switch ( __INPUTCANDY.ui.input_binding.influencing ) {
+			case mi_back: // Abort / go back / cancel
+		 	 __INPUTCANDY.ui.input_binding.mode=false;
+			 __INPUTCANDY.ui.device_select.mode=true;
+			 audio_play_sound(a_ICUI_pageflip,100,0);
+			break;
+			case mi_new: // New Profile mode
+				audio_play_sound(a_ICUI_tone,100,0);
+			break;
+			case mi_load: // Choose Profile mode
+				audio_play_sound(a_ICUI_tone,100,0);
+			break;
+			case mi_scrup: // Scroll up
+			 if ( __INPUTCANDY.ui.input_binding.scrolled > 0 ) __INPUTCANDY.ui.input_binding.scrolled--;
+             audio_play_sound(a_ICUI_click,100,0);
+			break;
+			case mi_scrdn: // Scroll down
+			 if ( __INPUTCANDY.ui.input_binding.scrolled < bindable_actions - (lines - 1) ) __INPUTCANDY.ui.input_binding.scrolled--;
+			 if ( __INPUTCANDY.ui.input_binding.scrolled < 0 ) __INPUTCANDY.ui.input_binding.scrolled=0;
+             audio_play_sound(a_ICUI_click,100,0);
+			break;
+			case mi_dz1: // Set axis deadzone
+			 __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1+=0.05;
+			 if (__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1>1.0)
+				 __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1=0.05;  /// Setting below this may have undesirable consequences
+             audio_play_sound(a_ICUI_tone,100,0);
+			break;
+			case mi_dz2: // Set button deadzone
+			 __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2+=0.05;
+			 if (__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2>1.0)
+				 __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2=0.05;  /// Setting below this may have undesirable consequences
+             audio_play_sound(a_ICUI_tone,100,0);
+			break;
+			default:
+//				__INPUTCANDY.ui.input_binding.choosing=true;
+				__INPUTCANDY.ui.input_binding.choosing_capture=false;
+				__INPUTCANDY.ui.input_binding.choosing_select=0;
+				audio_play_sound(a_ICUI_tone,100,0);
+			break;
+		}
+	}		
+
+	draw_set_font(oldfont);
+	draw_set_halign(oldhalign);
+	draw_set_valign(oldvalign);
 }
+
+
+function ICUI_Draw_input_binding_set_profile() {
+}
+
+
+function ICUI_Draw_input_binding_choice() {
+}
+
 
 function ICUI_Draw_SDLDB_select() {
 	if ( __INPUTCANDY.ui.style.show_title ) {

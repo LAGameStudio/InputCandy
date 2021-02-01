@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "a_SDLDB_Load_Complete.wav",
-  "duration": 1.404977,
+  "duration": 1.421599,
   "parent": {
     "name": "InputCandy",
     "path": "folders/Sounds/InputCandy.yy",

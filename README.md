@@ -49,6 +49,7 @@ InputCandy comes with:
 * A diagnostics screen that inspects game inputs
 * A single room with multiple panels that shows off ICUI
 * A test game
+* A "Gamepad Keyboard" similar to the old nintendo games for highscore entry
 
 InputCandy is good for:
 * Multiplayer hot-seat games that use controllers

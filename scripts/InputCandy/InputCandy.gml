@@ -2143,6 +2143,8 @@ function New_InputCandy_Private() {
 		return {
 			index: none,
 			deviceInfo: none,
+			deadzone1: none,
+			deadzone2: none,
 			bindings: []
 		};
 	},
