@@ -1170,11 +1170,22 @@ function ICUI_Draw_input_binding() {
 	}
 	
 	
-    if ( __INPUTCANDY.ui.input_binding.choosing == true ) {
+    if ( __INPUTCANDY.ui.input_binding.choosing ) {
 		ICUI_Draw_input_binding_choice();
 		return;
 	}
+
+    if ( __INPUTCANDY.ui.input_binding.choosing_pick ) {
+		ICUI_Draw_input_binding_choice_pick();
+		return;
+	}
 	 
+
+    if ( __INPUTCANDY.ui.input_binding.choosing_capture ) {
+		ICUI_Draw_input_binding_choice_capture();
+		return;
+	}
+
     var action_count=array_length(__INPUTCANDY.actions);
 	var bindable_action_index=[];
 	var bindable_actions=0;
@@ -1426,7 +1437,36 @@ function ICUI_Draw_input_binding_choice() {
 		ox+__INPUTCANDY.ui.region.w/2, oy
 	);
 	oy+=smidge+eh*2;
-
+	
+	var bound=__ICI.GetBindingData(settings_index,action_index);
+	if ( bound != none ) {
+		ICUI_text( false, "Current Binding:", ox+__INPUTCANDY.ui.region.w/4, oy	);
+		oy+=smidge;
+		if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
+		ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
+		 rectangle( ox + __INPUTCANDY.ui.region.w/4, oy, __INPUTCANDY.ui.region.w/2, eh*2 )
+		);
+		else
+		ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, action.mouse_keyboard_combo, 
+		 rectangle( ox + __INPUTCANDY.ui.region.w/4, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
+		);
+		oy-=smidge;
+	} else {
+		ICUI_text( false, "No Custom Binding", ox+__INPUTCANDY.ui.region.w/4, oy	);
+	}
+	
+	ICUI_text( false, "Default:", ox+__INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy );	
+	oy+=smidge;
+	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
+	ICUI_draw_ICaction( action.gamepad, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
+	 rectangle( ox + __INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
+	);
+	else
+	ICUI_draw_ICaction( action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, action.mouse_keyboard_combo, 
+	 rectangle( ox + __INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
+	);
+	oy+=smidge+eh*2;
+	
 	var sx=region.x;
 	var sy=region.y;	
 	
@@ -1505,6 +1545,14 @@ function ICUI_Draw_input_binding_choice() {
 	draw_set_halign(oldhalign);
 	draw_set_valign(oldvalign);
 	
+}
+
+
+function ICUI_Draw_input_binding_choice_pick() {
+}
+
+
+function ICUI_Draw_input_binding_choice_capture() {
 }
 
 
