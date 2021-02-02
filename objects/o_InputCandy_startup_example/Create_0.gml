@@ -9,10 +9,13 @@ IC_Action_ext( "Move", "None", IC_dpad, false, IC_arrows, false, IC_none, false,
 
 // Create a bunch of actions to fill the UI -- never checked in the test game
 
-for ( var i=0; i<20; i++ ) {
-	var signal=__INPUTCANDY.signals[i];
-	if ( signal.deviceType == ICDeviceType_gamepad ) 
-		__IC.Action("Gamepad Action "+int(i), signal.code, IC_none, IC_none );
-	if ( signal.deviceType == ICDeviceType_keyboard )
-		__IC.Action("Keyboard Action "+int(i), IC_none, signal.code, IC_none )
-}
+
+__IC.Action( "Block", IC_X, [ IC_any_alt, IC_lalt, IC_ralt ], IC_mouse_right );
+__IC.Action( "Duck",  IC_Y, IC_key_X );
+__IC.Action( "Dodge Left", IC_hat0_L, IC_key_A, IC_none );
+__IC.Action( "Dodge Right", IC_hat0_R, IC_key_D, IC_none );
+__IC.Action( "Dodge High", IC_hat0_U, IC_key_W, IC_none );
+__IC.Action( "Dodge Low", IC_hat0_D, IC_key_S, IC_none );
+__IC.Action( "Special", IC_Ltrigger, IC_key_E, IC_none );
+__IC.Action( "Inventory", IC_Rshoulder, IC_key_I, IC_none );
+__IC.Action( "Help/Menu",  IC_back_select, IC_f1, IC_none );

@@ -419,7 +419,9 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 					sx+=swh+spacing+fontsize*2;
 				}
 			break;
+			case ICDeviceType_keyboard_mouse:
 			case ICDeviceType_mouse:
+			case ICDeviceType_keyboard:
 				if ( is_directional ) {
 				} else {
 					switch ( code ) {
@@ -441,8 +443,6 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 					}
 					sx+=swh+spacing;
 				}
-			break;
-			case ICDeviceType_keyboard:
 				if ( is_directional ) {
 					if ( code == IC_wasd ) {
 						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
@@ -467,16 +467,16 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 						ICUI_image( s_InputCandy_ICUI_icons, 52, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						sx+=swh+spacing;
 					} else if ( code == IC_numpad ) { 
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						ICUI_image( s_InputCandy_ICUI_icons, 75, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						draw_text_transformed_color(sx+swh/2,sy+swh/2,"8",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						ICUI_image( s_InputCandy_ICUI_icons, 76, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						draw_text_transformed_color(sx+swh/2,sy+swh/2,"2",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						ICUI_image( s_InputCandy_ICUI_icons, 77, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						draw_text_transformed_color(sx+swh/2,sy+swh/2,"4",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						ICUI_image( s_InputCandy_ICUI_icons, 78, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						draw_text_transformed_color(sx+swh/2,sy+swh/2,"6",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						sx+=swh+spacing;
 					}
@@ -541,139 +541,139 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 							sx+=swh+spacing;
 						break;
 						case IC_pause:			
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 55, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_print:			
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 56, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_pgup:			
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 57, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_pgdn:			
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 58, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_home:			
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 59, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_end:			
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 63, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_insert:		
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 61, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_delete:		
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 60, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad0:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 85, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad1:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 83, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad2:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 79, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad3:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 82, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad4:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 76, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad5:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 79, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad6:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 77, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad7:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 81, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad8:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 75, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad9:		
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 81, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad_multiply:
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 89, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad_divide:  
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 88, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad_subtract:
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 87, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_numpad_decimal: 
-							ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 84, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f1:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 63, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f2:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 64, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f3:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 65, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f4:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 66, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f5:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 67, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f6:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 68, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f7:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 69, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f8:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 70, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f9:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 71, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f10:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 72, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f11:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 73, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_f12:
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 74, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 					}
@@ -688,7 +688,7 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 							sx+=swh+spacing;
 						break;
 						case IC_space:
-							ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							ICUI_image( s_InputCandy_ICUI_icons, 91, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 						case IC_key_escape:
@@ -1253,8 +1253,28 @@ function ICUI_Draw_input_binding() {
 		oy=lines_region.y;
 		for ( var i=start_item; (i<bindable_actions) and (i-start_item<lines); i++ ) {
 			var action=__INPUTCANDY.actions[bindable_action_index[i]];
+			var bound=__ICI.GetBindingData( __INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings, bindable_action_index[i] );
 			ICUI_text_in_box( false, string_replace(action.group+" ","None ","")+action.name, ox,oy, lines_region.w/2-smidge/2, lineh );
 			ICUI_text_in_box( __INPUTCANDY.ui.input_binding.influencing == i, "", ox + lines_region.w/2 - smidge/4, oy, lines_region.w/2, lineh );
+			if ( bound != none ) {
+				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
+				ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
+				 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
+				);
+				else
+				ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, action.mouse_keyboard_combo, 
+				 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
+				);
+			} else {
+				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
+				ICUI_draw_ICaction( action.gamepad, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
+				 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
+				);
+				else
+				ICUI_draw_ICaction( action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, action.mouse_keyboard_combo, 
+				 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
+				);
+			}
 			oy+=lineh+lineskip;
 		}
 		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);

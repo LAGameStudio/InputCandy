@@ -2252,8 +2252,14 @@ function New_InputCandy_Private() {
 	},
 	
 	GetBinding: function ( settings_index, action_index ) {
-	 var bindings=array_length(__INPUTCANDY.settings[i].bindings);
-     for ( var i=0; i<bindings; i++ ) if ( __INPUTCANDY.settings[settings_index].bindings[i].action == action_index ) return j;
+	 var bindings=array_length(__INPUTCANDY.settings[settings_index].bindings);
+     for ( var i=0; i<bindings; i++ ) if ( __INPUTCANDY.settings[settings_index].bindings[i].action == action_index ) return i;
+	 return none;
+	},
+	
+	GetBindingData: function ( settings_index, action_index ) {
+	 var bindings=array_length(__INPUTCANDY.settings[settings_index].bindings);
+     for ( var i=0; i<bindings; i++ ) if ( __INPUTCANDY.settings[settings_index].bindings[i].action == action_index ) return __INPUTCANDY.settings[settings_index].bindings[i];
 	 return none;
 	},
 	
