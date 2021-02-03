@@ -394,12 +394,12 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 					sx+=swh+spacing;
 				} else if ( code == IC_Lstick ) {
 					ICUI_image( s_InputCandy_ICUI_icons, 52, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-                    ICUI_text_color( c_white, c_white, c_white, c_white, "L", sx+swh+spacing+fontsize, sy);
-					sx+=swh+spacing+fontsize*2;
+                    ICUI_text_color( c_white, c_white, c_white, c_white, "L", sx+swh+spacing, sy);
+					sx+=swh+spacing+fontsize;
 				} else if ( code == IC_Rstick ) {
 					ICUI_image( s_InputCandy_ICUI_icons, 52, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-                    ICUI_text_color( c_white, c_white, c_white, c_white, "R", sx+swh+spacing+fontsize, sy);
-					sx+=swh+spacing+fontsize*2;
+                    ICUI_text_color( c_white, c_white, c_white, c_white, "R", sx+swh+spacing, sy);
+					sx+=swh+spacing+fontsize;
 				} else if ( code == IC_A ) {
 					ICUI_image( s_InputCandy_ICUI_icons, 12, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 					sx+=swh+spacing;					
