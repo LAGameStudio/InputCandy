@@ -273,6 +273,8 @@ function ICDeviceTypeString(i) {
 #macro IC_hat4_L 146
 #macro IC_hat4_R 147
 
+#macro IC_MAX_SIGNAL 148
+
 ////// Action pad indications.  A special category of action.
 
 /* 
@@ -403,6 +405,7 @@ global._INPUTCANDY_DEFAULTS_ = {
  //// Global Settings ////
  ready: false,                            // Has IC been initialized?
  max_players: 8,                          // Default value for SetMaxPlayers()
+ allow_multibutton_capture: true,         // Allows players to assign multi-button combos to a single action, set to false for simplicity
  allow_keyboard_mouse: true,              // If the platform supports it, setting this true will use keyboard_and_mouse as an input device (false = hide on consoles w/o keyboard)
  keyboard_mouse_player1: true,	          // True means "player 1 gets to use a gamepad too"
  keyboard_layout: ICKeyboardLayout_qwerty,   // Changing to Azerty or Qwertz provides a sorta-remapping for keyboards, but there isn't a good way to detect what keyboard
@@ -2263,6 +2266,92 @@ function New_InputCandy_Private() {
 	 return none;
 	},
 	
+	// The following are used in ui.input_binding for testing if a code or code set is already in use.
+	
+	CodeMatches: function ( code, single_array ) {
+		var c;
+		if ( !is_array(code) ) c[0]=code;
+		else c=code;
+		var a;
+		if ( !is_array(single_array) ) a[0]=single_array;
+		else a=single_array;
+		var len=array_length(a);
+		var len2=array_length(c);
+		for ( var i=0; i<len; i++ ) {
+			for ( var j=0; j<len2; j++ ) if ( c[j] == a[i] ) return true;
+		}
+		return false;
+	},
+	
+	CodeMatchesAll: function ( code, single_array ) {
+		var c;
+		if ( !is_array(code) ) c[0]=code;
+		else c=code;
+		var a;
+		if ( !is_array(single_array) ) a[0]=single_array;
+		else a=single_array;
+		var len=array_length(a);
+		var len2=array_length(c);
+		if ( len != len2 ) return false;
+		for ( var i=0; i<len; i++ ) {
+			var found=false;
+			for ( var j=0; j<len2; j++ ) if ( c[j] == a[i] ) { found=true; break; }
+			if ( !found ) return false;
+		}
+		return true;
+	},
+			
+	ActionMatches: function( action, code ) {
+	 if ( action.is_directional ) {
+		 return __ICI.CodeMatches(code,action.gamepad) || __ICI.CodeMatches(code,action.keyboard) || __ICI.CodeMatches(code,action.mouse);
+	 } else {
+		if ( action.mouse_combo ) {
+			if ( __ICI.CodeMatchesAll(code,action.mouse) ) return true;
+		} else {
+			if ( __ICI.CodeMatches(code,action.mouse) ) return true;
+		}
+		if ( action.keyboard_combo ) {
+			if ( __ICI.CodeMatchesAll(code,action.keyboard) ) return true;
+		} else {
+			if ( __ICI.CodeMatches(code,action.keyboard) ) return true;
+		}
+		if ( action.gamepad_combo ) {
+			if ( __ICI.CodeMatchesAll(code,action.gamepad) ) return true;
+		} else {
+			if ( __ICI.CodeMatches(code,action.gamepad) ) return true;
+		}
+	 }
+	 return false;
+	},
+	
+	GetActionsBindingsByCode: function ( settings_index, code, exclude, for_action ) {
+	 var result={actions:[], actions_count:0, bindings:[], bindings_count:0 };
+	 var bindings=array_length(__INPUTCANDY.settings[settings_index].bindings);
+     for ( var i=0; i<bindings; i++ ) {
+		if ( i == exclude ) continue;
+		var b= __INPUTCANDY.settings[settings_index].bindings[i];
+		if ( __ICI.ActionMatches( b.bound_action, code ) ) result.bindings[array_length(result.bindings)]=b;
+	 }
+	 result.bindings_count=array_length(result.bindings);
+	 var actions=array_length(__INPUTCANDY.actions);
+     for ( var i=0; i<actions; i++ ) {
+		if ( i==for_action ) continue;
+		if ( __ICI.ActionMatches( __INPUTCANDY.actions[i], code ) ) result.actions[array_length(result.actions)]=__INPUTCANDY.actions[i];
+	 }
+	 var list=[];
+	 result.actions_count=array_length(result.actions);
+	 for ( var i=0; i<result.actions_count; i++ ) {
+		var is_overridden=false;
+		for ( var j=0; j<result.bindings_count; j++ ) {
+			if ( result.actions[i].index == result.bindings[j].action ) { is_overridden=true; break; }
+		}
+		if ( !is_overridden ) list[array_length(list)]=result.actions[i];
+	 }
+	 result.actions=list;
+	 result.actions_count=array_length(result.actions);
+	 return result;
+	},
+	
 	RemoveBinding: function ( settings_index, action_index ) {
 	},
 	
@@ -2292,11 +2381,10 @@ function New_InputCandy_Private() {
 		if ( binding_index == none ) binding_index = __ICI.AddBinding( settings_index, action_index );
 		__INPUTCANDY.settings[settings_index].bindings[binding_index].action=action_index;
 		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.mouse=mouse;
-		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.keyboard=mouse;
+		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.keyboard=keyboard;
 	},	
 	
 	///// File saving and loading for settings and setups.
-	
 	
 	PostLoadBinding: function( json_struct ) {
 		var new_json=json_struct;
