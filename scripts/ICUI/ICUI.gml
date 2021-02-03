@@ -139,6 +139,7 @@ function __Init_ICUI() {
 			mode: false,
 			influencing: 0,
 			keyboard_and_mouse: false,
+			scrolled: 0,			// How many elements we've scrolled down the list.
 			choosing: false,         // Set to default?  Pick input from list?  Capture input?  Cancel?
 			choosing_select: 0,
 			choosing_action: none,
@@ -153,7 +154,8 @@ function __Init_ICUI() {
 			loading: false,          // Set profile from list
 			loading_select: 0,
 			loading_scrolled: 0,
-			scrolled: 0         // How many elements we've scrolled down the list.
+			confirm_exit: false,
+			confirm_exit_message: ""
 		},
 		// Special mode where we're capturing input.
 		capture: {
