@@ -362,10 +362,14 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 				  ICUI_image( s_InputCandy_ICUI_icons, 4, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 				  ICUI_image( s_InputCandy_ICUI_icons, 8, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 				  sx+=swh+spacing;
-				} else if ( code >= IC_hat0_U and code <= IC_hat4_U ) {
+				} else if ( code >= IC_hat0_U and code <= IC_hat4_R ) {
 					var d=(code-IC_hat0_U) % 4;
 					var index=5;
-					var hatnum=(code-d)/4;
+					var hatnum=1;
+					if (code >= IC_hat0_U and code <= IC_hat0_R) hatnum=0;
+					else if (code >= IC_hat1_U and code <= IC_hat1_R) hatnum=1;
+					else if (code >= IC_hat2_U and code <= IC_hat2_R) hatnum=2;
+					else if (code >= IC_hat3_U and code <= IC_hat3_R) hatnum=3;
 					switch ( d ) {
 						case 0: break;
 						case 1: index=6; break;
