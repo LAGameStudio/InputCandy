@@ -1752,20 +1752,22 @@ function ICUI_Draw_input_binding_choice_pick() {
 			default:
 				if ( __INPUTCANDY.ui.input_binding.choosing_pick_select >= 0 and __INPUTCANDY.ui.input_binding.choosing_pick_select < bindables_count ) {
 					var b=bindables[__INPUTCANDY.ui.input_binding.choosing_pick_select];
-					if ( bound == none ) {
-						bound = __INPUTCANDY.settings[settings_index].bindings[__ICI.AddBinding(settings_index,action.index)];
+					var b_index=__ICI.GetBinding(settings_index,action.index);
+					if ( b_index < 0 ) {
+						b_index=__ICI.AddBinding(settings_index,action.index);
 					}
 					if ( b.type == ICDeviceType_mouse ) {
-						__INPUTCANDY.settings[settings_index].bindings[bound.index].bound_action.mouse=b.code;
+						__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.mouse=b.code;
 					} else if ( b.type == ICDeviceType_keyboard ) {
-						__INPUTCANDY.settings[settings_index].bindings[bound.index].bound_action.keyboard=b.code;
+						__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=b.code;
 					} else {
-						__INPUTCANDY.settings[settings_index].bindings[bound.index].bound_action.gamepad=b.code;
+						__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=b.code;
 					}
 				}
-				audio_play_sound(a_ICUI_tone,100,0);
-			 	__INPUTCANDY.ui.input_binding.choosing=true;
+			 	__INPUTCANDY.ui.input_binding.choosing=false;
 				__INPUTCANDY.ui.input_binding.choosing_pick=false;
+				__ICI.SaveSettings();
+				audio_play_sound(a_ICUI_tone,100,0);
 			break;
 		}
 	}		
