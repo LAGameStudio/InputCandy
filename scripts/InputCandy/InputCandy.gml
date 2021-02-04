@@ -2249,7 +2249,7 @@ function New_InputCandy_Private() {
 		var index=array_length(__INPUTCANDY.settings[setting_index].bindings);
 		__INPUTCANDY.settings[setting_index].bindings[index]= __ICI.New_ICBinding();
 		__INPUTCANDY.settings[setting_index].bindings[index].index=from_action_index;
-		__INPUTCANDY.settings[setting_index].bindings[index].group=__ICI.actions[from_action_index].group;
+		__INPUTCANDY.settings[setting_index].bindings[index].group=__INPUTCANDY.actions[from_action_index].group;
 		__INPUTCANDY.settings[setting_index].bindings[index].bound_action = __ICI.CopyOfAction( from_action_index );
 		return index;
 	},

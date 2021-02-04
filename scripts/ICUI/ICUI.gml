@@ -1547,8 +1547,12 @@ function ICUI_Draw_input_binding_choice() {
 			break;
 			case mi_set_to_default:
 				audio_play_sound(a_ICUI_tone,100,0);
-				__ICI.RemoveBinding( settings_index, action_index );
-		 		__INPUTCANDY.ui.input_binding.choosing=false;
+				var b_index=__ICI.GetBinding( settings_index, action_index );
+				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
+					__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=action.keyboard;
+				else
+					__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=action.gamepad;
+	 			__INPUTCANDY.ui.input_binding.choosing=false;
 			break;
 		}
 	}
@@ -1580,13 +1584,13 @@ function ICUI_Draw_input_binding_choice_pick() {
 		target_deviceType=ICDeviceType_keyboard_mouse;
 		target_is_combo = action.keyboard_combo;
 		if ( action.is_directional ) {
-			bindables[array_length(bindables)]={ code: IC_wasd, name: "WASD" };
-			bindables[array_length(bindables)]={ code: IC_arrows, name: "Arrow Keys" };
-			bindables[array_length(bindables)]={ code: IC_numpad, name: "Numpad Arrows" };
+			bindables[array_length(bindables)]={ type: ICDeviceType_keyboard, code: IC_wasd, name: "WASD" };
+			bindables[array_length(bindables)]={ type: ICDeviceType_keyboard, code: IC_arrows, name: "Arrow Keys" };
+			bindables[array_length(bindables)]={ type: ICDeviceType_keyboard, code: IC_numpad, name: "Numpad Arrows" };
 			/* (add mouse move here if you wanted to) */
 		} else {
 			for ( var i=__FIRST_MOUSE_SIGNAL; i<__LAST_KEYBOARD_SIGNAL_PLUS_1; i++ ) {
-				bindables[array_length(bindables)]={ code: __INPUTCANDY.signals[i].code, name: __INPUTCANDY.signals[i].name };
+				bindables[array_length(bindables)]={ type: ICDeviceType_keyboard, code: __INPUTCANDY.signals[i].code, name: __INPUTCANDY.signals[i].name };
 			}
 		}
 	} else { // Gamepad
@@ -1604,12 +1608,12 @@ function ICUI_Draw_input_binding_choice_pick() {
 			for ( var i=__FIRST_GAMEPAD_SIGNAL; i<__LAST_GAMEPAD_SIGNAL_PLUS_1; i++ ) {
 				if ( __INPUTCANDY.signals[i].code == IC_AandB ) continue;
 				if ( __INPUTCANDY.signals[i].code == IC_XandY ) continue;
-				bindables[array_length(bindables)]={ code: __INPUTCANDY.signals[i].code, name: __INPUTCANDY.signals[i].name };
+				bindables[array_length(bindables)]={ type: ICDeviceType_gamepad, code: __INPUTCANDY.signals[i].code, name: __INPUTCANDY.signals[i].name };
 			}
 			var last_signal_plus_1 = array_length(__INPUTCANDY.signals );
 			for ( var i=__LAST_KEYBOARD_SIGNAL_PLUS_1; i<last_signal_plus_1; i++ ) {
 				if ( __INPUTCANDY.signals[i].deviceType == ICDeviceType_gamepad ) 
-					bindables[array_length(bindables)]={ code: __INPUTCANDY.signals[i].code, name: __INPUTCANDY.signals[i].name };
+					bindables[array_length(bindables)]={ type: ICDeviceType_gamepad, code: __INPUTCANDY.signals[i].code, name: __INPUTCANDY.signals[i].name };
 			}
 		}		
 	}
@@ -1732,8 +1736,8 @@ function ICUI_Draw_input_binding_choice_pick() {
 	 	audio_play_sound(a_ICUI_tone,100,0);
 		switch ( __INPUTCANDY.ui.input_binding.choosing_pick_select ) {
 			case mi_back: // Abort / go back / cancel
-		 	 __INPUTCANDY.ui.input_binding.mode=true;
-			 __INPUTCANDY.ui.device_select.choosing_pick=false;
+		 	 __INPUTCANDY.ui.input_binding.choosing=true;
+			 __INPUTCANDY.ui.input_binding.choosing_pick=false;
 			 audio_play_sound(a_ICUI_pageflip,100,0);
 			break;
 			case mi_scrup: // Scroll up
@@ -1746,7 +1750,22 @@ function ICUI_Draw_input_binding_choice_pick() {
              audio_play_sound(a_ICUI_click,100,0);
 			break;
 			default:
+				if ( __INPUTCANDY.ui.input_binding.choosing_pick_select >= 0 and __INPUTCANDY.ui.input_binding.choosing_pick_select < bindables_count ) {
+					var b=bindables[__INPUTCANDY.ui.input_binding.choosing_pick_select];
+					if ( bound == none ) {
+						bound = __INPUTCANDY.settings[settings_index].bindings[__ICI.AddBinding(settings_index,action.index)];
+					}
+					if ( b.type == ICDeviceType_mouse ) {
+						__INPUTCANDY.settings[settings_index].bindings[bound.index].bound_action.mouse=b.code;
+					} else if ( b.type == ICDeviceType_keyboard ) {
+						__INPUTCANDY.settings[settings_index].bindings[bound.index].bound_action.keyboard=b.code;
+					} else {
+						__INPUTCANDY.settings[settings_index].bindings[bound.index].bound_action.gamepad=b.code;
+					}
+				}
 				audio_play_sound(a_ICUI_tone,100,0);
+			 	__INPUTCANDY.ui.input_binding.choosing=true;
+				__INPUTCANDY.ui.input_binding.choosing_pick=false;
 			break;
 		}
 	}		
