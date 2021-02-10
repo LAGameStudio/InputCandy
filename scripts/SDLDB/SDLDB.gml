@@ -124,7 +124,7 @@ function SDLDB_Process_Step() {
 						index: __INPUTCANDY.SDLDB_Process_j,
 						guid: fomo,
 						short: string_delete(fomo,1,8),  // Remove the 03000000 at the beginning
-						brief: string_copy(string_delete(fomo,1,8),1,4),
+						brief: string_copy(string_delete(fomo,1,8),1,8),
 						name: string_lower(parts[1]),
 						remapping: line,
 						platform: string_replace(parts[array_length(parts)-1],"platform:","")
@@ -148,7 +148,6 @@ function SDLDB_Process_Step() {
 function SDLDB_Lookup_GUID( guid ) {
 	guid=string_lower(guid);
 	for ( var i=0; i<global.SDLDB_Entries; i++ ) if ( global.SDLDB[i].guid == guid ) return global.SDLDB[i];
-	for ( var i=0; i<global.SDLDB_Entries; i++ ) if ( string_pos(global.SDLDB[i].brief,guid) ) return global.SDLDB[i];
 	return { index: -1, guid: "none", name: "Unknown", remapping: "", platform: "" };
 }
 
