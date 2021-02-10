@@ -49,7 +49,10 @@ function __Init_ICUI() {
                  break;
 				 case ICUI_SDLDB_select:
 				  __INPUTCANDY.ui.mode(ICUI_none);
-				  __INPUTCANDY.ui.SDLDB_select=true;
+				  __INPUTCANDY.ui.SDLDB_select.mode=true;
+				  __INPUTCANDY.ui.SDLDB_select.search_mode=-1;
+				 ICUI_DoSearch(__INPUTCANDY.devices[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].device],none);
+		         __INPUTCANDY.ui.SDLDB_select.scrolled=__INPUTCANDY.ui.device_select.influencing;
                  break;
 				 case ICUI_gamepad_test:
 				  __INPUTCANDY.ui.mode(ICUI_none);
@@ -106,7 +109,6 @@ function __Init_ICUI() {
 			pulse_highlight: true,  // Pulse the influence indicator
 			pulse_speed_s: 1.3,     // Speed of the pulsing (in seconds)
 			draw_3d_buttons: true,  // Draws a "Fake 3d" button instead of a flat button
-			show_title: true,    // false if you are going to provide your own title/mode display
 			  //////// Mouse support
 			allow_mouse: false,        // When available, use the mouse.
 			use_custom_cursor: true,   // Provide a mouse cursor.
@@ -126,6 +128,7 @@ function __Init_ICUI() {
 		// UI mode where we're selecting a remapping from the SDL database
 		SDLDB_select: {
 			mode: false,
+			search_mode: -1,
 			influencing: 0,
 			scrolled: 0         // How many elements we've scrolled down the list.
 		},
@@ -767,11 +770,9 @@ function ICUI_Draw_device_select() {
 	draw_set_valign(fa_middle);
 	draw_set_font(__INPUTCANDY.ui.style.font);
 	
-	if ( __INPUTCANDY.ui.style.show_title ) {
-		oy+=eh;
-		ICUI_text( false, "Choose Device and Configure Controls", ox+__INPUTCANDY.ui.region.w/2, oy );
-		oy+=smidge+eh*2;
-	}	
+	oy+=eh;
+	ICUI_text( false, "Choose Device and Configure Controls", ox+__INPUTCANDY.ui.region.w/2, oy );
+	oy+=smidge+eh*2;
 	
 	var rows=2,cols=2;
 	switch ( __INPUTCANDY.max_players ) {
@@ -936,7 +937,10 @@ function ICUI_Draw_device_select() {
 				case 2:
 				audio_play_sound(a_ICUI_pageflip,100,0);
 				 __INPUTCANDY.ui.device_select.mode=false;
-				 __INPUTCANDY.ui.SDLDB_select=true;
+				 __INPUTCANDY.ui.SDLDB_select.mode=true;
+				 __INPUTCANDY.ui.SDLDB_select.search_mode=-1;
+				 ICUI_DoSearch(__INPUTCANDY.devices[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].device],none);
+				 __INPUTCANDY.ui.SDLDB_select.scrolled=__INPUTCANDY.ui.SDLDB_select.influencing;
 				break;
 				case 3:
 				audio_play_sound(a_ICUI_pageflip,100,0);
@@ -1691,6 +1695,7 @@ function ICUI_Draw_input_binding_choice_pick() {
 		ox+__INPUTCANDY.ui.region.w/2, oy+eh );
 	ICUI_text( false, "For Action: "+string_replace(action.group+" "+action.name,"None ",""), ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
 	oy+=smidge+eh*3;
+	
 
       var buttons_region=rectangle( __INPUTCANDY.ui.region.x+eh, oy-eh, __INPUTCANDY.ui.region.w-(eh*5), eh );
 	  
@@ -1858,6 +1863,7 @@ function ICUI_Draw_input_binding_set_profile() {
 	ICUI_text( false, "Current Settings: Profile #"+int(__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings+1), ox+__INPUTCANDY.ui.region.w/2, oy );
 	ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
 	oy+=smidge+eh*2;
+	
 
       var buttons_region=rectangle( __INPUTCANDY.ui.region.x+eh, oy-eh, __INPUTCANDY.ui.region.w-(eh*5), eh );
 	  
@@ -1869,8 +1875,6 @@ function ICUI_Draw_input_binding_set_profile() {
 	  var sb_up=rectangle(sb_region.x,sb_region.y,sb_region.w,sb_region.w);
 	  var sb_dn=rectangle(sb_region.x,sb_region.y+sb_region.h-sb_up.h,sb_up.w,sb_up.h);
 	  var sb_mid=rectangle(sb_up.x,sb_up.y2,sb_region.w,sb_region.h-sb_up.h*2);
-	  var dz1=rectangle(lines_region.x,sb_dn.y2,lines_region.w/2-eh/2,eh*2);
-	  var dz2=rectangle(dz1.x+lines_region.w/2+eh/2,dz1.y,dz1.w,dz1.h);
 
 	var start_item=__INPUTCANDY.ui.input_binding.loading_scrolled;
 	var end_item=min(settings_count-1,start_item+lines-1);
@@ -1937,19 +1941,324 @@ function ICUI_Draw_input_binding_set_profile() {
 	draw_set_valign(oldvalign);
 }
 
+function ICUI_SDLDB_Search_Character() {
+	switch ( floor(__INPUTCANDY.ui.SDLDB_select.search_mode) ) {
+		 case -1: return "#";
+		 case 0: return "*";
+		 case 1: return "A";
+		 case 2: return "B";
+		 case 3: return "C";
+		 case 4: return "D";
+		 case 5: return "E";
+		 case 6: return "F";
+		 case 7: return "G";
+		 case 8: return "H";
+		 case 9: return "I";
+		case 10: return "J";
+		case 11: return "K";
+		case 12: return "L";
+		case 13: return "M";
+		case 14: return "N";
+		case 15: return "O";
+		case 16: return "P";
+		case 17: return "Q";
+		case 18: return "R";
+		case 19: return "S";
+		case 20: return "T";
+		case 21: return "U";
+		case 22: return "V";
+		case 23: return "W";
+		case 24: return "X";
+		case 25: return "Y";
+		case 26: return "Z";
+		case 27: return "0";
+		case 28: return "1";
+		case 29: return "2";
+		case 30: return "3";
+		case 31: return "4";
+		case 32: return "5";
+		case 33: return "6";
+		case 34: return "7";
+		case 35: return "8";
+		case 36: return "9";
+		default: return "A";
+	}
+}
+
+// Return the name of the search mode
+function ICUI_SDLDB_Mode() {
+	switch ( __INPUTCANDY.ui.SDLDB_select.search_mode%37 ) {
+		case -1: return "Matching GUID";
+		case 0: return "Closest Name";
+		default: return "Starts with "+ICUI_SDLDB_Search_Character();
+	}
+}
+
+function ICUI_trim(s) {
+	var char=" ";
+	var new_string = s;
+	var len=string_length(new_string);
+	var _start = 0;
+	for(var i=1;i <= len;i++) if (string_char_at(new_string, i) != char) {
+		_start = i - 1;
+		break;
+	}
+	if (_start != 0) new_string = string_delete(new_string,1,_start);
+	var _end = 0;
+	len=string_length(new_string);
+	for ( var i=len; i > 0; i-- ) if (string_char_at(new_string, i) != char) {
+		_end = i + 1;
+		break;
+	}
+	if (_end != 0) {
+		new_string = string_delete(new_string,_end,string_length(new_string));
+	}
+	return new_string;
+}
+
+function ICUI_string_into_words(str) {
+    var sep=" ",len = 1,i=0,pos;
+    var dat = str + sep;
+    len = 1;//string_length(sep);
+	var arr=[];
+    repeat (string_count(sep,dat)) {
+        pos = string_pos(sep,dat)-1;
+        arr[i]=ICUI_trim(string_lower(string_copy(dat,1,pos)));
+        dat = string_delete(dat,1,pos+len);
+        i += 1;
+    }
+    return arr;
+}
+
+function ICUI_StringMatchPercentage( haystack, needle, limited ) {
+	if ( string_pos(needle,haystack) != 0 ) {
+		return array_length(needle)/array_length(haystack) * 100.0;
+	}
+	var words1=ICUI_string_into_words(haystack);
+	var words2=ICUI_string_into_words(needle);
+	var len1=array_length(words1);
+	var len2=array_length(words2);
+	if ( limited == none ) limited=len1;
+	if ( limited == -1 ) limited=min(len1,len2);
+	var searching=0;
+	for ( var i=0; i<len2; i++ ) {
+		for ( var j=0; j<len1; j++ ) {
+			if ( string_pos(words1[j],words2[i]) != 0 or string_pos(words2[i],words1[j]) != 0 ) searching++;
+		}
+	}
+	return searching / min(limited,len1) * 100.0;
+}
+
+function ICUI_DoSearch( device, next ) {
+	var start=(next != none ? next : 0);
+	if ( __INPUTCANDY.ui.SDLDB_select.search_mode == -1 ) {
+		var guid=string_lower(device.guid);
+		for ( var i=start; i<global.SDLDB_Entries; i++ ) {
+			if ( string_lower(global.SDLDB[i].guid) == guid ) return i;
+		}
+		__INPUTCANDY.ui.SDLDB_select.search_mode=0; // Failed to find GUID
+	}
+	var deviceName=device.desc;
+	if ( start >= global.SDLDB_Entries ) start=0;
+	if ( floor(__INPUTCANDY.ui.SDLDB_select.search_mode)%37 == 0 ) {
+		var found=start;
+		var confidence=0;
+		for ( var i=start; i<global.SDLDB_Entries; i++ ) {
+			var candidate = ICUI_StringMatchPercentage(global.SDLDB[i].name,deviceName,none);
+			if ( candidate > confidence ) {
+				found=i;
+				confidence=candidate;
+			}
+		}	
+		__INPUTCANDY.ui.SDLDB_select.scrolled=found;
+		if ( confidence < 50.0 ) {
+			for ( var i=start; i<global.SDLDB_Entries; i++ ) {
+				var candidate = ICUI_StringMatchPercentage(global.SDLDB[i].name,deviceName,-1);
+				if ( candidate > confidence ) {
+					found=i;
+					confidence=candidate;
+				}
+			}
+			__INPUTCANDY.ui.SDLDB_select.scrolled=found;
+		}
+	} else {
+		var term=string_lower(ICUI_SDLDB_Search_Character());
+		for ( var i=start; i<global.SDLDB_Entries; i++ ) if ( string_pos(term,string_lower(global.SDLDB[i].name)) == 1 ) {
+			__INPUTCANDY.ui.SDLDB_select.scrolled=i;
+			return;
+		}
+	}
+}
 
 
 function ICUI_Draw_SDLDB_select() {
-	if ( __INPUTCANDY.ui.style.show_title ) {
+	
+    // Create new settings if none exist, otherwise let the player choose existing settings or create new.
+	if ( __INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings == none ) {
+		if ( __INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].device == none ) {
+			// Return to previous screen
+			     __INPUTCANDY.ui.SDLDB_select.mode=false;
+				 __INPUTCANDY.ui.device_select.mode=true;
+				return;
+		} else {
+			var next_profile = array_length(__INPUTCANDY.settings);
+			__INPUTCANDY.settings[next_profile]=__ICI.New_ICSettings();
+			__INPUTCANDY.settings[next_profile].deviceInfo=__INPUTCANDY.devices[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].device];
+			__INPUTCANDY.settings[next_profile].index=next_profile;
+			__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings = next_profile;
+			__INPUTCANDY.settings[next_profile].deadzone1=gamepad_get_axis_deadzone(__INPUTCANDY.settings[next_profile].deviceInfo.slot_id);
+			__INPUTCANDY.settings[next_profile].deadzone2=gamepad_get_button_threshold(__INPUTCANDY.settings[next_profile].deviceInfo.slot_id);
+		} 
+	}	
+	
+    var settings_count=global.SDLDB_Entries;
+    var max_menuitem=settings_count+6;  // 0 Back button, 2/3 Up/Down Scroll
+	var mi_back=max_menuitem-6;  // Back
+	var mi_clear=max_menuitem-5; // Clear mapping
+	var mi_top=max_menuitem-4;   // Go to Top of List
+	var mi_next=max_menuitem-3;  // Match By (Same letter / search term)
+	var mi_find=max_menuitem-2;  // Find Next
+	var mi_scrup=max_menuitem-1; // Up
+	var mi_scrdn=max_menuitem;   // Down
+	if ( __INPUTCANDY.ui.SDLDB_select.influencing < 0 ) {
+		__INPUTCANDY.ui.SDLDB_select.influencing=mi_back;
 	}
+	
+	var ox=__INPUTCANDY.ui.region.x;
+	var oy=__INPUTCANDY.ui.region.y;
+	var ew=__INPUTCANDY.ui.style.wide*__INPUTCANDY.ui.region.w;
+	var eh=__INPUTCANDY.ui.style.high*__INPUTCANDY.ui.region.h;
+	var smidge=__INPUTCANDY.ui.region.w*__INPUTCANDY.ui.style.smidge;
+	var icon_sprite_wh=sprite_get_width(s_InputCandy_device_icons);
+	var icon_scale=1.0/icon_sprite_wh;
+	var fontsize=eh;
+	var oldfont = draw_get_font();
+	var oldhalign = draw_get_halign();
+	var oldvalign = draw_get_valign();
+	draw_set_halign(fa_center);
+	draw_set_valign(fa_middle);
+	draw_set_font(__INPUTCANDY.ui.style.font);
+		
+	// Draws a background
+	ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
+
+	var sx=__INPUTCANDY.ui.region.x;
+	var sy=__INPUTCANDY.ui.region.y;
+
+	// Back Button
+	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.SDLDB_select.influencing=max_menuitem;
+	ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_back, "", r.x,r.y,r.w,r.h );
+	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
+
+    // Title
+	oy+=eh;
+	ICUI_text( false, "Selecting for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+" :: "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.guid, ox+__INPUTCANDY.ui.region.w/2, oy );
+	ICUI_text( false, "Current Mapping: "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.sdl.name+" #"+int(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.sdl.index), ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	oy+=smidge+eh*3;
+
+      var buttons_region=rectangle( __INPUTCANDY.ui.region.x+eh, oy-eh, __INPUTCANDY.ui.region.w-(eh*5), eh );
+	  
+	ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_clear, "Clear Mapping", buttons_region.x, buttons_region.y, buttons_region.w/4-smidge, buttons_region.h );
+	ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_top, "Go to Top", buttons_region.x+buttons_region.w/4, buttons_region.y, buttons_region.w/4-smidge, buttons_region.h );
+	ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_next, "Find Next", buttons_region.x + buttons_region.w/2, buttons_region.y, buttons_region.w/4-smidge, buttons_region.h );
+	ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_find, "Match By: "+ICUI_SDLDB_Mode(), buttons_region.x + buttons_region.w/2 + buttons_region.w/4, buttons_region.y, buttons_region.w/4-smidge, buttons_region.h );
+	  
+	  var lines_region=rectangle(__INPUTCANDY.ui.region.x+eh,oy+smidge,__INPUTCANDY.ui.region.w-(eh*5),__INPUTCANDY.ui.region.y2-oy-eh);
+	  var lineh=eh*2;
+	  var lineskip=smidge;
+	  var lines=floor(lines_region.h / (lineh+lineskip));
+	  var sb_region=rectangle(lines_region.x2+eh/2,lines_region.y,eh*2,lines_region.h);
+	  var sb_up=rectangle(sb_region.x,sb_region.y,sb_region.w,sb_region.w);
+	  var sb_dn=rectangle(sb_region.x,sb_region.y+sb_region.h-sb_up.h,sb_up.w,sb_up.h);
+	  var sb_mid=rectangle(sb_up.x,sb_up.y2,sb_region.w,sb_region.h-sb_up.h*2);
+
+	var start_item=__INPUTCANDY.ui.SDLDB_select.scrolled;
+	var end_item=min(settings_count-1,start_item+lines-1);
+
+	if ( settings_count > 0 ) {
+	    ox=lines_region.x;
+		oy=lines_region.y;
+		for ( var i=start_item; (i<settings_count) and (i-start_item<lines); i++ ) {
+			ICUI_text_in_box(  __INPUTCANDY.ui.SDLDB_select.influencing == i, "SDL #"+int(i+1)+" "+global.SDLDB[i].name+" ::"+global.SDLDB[i].guid, ox,oy, lines_region.w-smidge/2, lineh );
+			oy+=lineh+lineskip;
+		}
+		ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);
+		ICUI_fit_image( s_InputCandy_ICUI_icons, 3, sb_dn.x, sb_dn.y, sb_dn.w, sb_dn.h, c_white, 0.65, 0, 0.5 );
+		ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_scrup, "", sb_up.x,sb_up.y,sb_up.w,sb_up.h);
+		ICUI_fit_image( s_InputCandy_ICUI_icons, 2, sb_up.x, sb_up.y, sb_up.w, sb_up.h, c_white, 0.65, 0, 0.5 );
+		ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
+		var first_perc=(__INPUTCANDY.ui.SDLDB_select.scrolled / settings_count);
+		var last_perc=min(1.0,(__INPUTCANDY.ui.SDLDB_select.scrolled+lines) / settings_count);
+		var total_size=sb_mid.h-smidge*2;
+		ICUI_tinted_box(__INPUTCANDY.ui.style.knob1,__INPUTCANDY.ui.style.knob2, sb_mid.x+smidge, sb_mid.y+smidge + total_size*first_perc, sb_mid.w-smidge*2, max(4,(total_size*last_perc)-(total_size*first_perc)) );
+	}
+	
+	if ( __INPUTCANDY.ui.input(ICUI_right) or __INPUTCANDY.ui.input(ICUI_down) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.SDLDB_select.influencing+=1;
+		if ( __INPUTCANDY.ui.SDLDB_select.influencing == end_item+1 and end_item < settings_count ) __INPUTCANDY.ui.SDLDB_select.influencing=mi_scrdn;
+		if ( __INPUTCANDY.ui.SDLDB_select.influencing > max_menuitem ) {
+			__INPUTCANDY.ui.SDLDB_select.influencing=__INPUTCANDY.ui.SDLDB_select.scrolled;
+		}
+	}
+	if ( __INPUTCANDY.ui.input(ICUI_left) or __INPUTCANDY.ui.input(ICUI_up) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.SDLDB_select.influencing-=1;
+		if ( __INPUTCANDY.ui.SDLDB_select.influencing < 0 ) __INPUTCANDY.ui.SDLDB_select.influencing=max_menuitem;
+		if ( __INPUTCANDY.ui.SDLDB_select.scrolled > 0 and __INPUTCANDY.ui.SDLDB_select.influencing == __INPUTCANDY.ui.SDLDB_select.scrolled-1 ) __INPUTCANDY.ui.SDLDB_select.influencing=mi_scrup;
+		if ( __INPUTCANDY.ui.SDLDB_select.influencing == mi_back-1 ) __INPUTCANDY.ui.SDLDB_select.influencing=end_item;
+	}
+	if( __INPUTCANDY.ui.input(ICUI_button) ) {
+	 	audio_play_sound(a_ICUI_tone,100,0);
+		switch ( __INPUTCANDY.ui.SDLDB_select.influencing ) {
+			case mi_back: // Abort / go back / cancel
+			 __INPUTCANDY.ui.SDLDB_select.mode=false;
+			 __INPUTCANDY.ui.device_select.mode=true;
+			 audio_play_sound(a_ICUI_pageflip,100,0);
+			break;
+			case mi_top:
+			 __INPUTCANDY.ui.SDLDB_select.scrolled=0;
+             audio_play_sound(a_ICUI_click,100,0);
+			break;
+			case mi_find:
+ 		 	 __INPUTCANDY.ui.SDLDB_select.search_mode++;
+			 ICUI_DoSearch(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo,none);
+             audio_play_sound(a_ICUI_click,100,0);
+			break;
+			case mi_next:
+			 ICUI_DoSearch(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo,__INPUTCANDY.ui.SDLDB_select.scrolled+1);
+             audio_play_sound(a_ICUI_click,100,0);
+			break;
+			case mi_clear: // Clear current mapping
+			 __INPUTCANDY.ui.SDLDB_select.mode=false;
+			 __INPUTCANDY.ui.device_select.mode=true;
+			 audio_play_sound(a_ICUI_pageflip,100,0);
+			break;
+			case mi_scrup: // Scroll up
+			 if ( __INPUTCANDY.ui.SDLDB_select.scrolled > 0 ) __INPUTCANDY.ui.SDLDB_select.scrolled-=lines;
+			 if ( __INPUTCANDY.ui.SDLDB_select.scrolled < 0 ) __INPUTCANDY.ui.SDLDB_select.scrolled=0;
+             audio_play_sound(a_ICUI_click,100,0);
+			break;
+			case mi_scrdn: // Scroll down
+   			 __INPUTCANDY.ui.SDLDB_select.scrolled+=lines-1;
+			 if ( __INPUTCANDY.ui.SDLDB_select.scrolled >= settings_count - (lines - 1) ) __INPUTCANDY.ui.SDLDB_select.scrolled = settings_count - (lines - 1);
+			 if ( __INPUTCANDY.ui.SDLDB_select.scrolled < 0 ) __INPUTCANDY.ui.SDLDB_select.scrolled=0;
+             audio_play_sound(a_ICUI_click,100,0);
+			break;
+			default:
+				audio_play_sound(a_ICUI_tone,100,0);
+			break;
+		}
+	}		
+
+	draw_set_font(oldfont);
+	draw_set_halign(oldhalign);
+	draw_set_valign(oldvalign);
 }
 
 function ICUI_Draw_gamepad_test() {
-	if ( __INPUTCANDY.ui.style.show_title ) {
-	}
 }
 
 function ICUI_Draw_capture() {
-	if ( __INPUTCANDY.ui.style.show_title ) {
-	}
 }
