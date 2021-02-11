@@ -2428,10 +2428,49 @@ function New_InputCandy_Private() {
 		}
 	},
 	
-	SaveSetups: function() {
+	//// Associates device configurations with their players and settings, 
+	//// so upon reloading of the game the same settings, devices and players are associated.
+
+    // A matching algorithm determines which setup is most appropriate and applies it.	
+	MatchSetup: function() {
 	},
 	
+	// Saves prior setups to disk.
+	SaveSetups: function() {
+		
+	},
+	
+	// Loads previous setups from disk.
 	LoadSetups: function() {
+	},
+	
+	ApplySDLMappings: function () {
+		for ( var i=0; i<global.max_players; i++ ) {
+			var player=__INPUTCANDY.players[i];
+			if ( player.device == none ) continue;
+			var device=__INPUTCANDY.devices[__INPUTCANDY.players[i].device];
+			gamepad_remove_mapping(device.slot_id);
+			var mapping=gamepad_get_guid(device.slot_id) + "," + gamepad_get_description(device.slot_id) + ",";
+			if ( player.settings != none ) {
+				mapping+=__INPUTCANDY.settings[player.settings].deviceInfo.sdl.remapping;
+			} else {
+				mapping+=device.sdl.remapping;
+			}
+			gamepad_test_mapping(device.slot_id,mapping);
+		}
+	},
+	
+	ApplyDeviceSettings: function() {
+		for ( var i=0; i<global.max_players; i++ ) {
+			var player=__INPUTCANDY.players[i];
+			if ( player.device == none ) continue;
+			var device=__INPUTCANDY.devices[__INPUTCANDY.players[i].device];
+			if ( player.settings != none ) {
+				var settings=__INPUTCANDY.settings[player.settings];
+				gamepad_set_axis_deadzone(device.slot_id,settings.deadzone1);
+				gamepad_set_button_threshold(device.slot_id,settings.deadzone2);
+			}
+		}
 	},
 
 	/// WIP Network	

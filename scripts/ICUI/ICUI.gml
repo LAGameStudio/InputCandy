@@ -1947,42 +1947,14 @@ function ICUI_SDLDB_Search_Character() {
 	switch ( floor(__INPUTCANDY.ui.SDLDB_select.search_mode) ) {
 		 case -1: return "#";
 		 case 0: return "*";
-		 case 1: return "A";
-		 case 2: return "B";
-		 case 3: return "C";
-		 case 4: return "D";
-		 case 5: return "E";
-		 case 6: return "F";
-		 case 7: return "G";
-		 case 8: return "H";
-		 case 9: return "I";
-		case 10: return "J";
-		case 11: return "K";
-		case 12: return "L";
-		case 13: return "M";
-		case 14: return "N";
-		case 15: return "O";
-		case 16: return "P";
-		case 17: return "Q";
-		case 18: return "R";
-		case 19: return "S";
-		case 20: return "T";
-		case 21: return "U";
-		case 22: return "V";
-		case 23: return "W";
-		case 24: return "X";
-		case 25: return "Y";
+		 case 1: return "A";		 case 2: return "B";		 case 3: return "C";		 case 4: return "D";		 case 5: return "E";
+		 case 6: return "F";		 case 7: return "G";		 case 8: return "H";		 case 9: return "I";		case 10: return "J";
+		case 11: return "K";		case 12: return "L";		case 13: return "M";		case 14: return "N";		case 15: return "O";
+		case 16: return "P";		case 17: return "Q";		case 18: return "R";		case 19: return "S";		case 20: return "T";
+		case 21: return "U";		case 22: return "V";		case 23: return "W";		case 24: return "X";		case 25: return "Y";
 		case 26: return "Z";
-		case 27: return "0";
-		case 28: return "1";
-		case 29: return "2";
-		case 30: return "3";
-		case 31: return "4";
-		case 32: return "5";
-		case 33: return "6";
-		case 34: return "7";
-		case 35: return "8";
-		case 36: return "9";
+		case 27: return "0";		case 28: return "1";		case 29: return "2";		case 30: return "3";		case 31: return "4";
+		case 32: return "5";		case 33: return "6";		case 34: return "7";		case 35: return "8";		case 36: return "9";
 		default: return "A";
 	}
 }
@@ -2246,8 +2218,14 @@ function ICUI_Draw_SDLDB_select() {
              audio_play_sound(a_ICUI_click,100,0);
 			break;
 			case mi_clear: // Clear current mapping
-			 __INPUTCANDY.ui.SDLDB_select.mode=false;
-			 __INPUTCANDY.ui.device_select.mode=true;
+			 {
+				var player=__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing];
+				if ( player.settings != none )	__INPUTCANDY.settings[player.settings].deviceInfo.sdl={ index: -1, guid: "none", name: "Unknown", remapping: "", platform: "" };
+				if ( player.device != none ) {
+					__INPUTCANDY.devices[player.device].sdl={ index: -1, guid: "none", name: "Unknown", remapping: "", platform: "" };
+					gamepad_remove_mapping(__INPUTCANDY.devices[player.device].slot_id);
+				}
+			 }
 			 audio_play_sound(a_ICUI_pageflip,100,0);
 			break;
 			case mi_scrup: // Scroll up
@@ -2262,6 +2240,9 @@ function ICUI_Draw_SDLDB_select() {
              audio_play_sound(a_ICUI_click,100,0);
 			break;
 			default:
+			    __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.detect_select.influencing].settings].deviceInfo.sdl=global.SDLDB[__INPUTCANDY.ui.SDLDB_select.influencing];
+				__INPUTCANDY.devices[__INPUTCANDY.players[__INPUTCANDY.ui.detect_select.influencing].device].sdl=SDLDB_Lookup_GUID(__INPUTCANDY.devices[i].guid );
+				__ICI.ApplySDLMappings();
 				audio_play_sound(a_ICUI_tone,100,0);
 			break;
 		}
@@ -2275,3 +2256,6 @@ function ICUI_Draw_SDLDB_select() {
 function ICUI_Draw_gamepad_test() {
 }
 
+
+function ICUI_Draw_capture() {
+}
