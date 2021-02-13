@@ -175,6 +175,8 @@ Advanced features of the library have been tested on a windows PC with the follo
 	- Tomee USB Controller for PC/PS3 (PS3-style controller) ($19.99)
 		- Both stick-presses registered properly
 		- Triggers registered as shoulders and shoulders registered as triggers
+	- ATARI VCS Classic Controller (not in a special mode)
+	- ATARI VCS Modern Controller (not in a special mode)
 	- Mouse, Keyboard
 
 Note that initial testing did not use any SDL remapping.
