@@ -8,17 +8,29 @@ For GMS 2.3.1+
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
 See a bug?  Submit an issue here, or better yet, a Pull Request.
 
-Remaining Progress Toward 1.0.0
----------------------
+Project Roadmap
+---------------
+
+### Remaining Progress Toward 1.0.0
 
 This table lists the remaining action items to be included in the 1.0.0 release.
 
-| Item | Progress |
+| Feature | Progress |
 |------|----------|
 | SDL Mapping Confirmation Test | A feature is needed to assure that input control is not lost when a user activates an SDL mapping that ruins their device settings.  This panel should appear after a new mapping is selected.  |
 | Capture Input Feature | Selection of input by capturing device input is a stretch goal that is not required for use now, but would be a value-added feature assisting players in setting up their input controls aside from the current list selection method.  This feature is also designed around allowing them to choose control axis in a two stage capture so they can program their thumbsticks (or other axis) as input. |
 | Live Device Simulator | A special screen that allows users to test their devices and get visual feedback.  Originally it was intended to include features created for the Atari by computercoder on the Atari developer discord.  This set of features was to use light-up indicators on actual photographs of devices in an ever expanding list of device associated photographs, but the feature should probably be backscoped to just show buttons for 1.0.0 |
 
+### Beyond 1.0.0
+
+| Feature | Version Priority | Progress |
+|---------|------------------|----------|
+| Testing on other platforms | Any next version | We need volunteers publishing to XBox, PS4/5 and other platforms |
+| Adding additional prefab UI components | 1.1.x and above | Adding additional more polished diagnostic tools that have their own Panel objects to be included in ICUI and as objects that can be included in your game ; adding a default "game menu" that can be styled ; a virtual keyboard for high score name entry, or any text entry, usable by controllers |
+| Thumbstick virtualization | ? | Provide a way to define virtualized thumbsticks (combinations of axis) ... requires additional research and thinking about usefulness.  This feature has a first step in the planned capture input feature |
+| Expanding Live Device Silmulator | 1.5.x and above | Expanding the Live Device simulator to support common console input controls (XInput, PS3, SNES/iBuffalo), STEAM Controller? As these are the most common controllers or are platform specific devices ; the goal is to use a visualization of the controller and "light up" or "arrow indicators" to show movements of the joystick, dpads, buttons etc, initially targetting: XBox, PS3/4/5, Atari VCS  |
+| Allowing Keyboard to be exchanged for players other than player 1 | ? | Not sure if this is needed |
+| Virtual on-screen joysticks | 1.8.x and above | Touch-sensor joysticks as a selectable device type for platforms that have touch screens ; there are other libraries that can handle this so this may be beyond scope |
 
 Supporting InputCandy
 ---------------------
