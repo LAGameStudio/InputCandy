@@ -8,6 +8,21 @@ For GMS 2.3.1+
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
 See a bug?  Submit an issue here, or better yet, a Pull Request.
 
+Remaining Progress Toward 1.0.0
+---------------------
+
+This table lists the remaining action items to be included in the 1.0.0 release.
+
+| Item | Progress |
+|------|----------|
+| SDL Mapping Confirmation Test | A feature is needed to assure that input control is not lost when a user activates an SDL mapping that ruins their device settings.  This panel should appear after a new mapping is selected.  |
+| Capture Input Feature | Selection of input by capturing device input is a stretch goal that is not required for use now, but would be a value-added feature assisting players in setting up their input controls aside from the current list selection method.  This feature is also designed around allowing them to choose control axis in a two stage capture so they can program their thumbsticks (or other axis) as input. |
+| Live Device Simulator | A special screen that allows users to test their devices and get visual feedback.  Originally it was intended to include features created for the Atari by computercoder on the Atari developer discord.  This set of features was to use light-up indicators on actual photographs of devices in an ever expanding list of device associated photographs, but the feature should probably be backscoped to just show buttons for 1.0.0 |
+
+
+Supporting InputCandy
+---------------------
+
 __If you download, use or just simply like this library, please star the above Repo, it helps. :)__     If you use this library in your
 game, please add the provided Lost Astronaut and Image Candy logos to your startup screen if you wish
 to give back a little credit to the creators of InputCandy.
