@@ -2509,6 +2509,7 @@ function New_InputCandy_Private() {
 		if ( candidate != -1 ) { // Ok, we found a perfect match
 			return candidate;
 		} 
+		/* I've turned this off because it needs a better merging and probably won't help anyway.
 		if ( candidate == -1 ) {
 		// Start from the back of the list which represents latest additions to "setup" memory.
 			for ( var i=len-1; i>=0; i-- ) {
@@ -2529,6 +2530,7 @@ function New_InputCandy_Private() {
 			}
 		}
 		if ( (confidence/(3.0*global.max_players)) > IC_SETUP_STRONG_CONFIDENT_MATCH_THRESHOLD ) return candidate;
+		*/
 		// Otherwise, let's go with the current setup, so let's create one.
 		var new_index=array_length(__INPUTCANDY.setups);
 		__INPUTCANDY.setups[new_index]=current;
@@ -2539,7 +2541,7 @@ function New_InputCandy_Private() {
 	UpdateActiveSetup: function () {
 		if ( __INPUTCANDY.active_setup == none ) return;
 		var k=__INPUTCANDY.active_setup;
-		__INPUTCANDY.setups[k]=
+		__INPUTCANDY.setups[k]=__ICI.CaptureSetup();
 		__ICI.SaveSetups();
 	},
 	
