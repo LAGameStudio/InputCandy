@@ -82,9 +82,14 @@ function IC_Action( verb_string, default_gamepad, default_keyboard /*mouse, grou
 
 ////////// enumerations and global macros
 
-
 #macro none noone
 #macro unknown -123456789
+
+// The value of "setups" stored in the setups memory list.  
+// Should be limited to at least the number of maximum players for good effect, more if desired
+#macro IC_MAX_SETUPS 20
+// This value is used for partially matching scheme.  There is probably some more complicated matching algorithm I've not yet considered, but for now this should help.
+#macro IC_SETUP_STRONG_CONFIDENT_MATCH_THRESHOLD 0.5
 
 #macro AXIS_NO_VALUE -10000
 
@@ -404,6 +409,7 @@ global.SDLDB=[];
 global._INPUTCANDY_DEFAULTS_ = {
  //// Global Settings ////
  ready: false,                            // Has IC been initialized?
+ steps: unknown,                          // During initialization, steps is set to 0.  This number increases until we reach a certain threshold, and it is used to delay aspects of "setup detection" until device polling is complete (it is not a frame counter)
  max_players: 8,                          // Default value for SetMaxPlayers()
  allow_multibutton_capture: true,         // Allows players to assign multi-button combos to a single action, set to false for simplicity
  allow_keyboard_mouse: true,              // If the platform supports it, setting this true will use keyboard_and_mouse as an input device (false = hide on consoles w/o keyboard)
@@ -429,6 +435,7 @@ global._INPUTCANDY_DEFAULTS_ = {
  players: [],                             // A list of player "slots", active setting info, and their status and device association, device state
  settings: [],                            // List of "stored" and associatable settings
  setups:  [],                             // Holds on to previous sessions where players have been associated with devices
+ active_setup: none,                      // When we've previously loaded a setup, and done a match, the setup index value of the matched setup goes here.
  network: {},
  platform: {},                            // Platform information acquired from GML
  //// Events that can be overridden: ////
@@ -1105,13 +1112,20 @@ function New_InputCandy_Private() {
 		__ICI.GetDeviceStates();
 		__ICI.AssignUnusedDevices();
 	    if ( __INPUTCANDY.use_network ) __ICI.UpdateNetwork();
+		if ( __INPUTCANDY.steps < 5 ) {
+			__INPUTCANDY.steps++;
+			if ( __INPUTCANDY.steps == 5 ) {
+				__INPUTCANDY.active_setup=__ICI.MatchSetup();				
+			}
+		}
 	 },
 	 Init: function() {
 		__INPUTCANDY.platform = __ICI.GetPlatformSpecifics();
 	 	__ICI.ReadPlayerSettings();
-//		__ICI.ReadLastPlayerSetup();
+		__ICI.LoadSettings();
+		__ICI.LoadSetups();
 		__IC.SetMaxPlayers(__INPUTCANDY.max_players);
-//		__INPUTCANDY.previous_devices = ds_list_create(); TODO
+		__INPUTCANDY.steps=0;
 	 },
 	 UpdateNetwork: function() { /* TODO */ },
 	 WritePlayerSettings: function( player_number, settings_number ) {
@@ -2430,18 +2444,103 @@ function New_InputCandy_Private() {
 	
 	//// Associates device configurations with their players and settings, 
 	//// so upon reloading of the game the same settings, devices and players are associated.
-
-    // A matching algorithm determines which setup is most appropriate and applies it.	
-	MatchSetup: function() {
+	
+	New_ICSetup: function() {
+		return {
+			devices: [],
+			settings: [],
+			deviceInfo: []
+		};
 	},
 	
-	// Saves prior setups to disk.
+	// Since setups are driven by the current state, we create an IC setup from the existing configuration.
+	CaptureSetup: function() {
+		var setup=__ICI.New_ICSetup();		
+		for ( var i=0; i<global.max_players; i++ ) {
+			setup.devices[array_length(setup.devices)]=__INPUTCANDY.players[i].device;
+			setup.settings[array_length(setup.settings)]=__INPUTCANDY.players[i].settings;
+			if ( __INPUTCANDY.players[i].device == none ) setup.deviceInfo[array_length(setup.deviceInfo)]=none;
+			else setup.deviceInfo[array_length(setup.deviceInfo)]=__INPUTCANDY.devices[__INPUTCANDY.players[i].device];
+		}
+	},
+
+	// Saves prior setups to disk.  Limits prior setups, tossing away earliest in list if beyond limit.  TODO: throw away duplicates and least useful
 	SaveSetups: function() {
-		
+		var len=array_length(__INPUTCANDY.setups);
+		if ( len < IC_MAX_SETUPS ) string_as_file(__INPUTCANDY.setups_filename,json_stringify(__INPUTCANDY.setups));
+		else {
+			var list=[];
+			for ( var i=len-IC_MAX_SETUPS; i<len; i++ ) {
+				list[array_length(list)]=__INPUTCANDY.setups[i];
+			}
+			string_as_file(__INPUTCANDY.setups_filename,json_stringify(list));
+		}
 	},
 	
 	// Loads previous setups from disk.
 	LoadSetups: function() {
+		if ( !file_exists(__INPUTCANDY.setups_filename) ) return [];
+		__INPUTCANDY.setups = json_parse(file_as_string(__INPUTCANDY.setups_filename));
+	},
+
+    // A matching algorithm determines which setup is most appropriate and applies it.	If it fails, it returns a fresh capture.
+	// Consider the problem:
+	//    - slot_ids are assigned based on their USB port, not the device port.  if a user swaps devices, this creates a distinct setup.
+	//    - settings are created for a specific device, but may be used by other devices at the player's discretion
+	//    - removing a device does disconnect a player, but what if
+	MatchSetup: function() {
+		var current=__ICI.CaptureSetup();
+		var len=array_length(__INPUTCANDY.setups);
+		var candidate=-1;
+		var confidence=0;
+		// See if we can find a complete match on devices based on latest setup.
+		// This query asks the question:
+		// "From the newest to the oldest setup memories, which one matches precisely on player+device association?"
+		for ( var i=len-1; i>=0; i-- ) {
+		    var matches=0;
+			for ( var j=0; j<global.max_players; j++ ) {
+			   if ( current.devices[j] == __INPUTCANDY.setups[i].devices[j] ) matches++;
+			}
+			if ( matches == 8 ) {
+				candidate=i;
+				break;
+			}
+		}
+		if ( candidate != -1 ) { // Ok, we found a perfect match
+			return candidate;
+		} 
+		if ( candidate == -1 ) {
+		// Start from the back of the list which represents latest additions to "setup" memory.
+			for ( var i=len-1; i>=0; i-- ) {
+				var setup_matches=0;
+				for ( var j=0; j<global.max_players; j++ ) {
+				   var matches=0;
+				   if ( current.devices[j] == __INPUTCANDY.setups[i].devices[j] ) matches++;
+				   if ( current.deviceInfo[j] != none ) {
+					   if ( current.deviceInfo[j].desc == __INPUTCANDY.setups[i].deviceInfo[j].desc ) matches++;
+					   if ( current.deviceInfo[j].sdl == __INPUTCANDY.setups[i].deviceInfo[j].sdl ) matches++;   // With high confidence, this matches on all cases.
+				   }
+				   setup_matches+=matches;
+				}
+				if ( setup_matches > confidence ) {
+					candidate=i;
+					confidence=matches;
+				}
+			}
+		}
+		if ( (confidence/(3.0*global.max_players)) > IC_SETUP_STRONG_CONFIDENT_MATCH_THRESHOLD ) return candidate;
+		// Otherwise, let's go with the current setup, so let's create one.
+		var new_index=array_length(__INPUTCANDY.setups);
+		__INPUTCANDY.setups[new_index]=current;
+		return new_index;
+	},
+	
+	// Updates the active setup based on
+	UpdateActiveSetup: function () {
+		if ( __INPUTCANDY.active_setup == none ) return;
+		var k=__INPUTCANDY.active_setup;
+		__INPUTCANDY.setups[k]=
+		__ICI.SaveSetups();
 	},
 	
 	ApplySDLMappings: function () {
