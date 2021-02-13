@@ -440,14 +440,15 @@ global._INPUTCANDY_DEFAULTS_ = {
  platform: {},                            // Platform information acquired from GML
  //// Events that can be overridden: ////
  // Set this to a different function to trigger your own custom reaction to this event.
- e_controller_connected:    function( slot_id ) { show_debug_message("Controller connected!"+int(slot_id)); },
+ e_controller_connected:    function( device_index, deviceInfo ) { show_debug_message("Controller connected! Device ID "+int(device_index)+" "+json_stringify(deviceInfo)); },
  // Set this to a different function to trigger your own custom reaction to this event.
- e_controller_disconnected: function( slot_id ) { show_debug_message("Controller disconnected!"+int(slot_id)); },
+ e_controller_disconnected: function( old_device_index, deviceInfo ) { show_debug_message("Controller disconnected! Device ID "+int(device_index)+" "+json_stringify(deviceInfo)); },
  // Default action for saving the settings file (sandboxed on most systems, only change if you need to)
- e_save_settings_file:      function( json_data ) { save_json( "control_settings.json", json_data ); },
- e_load_settings_file:      function( default_json ) { return load_json( "control_settings.json", default_json ); },
+ e_save_file:      function( filename, json_data ) { string_as_file( filename, json_stringify(json_data) ); },
+ e_load_file:      function( filename, default_json ) { if ( !file_exists(filename) ) return default_json; else return json_parse(file_as_string( filename )); },
+ // I've removed this since it's best if you tie it into your game the way you want to.  You can simply detect signals and filter them from players who are inactive yourself.
  // What to do when a player wants to join.  This is useful if you wish for players to become active at any time, but can be handled another way
- e_inactive_player_pressed_start:     function( player_number ) {} //show_debug_message("Player wants to start! "+string_format(player_number,1,0)); }
+ // e_inactive_player_pressed_start:     function( player_number ) {} //show_debug_message("Player wants to start! "+string_format(player_number,1,0)); }
 };
 
 // This is the global variable where the persistent state of InputCandy is stored.   __IC.interface references this global profile.
@@ -1115,27 +1116,20 @@ function New_InputCandy_Private() {
 		if ( __INPUTCANDY.steps < 5 ) {
 			__INPUTCANDY.steps++;
 			if ( __INPUTCANDY.steps == 5 ) {
-				__INPUTCANDY.active_setup=__ICI.MatchSetup();				
+				__INPUTCANDY.active_setup=__ICI.MatchSetup();
+				__ICI.ApplyDeviceSettings();
+				//__ICI.ApplySDLMappings();
 			}
 		}
 	 },
 	 Init: function() {
 		__INPUTCANDY.platform = __ICI.GetPlatformSpecifics();
-	 	__ICI.ReadPlayerSettings();
 		__ICI.LoadSettings();
 		__ICI.LoadSetups();
 		__IC.SetMaxPlayers(__INPUTCANDY.max_players);
 		__INPUTCANDY.steps=0;
 	 },
 	 UpdateNetwork: function() { /* TODO */ },
-	 WritePlayerSettings: function( player_number, settings_number ) {
-		 __IC.e_save_settings_file( { settings: __INPUTCANDY.settings, setups: __INPUTCANDY.setups } );
-	 },
-	 ReadPlayerSettings: function( player_number, settings_number ) {
-		 var data = __INPUTCANDY.e_load_settings_file( { settings:[], setups:[] } );
-		 __INPUTCANDY.settings = data.settings;
-		 __INPUTCANDY.setups = data.setups;
-	 },
 	 GetPlatformSpecifics: function() {
 		return {
 			device: os_device,
@@ -1247,6 +1241,7 @@ function New_InputCandy_Private() {
 			 var index=array_length(__INPUTCANDY.devices);
 			 __INPUTCANDY.devices[index]=devices_list[i];
 			 if ( devices_list[i].type == ICDeviceType_keyboard_mouse and index != 0 ) devices_list[i].type=ICDeviceType_gamepad;
+			__INPUTCANDY.e_controller_connected(i,devices_list[i]);
 		 }
 		 // Determine if any of the already known are still connected.  If not, prune in a special case, otherwise, create a new device profile and populate it.
 		 j=0;
@@ -1263,6 +1258,7 @@ function New_InputCandy_Private() {
 					 if ( !connected ) devices_list[j].slot_id=none;
 					 j++;
 				 } else { // Otherwise: It's an isolated gamepad we're going to remove it from the new devices list, disconnect it and move it to the previously known list (TODO?)
+					__INPUTCANDY.e_controller_disconnected(i,devices_list[i]);
 				 }
 			 }
 		 }
@@ -2423,12 +2419,12 @@ function New_InputCandy_Private() {
 			var blen=array_length(output[i].bindings);
 			for ( var j=0; j<blen; j++ ) output[i].bindings[j]=__ICI.PreSaveBinding(output[i].bindings[j]);
 		}
-		string_as_file(__INPUTCANDY.settings_filename,json_stringify(output));
+		__INPUTCANDY.e_save_file(__INPUTCANDY.settings_filename,output);
+		__ICI.SaveSetups();
 	},
 	
 	LoadSettings: function() {
-		if ( !file_exists(__INPUTCANDY.settings_filename) ) return [];
-		var a=json_parse(file_as_string(__INPUTCANDY.settings_filename));
+		var a=__INPUTCANDY.e_load_file(__INPUTCANDY.settings_filename,[]);
 		if ( !is_array(a) ) return;
 		var len=array_length(a);
 		__INPUTCANDY.settings=[];
@@ -2456,7 +2452,7 @@ function New_InputCandy_Private() {
 	// Since setups are driven by the current state, we create an IC setup from the existing configuration.
 	CaptureSetup: function() {
 		var setup=__ICI.New_ICSetup();		
-		for ( var i=0; i<global.max_players; i++ ) {
+		for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
 			setup.devices[array_length(setup.devices)]=__INPUTCANDY.players[i].device;
 			setup.settings[array_length(setup.settings)]=__INPUTCANDY.players[i].settings;
 			if ( __INPUTCANDY.players[i].device == none ) setup.deviceInfo[array_length(setup.deviceInfo)]=none;
@@ -2467,20 +2463,19 @@ function New_InputCandy_Private() {
 	// Saves prior setups to disk.  Limits prior setups, tossing away earliest in list if beyond limit.  TODO: throw away duplicates and least useful
 	SaveSetups: function() {
 		var len=array_length(__INPUTCANDY.setups);
-		if ( len < IC_MAX_SETUPS ) string_as_file(__INPUTCANDY.setups_filename,json_stringify(__INPUTCANDY.setups));
+		if ( len < IC_MAX_SETUPS ) __INPUTCANDY.e_save_file(__INPUTCANDY.setups_filename,__INPUTCANDY.setups);
 		else {
 			var list=[];
 			for ( var i=len-IC_MAX_SETUPS; i<len; i++ ) {
 				list[array_length(list)]=__INPUTCANDY.setups[i];
 			}
-			string_as_file(__INPUTCANDY.setups_filename,json_stringify(list));
+			__INPUTCANDY.e_save_file(__INPUTCANDY.setups_filename,list);
 		}
 	},
 	
 	// Loads previous setups from disk.
 	LoadSetups: function() {
-		if ( !file_exists(__INPUTCANDY.setups_filename) ) return [];
-		__INPUTCANDY.setups = json_parse(file_as_string(__INPUTCANDY.setups_filename));
+		__INPUTCANDY.setups = __INPUTCANDY.e_load_file(__INPUTCANDY.setups_filename,[]);
 	},
 
     // A matching algorithm determines which setup is most appropriate and applies it.	If it fails, it returns a fresh capture.
@@ -2546,7 +2541,7 @@ function New_InputCandy_Private() {
 	},
 	
 	ApplySDLMappings: function () {
-		for ( var i=0; i<global.max_players; i++ ) {
+		for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
 			var player=__INPUTCANDY.players[i];
 			if ( player.device == none ) continue;
 			var device=__INPUTCANDY.devices[__INPUTCANDY.players[i].device];
@@ -2562,7 +2557,7 @@ function New_InputCandy_Private() {
 	},
 	
 	ApplyDeviceSettings: function() {
-		for ( var i=0; i<global.max_players; i++ ) {
+		for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
 			var player=__INPUTCANDY.players[i];
 			if ( player.device == none ) continue;
 			var device=__INPUTCANDY.devices[__INPUTCANDY.players[i].device];
