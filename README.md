@@ -21,6 +21,7 @@ This table lists the remaining action items to be included in the 1.0.0 release.
 | Capture Input Feature | Selection of input by capturing device input is a stretch goal that is not required for use now, but would be a value-added feature assisting players in setting up their input controls aside from the current list selection method.  This feature is also designed around allowing them to choose control axis in a two stage capture so they can program their thumbsticks (or other axis) as input. |
 | Live Device Simulator | A special screen that allows users to test their devices and get visual feedback.  Originally it was intended to include features created for the Atari by computercoder on the Atari developer discord.  This set of features was to use light-up indicators on actual photographs of devices in an ever expanding list of device associated photographs, but the feature should probably be backscoped to just show buttons for 1.0.0 |
 | Documentation | Tutorials on Github wiki, intro video, promo video, dev debrief/diary video planned for 1.0.0 |
+| Tech Debt | Clean up ICUI such that users can reuse certain parts independently of the default workflow |
 
 ### Beyond 1.0.0
 
