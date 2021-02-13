@@ -3,6 +3,12 @@ InputCandy by Lost Astronaut
 
 ![GitHub Logo](/marketplace/InputCandyTeaser.png)
 
+InputCandy focuses on providing input testing and customization for users
+of PC and gamepad-friendly platforms (consoles).
+
+It's that classic "control setup" panel system you are accustomed to seeing
+in video games small and large, but for GameMaker.
+
 For GMS 2.3.1+
 
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
@@ -41,7 +47,10 @@ __If you download, use or just simply like this library, please star the above R
 game, please add the provided Lost Astronaut and Image Candy logos to your startup screen if you wish
 to give back a little credit to the creators of InputCandy.
 
-InputCandy focuses on PC and gamepad-friendly platforms.
+Using InputCandy
+----------------
+
+You can use InputCandy in pieces or as a whole.
 
 It currently does not handle multitouch, screen reorientation, platform specific scenarios beyond gamepads.
 
