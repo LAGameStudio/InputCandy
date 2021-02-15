@@ -13,7 +13,6 @@ See Notes > Note1 for more information
 #macro __IC __INPUTCANDY.interface
 #macro __ICI __INPUTCANDY.internal
 
-
 // 1. Initialize the "Advanced mode" with the following function call in a Room Creation or during initial game startup.
 function Init_InputCandy_Advanced() { __Private_Init_InputCandy(); }
 
@@ -88,8 +87,6 @@ function IC_Action( verb_string, default_gamepad, default_keyboard /*mouse, grou
 // The value of "setups" stored in the setups memory list.  
 // Should be limited to at least the number of maximum players for good effect, more if desired
 #macro IC_MAX_SETUPS 20
-// This value is used for partially matching scheme.  There is probably some more complicated matching algorithm I've not yet considered, but for now this should help.
-#macro IC_SETUP_STRONG_CONFIDENT_MATCH_THRESHOLD 0.5
 
 #macro AXIS_NO_VALUE -10000
 
@@ -411,9 +408,10 @@ global._INPUTCANDY_DEFAULTS_ = {
  ready: false,                            // Has IC been initialized?
  steps: unknown,                          // During initialization, steps is set to 0.  This number increases until we reach a certain threshold, and it is used to delay aspects of "setup detection" until device polling is complete (it is not a frame counter)
  max_players: 8,                          // Default value for SetMaxPlayers()
+ player_using_keyboard_mouse: 0,          // Player index of the player using the keyboard and mouse
  allow_multibutton_capture: true,         // Allows players to assign multi-button combos to a single action, set to false for simplicity
  allow_keyboard_mouse: true,              // If the platform supports it, setting this true will use keyboard_and_mouse as an input device (false = hide on consoles w/o keyboard)
- keyboard_mouse_player1: true,	          // True means "player 1 gets to use a gamepad too"
+ allow_SDL_remapping: false,
  keyboard_layout: ICKeyboardLayout_qwerty,   // Changing to Azerty or Qwertz provides a sorta-remapping for keyboards, but there isn't a good way to detect what keyboard
  skip_simplified_axis: false,             // Set this value to true to stop IC from registering simplified axis movements.
  use_network: false,                      // Turn this on if you are going to be using network transmits
@@ -1083,7 +1081,7 @@ function New_InputCandy() {
 		KeyboardMouseDiagnosticString: function () {
 			var out="";
 			if ( !__INPUTCANDY.allow_keyboard_mouse ) out += "Mouse and keyboard disabled\n";
-			if ( !__INPUTCANDY.keyboard_mouse_player1 ) out+="Player 1 uses Mouse and keyboard\n";
+			if ( !__INPUTCANDY.player_using_keyboard_mouse ) out+="Player "+int(__INPUTCANDY.player_using_keyboard_mouse)+" uses Mouse and keyboard\n";
 			else out+="Player 1 uses Mouse and Keyboard AND/OR Gamepad\n";
 			out+="Mouse:     "+json_stringify(__INPUTCANDY.mouse)+"\n";
 			out+="wasMouse: "+json_stringify(__INPUTCANDY.wasMouse)+"\n";
@@ -1191,90 +1189,56 @@ function New_InputCandy_Private() {
 	GetActiveDevices: function() {
 		 var j=0;
 		 var existing = array_length(__INPUTCANDY.devices);
-		 var devices_list=[];
-		 // Mouse, Keyboard is always "device index 0"; but only when supported and permitted to be used as an input device
-		 if ( __INPUTCANDY.platform.keyboard_mouse_supported and __INPUTCANDY.allow_keyboard_mouse ) {
-			 var d=__ICI.New_ICDevice();
-			 d.type=ICDeviceType_keyboard_mouse;
-			 d.index=j;
-			 devices_list[j]=d;
-			 if ( !__INPUTCANDY.keyboard_mouse_player1 ) j++;
-		 }
+		 var newly_devices_list=[];
 		 // Poll all gamepad slots for connected devices.
 		 var gamepads=gamepad_get_device_count();
 		 for ( var i=0; i<gamepads; i++ ) {
 			 if ( gamepad_is_connected(i) ) {
 				var found=false;
 				// See if the gamepad is already known about...
-				for ( var k=0; k<existing; k++ ) if ( __INPUTCANDY.devices[k].slot_id==i ) { found=true; break; }
-				if ( found ) continue;
-				// In the special case that keyboard_and_mouse are activated in settings, and we're allowing the player(s) to use it
-				if ( __INPUTCANDY.platform.keyboard_mouse_supported and __INPUTCANDY.allow_keyboard_mouse ) {
-					// If we're in the special case of the "Device 0" position, and it's not "Device 0" index we need to create a new device profile and give it an accurate type.
-					if ( __INPUTCANDY.keyboard_mouse_player1 and j != 0 ) {
-						devices_list[j]=__ICI.New_ICDevice();
-						devices_list[j].type = ICDeviceType_gamepad;
-					} // otherwise we are writing to the "Device 0" position and the type is already set.
-				} else { // No keyboard or mouse enters the picture, so give the new profile an accurate type
-					devices_list[j]=__ICI.New_ICDevice();
-					devices_list[j].type = ICDeviceType_gamepad;
+				for ( var k=0; k<existing; k++ ) {
+					if ( __INPUTCANDY.devices[k].slot_id==i ) { found=true; break; }
 				}
+				if ( found ) continue;
+				newly_devices_list[j]=__ICI.New_ICDevice();
+				newly_devices_list[j].type = ICDeviceType_gamepad;
 				// Associated and collect all information into the new devices list.
-				devices_list[j].slot_id=i;
-				devices_list[j].guid = gamepad_get_guid(i);
-				devices_list[j].desc = gamepad_get_description(i);
-				devices_list[j].hat_count = gamepad_hat_count(i);
+				newly_devices_list[j].slot_id=i;
+				newly_devices_list[j].guid = gamepad_get_guid(i);
+				newly_devices_list[j].desc = gamepad_get_description(i);
+				newly_devices_list[j].hat_count = gamepad_hat_count(i);
 				var btns= gamepad_button_count(i);
-				devices_list[j].button_count = btns;
-				for ( var k=0; k<btns; k++ ) devices_list[j].button_thresholds[k]=gamepad_get_button_threshold(i);
+				newly_devices_list[j].button_count = btns;
+				for ( var k=0; k<btns; k++ ) newly_devices_list[j].button_thresholds[k]=gamepad_get_button_threshold(i);
 				var axes= gamepad_axis_count(i);
-				devices_list[j].axis_count = axes;
-				for ( var k=0; k<axes; k++ ) devices_list[j].axis_deadzones[k]=gamepad_get_axis_deadzone(i);
-				devices_list[j].index=j;
-				devices_list[j].sdl = SDLDB_Lookup_Device(devices_list[j]);
+				newly_devices_list[j].axis_count = axes;
+				for ( var k=0; k<axes; k++ ) newly_devices_list[j].axis_deadzones[k]=gamepad_get_axis_deadzone(i);
+				newly_devices_list[j].index=j;
+				newly_devices_list[j].sdl = SDLDB_Lookup_Device(newly_devices_list[j]);
 				j++;
 			 }
 		 }
 		 // Append detected devices not found in the already known and connected list
-		 var len=array_length(devices_list);
+		 var len=array_length(newly_devices_list);
 		 for ( var i=0; i<len; i++ ) {
 			 var index=array_length(__INPUTCANDY.devices);
-			 __INPUTCANDY.devices[index]=devices_list[i];
-			 if ( devices_list[i].type == ICDeviceType_keyboard_mouse and index != 0 ) devices_list[i].type=ICDeviceType_gamepad;
-			__INPUTCANDY.e_controller_connected(i,devices_list[i]);
+			 __INPUTCANDY.devices[index]=newly_devices_list[i];
+			__INPUTCANDY.e_controller_connected(i,newly_devices_list[i]);
 		 }
 		 // Determine if any of the already known are still connected.  If not, prune in a special case, otherwise, create a new device profile and populate it.
 		 j=0;
-		 devices_list=[];
+		 var devices_list=[];
 		 len = array_length(__INPUTCANDY.devices);
 		 for ( var i=0; i<len; i++ ) {
 			 if ( __INPUTCANDY.devices[i].slot_id != none ) {
 				 var connected=gamepad_is_connected(__INPUTCANDY.devices[i].slot_id);
-				 // If this device profile is connected to a valid slot_id we need to copy it to the new list.
-				 if ( connected or ( __INPUTCANDY.keyboard_mouse_player1 and i==0 ) ) {
+				 if ( !connected ) {
+					 // If this device profile is connected to a valid slot_id we need to copy it to the new list.
+					__INPUTCANDY.e_controller_disconnected(i,__INPUTCANDY.devices[i]);
+				 } else {
 					 devices_list[j]=__INPUTCANDY.devices[i];
-					 devices_list[j].index = j;
-					 // Unless its a special case and the gamepad is disconnected, then we're removing it from the "Device 0" position which remains as a keyboard mouse primary input
-					 if ( !connected ) devices_list[j].slot_id=none;
 					 j++;
-				 } else { // Otherwise: It's an isolated gamepad we're going to remove it from the new devices list, disconnect it and move it to the previously known list (TODO?)
-					__INPUTCANDY.e_controller_disconnected(i,devices_list[i]);
 				 }
-			 }
-		 }
-		 // If no gamepad is associated with "Device 0", and there's supposed to be at least one associated, assign the next available one to the "Device 0" position
-		 if ( __INPUTCANDY.keyboard_mouse_player1 and __INPUTCANDY.platform.keyboard_mouse_supported and __INPUTCANDY.allow_keyboard_mouse ) {
-			 if ( devices_list[0].slot_id == none and array_length(devices_list) > 1 ) {
-				 var device_list_copy=[];
-				 var list_len=array_length(devices_list);
-				 device_list_copy[0]=devices_list[1];
-				 device_list_copy[0].type=ICDeviceType_keyboard_mouse;
-				 device_list_copy[0].index=0;
-				 for ( var m=2; m<list_len; m++ ) {
-					 device_list_copy[m-1]=devices_list[m];
-					 device_list_copy[m-1].index=m-1;
-				 }				 
-				 devices_list=device_list_copy;
 			 }
 		 }
 		 // Get the latest list and make it available.
@@ -1551,7 +1515,7 @@ function New_InputCandy_Private() {
 			__INPUTCANDY.states[array_length(__INPUTCANDY.states)]=state;
 		}
 		if ( __INPUTCANDY.allow_keyboard_mouse && __INPUTCANDY.platform.keyboard_mouse_supported ) {
-			GetKeyboardMouseStates();
+			__ICI.GetKeyboardMouseStates();
 		}
 	},
 	ButtonStateIn: function ( code, keys, len ) {
@@ -2364,6 +2328,15 @@ function New_InputCandy_Private() {
 	},
 	
 	RemoveBinding: function ( settings_index, action_index ) {
+		var list=[];
+		var len=array_length(__INPUTCANDY.settings[settings_index]);
+		for ( var i=0; i<len; i++ ) {
+			if ( __INPUTCANDY.settings[settings_index].bindings[i].action == action_index ) {
+				continue;
+			}
+			list[array_length(list)]= __INPUTCANDY.settings[settings_index].bindings[i];
+		}
+ 	    __INPUTCANDY.settings[settings_index].bindings=list;
 	},
 	
 	// Call only to set Gamepad
@@ -2503,29 +2476,7 @@ function New_InputCandy_Private() {
 		}
 		if ( candidate != -1 ) { // Ok, we found a perfect match
 			return candidate;
-		} 
-		/* I've turned this off because it needs a better merging and probably won't help anyway.
-		if ( candidate == -1 ) {
-		// Start from the back of the list which represents latest additions to "setup" memory.
-			for ( var i=len-1; i>=0; i-- ) {
-				var setup_matches=0;
-				for ( var j=0; j<global.max_players; j++ ) {
-				   var matches=0;
-				   if ( current.devices[j] == __INPUTCANDY.setups[i].devices[j] ) matches++;
-				   if ( current.deviceInfo[j] != none ) {
-					   if ( current.deviceInfo[j].desc == __INPUTCANDY.setups[i].deviceInfo[j].desc ) matches++;
-					   if ( current.deviceInfo[j].sdl == __INPUTCANDY.setups[i].deviceInfo[j].sdl ) matches++;   // With high confidence, this matches on all cases.
-				   }
-				   setup_matches+=matches;
-				}
-				if ( setup_matches > confidence ) {
-					candidate=i;
-					confidence=matches;
-				}
-			}
 		}
-		if ( (confidence/(3.0*global.max_players)) > IC_SETUP_STRONG_CONFIDENT_MATCH_THRESHOLD ) return candidate;
-		*/
 		// Otherwise, let's go with the current setup, so let's create one.
 		var new_index=array_length(__INPUTCANDY.setups);
 		__INPUTCANDY.setups[new_index]=current;

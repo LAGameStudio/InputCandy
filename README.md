@@ -71,7 +71,10 @@ InputCandy is good for:
 * Allowing players to rebind controls
 * Allowing players to take advantage of the SDL Game Controller DB
 
+If you are going to use SDLDB, and you are testing with devices that don't map or have no DB entry, developers on the GameMaker Discord emphatically encourages you to submit a Pull Request to the SDL Gamecontroller Database at
+https://github.com/gabomdq/SDL_GameControllerDB
 
+Note that use of the SDLDB is turned off by default as it may have undesired consequences and is not really necessary if the player is going to be permitted to remap input by use of device testing/capture or input selection.
 
 Input Device Control Concept Diagram
 ------------------------------------

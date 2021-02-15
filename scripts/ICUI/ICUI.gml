@@ -309,6 +309,10 @@ function ICUI_labeled_button( is_focused, labeltext, x, y, w, h ) {
 }
 
 
+function ICUI_get_key_size( sx, sy, fontsize, swh ) {
+	return rectangle(sx,sy,1.0/fontsize*swh*0.25,1.0/fontsize*swh*0.25);
+}
+
 // Draws a "button description" like A,B,X,Y,hat0_L,a key
 function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mouse_combo, r ) {
 	
@@ -456,17 +460,18 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 				}
 				if ( is_directional ) {
 					if ( code == IC_wasd ) {
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,"W",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
+						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y-keyh, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx,key.y,"W",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,"A",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y-keyh, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx,key.y,"A",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,"S",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx,key.y,"S",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,"D",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx,key.y,"D",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						sx+=swh+spacing;
 					} else if ( code == IC_arrows ) {
 						ICUI_image( s_InputCandy_ICUI_icons, 49, sx, r.y, swh, r.h, c_white, 0, 1.0 );
@@ -475,43 +480,45 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 51, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 52, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						sx+=swh+spacing;
 					} else if ( code == IC_numpad ) { 
+						var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
 						ICUI_image( s_InputCandy_ICUI_icons, 75, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,"8",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						draw_text_transformed_color(sx+swh/2,key.y,"8",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 76, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,"2",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						draw_text_transformed_color(sx+swh/2,key.y,"2",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 77, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,"4",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						draw_text_transformed_color(sx+swh/2,key.y,"4",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 78, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,"6",1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						draw_text_transformed_color(sx+swh/2,key.y,"6",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						sx+=swh+spacing;
 					}
 				} else if ( code >= IC_key_A and code <= IC_key_9 ) {
-					ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
 					switch ( __INPUTCANDY.keyboard_layout ) {
 						case ICKeyboardLayout_qwerty:
-							draw_text_transformed_color(sx+swh/2,sy+swh/2,string_replace(__INPUTCANDY.signals[code].name,"Key ",""), 1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+							draw_text_transformed_color(sx+swh/2,key.y,string_replace(__INPUTCANDY.signals[code].name,"Key ",""), key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						break;
 						case ICKeyboardLayout_azerty:
-							draw_text_transformed_color(sx+swh/2,sy+swh/2,string_replace(__INPUTCANDY.signals[code].azerty_name,"Key ",""), 1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+							draw_text_transformed_color(sx+swh/2,key.y,string_replace(__INPUTCANDY.signals[code].azerty_name,"Key ",""), key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						break;
 						case ICKeyboardLayout_qwertz:
-							draw_text_transformed_color(sx+swh/2,sy+swh/2,string_replace(__INPUTCANDY.signals[code].qwertz_name,"Key ",""), 1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+							draw_text_transformed_color(sx+swh/2,key.y,string_replace(__INPUTCANDY.signals[code].qwertz_name,"Key ",""), key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						break;
 					}
 					sx+=swh+spacing;
 				} else if ( code >= IC_backspace and code <= IC_f12 ) {
 					switch ( code ) {
-						case IC_backspace:     
+						case IC_backspace:
 							ICUI_image( s_InputCandy_ICUI_icons, 31, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
-						case IC_any_alt:		
+						case IC_any_alt:	
 							ICUI_image( s_InputCandy_ICUI_icons, 39, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
@@ -689,8 +696,9 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 						break;
 					}
 				} else if ( code >= IC_key_backtick and code <= IC_key_apostrophe ) {
-						ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,sy+swh/2,__INPUTCANDY.signals[code].keychar,1.0/fontsize*swh*0.8,1.0/fontsize*swh*0.8,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
+						ICUI_image( s_InputCandy_ICUI_icons, 30, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx,key.y,__INPUTCANDY.signals[code].keychar,key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 				} else if ( code >= IC_enter and code <= IC_key_escape ) {
 					switch ( code ) {
@@ -711,8 +719,9 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 			break;
 		}
 		if ( i+1 != len ) {
-			ICUI_text( false, (is_combo or key_mouse_combo) ? "and" : "or", sx + ( spacing*2 + fontsize*5 ) /2, sy + swh/2 );
-			sx += spacing+fontsize*5+spacing;
+			ICUI_text( false, (is_combo or key_mouse_combo) ? "and" : "or", sx + spacing, sy );
+		//	sx += spacing;
+			sx -= fontsize+spacing;
 		}
 	}	
 }
@@ -746,7 +755,7 @@ function ICUI_Draw_device_select() {
 	if ( __INPUTCANDY.max_players == 1 and device_count == 0 ) { // Skip gamepad selection, go right to Keyboard/Mouse Input Binding
 		__INPUTCANDY.ui.device_select.mode=false;
 		__INPUTCANDY.ui.input_binding.mode=true;
-		__INPUTCANDY.ui.input_binding.keyboard_mouse=true;
+		__INPUTCANDY.ui.input_binding.keyboard_and_mouse=true;
 		return;
 	}
 	
@@ -810,7 +819,7 @@ function ICUI_Draw_device_select() {
 			 ( __INPUTCANDY.ui.device_select.influencing == k and __INPUTCANDY.ui.device_select.menuitem == 0 ),
 			 r.x,r.y,r.w,r.h );
 		}
-		if ( __INPUTCANDY.keyboard_mouse_player1 and k==0 ) {
+		if ( k==__INPUTCANDY.player_using_keyboard_mouse ) {
 			draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*swh*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*swh*0.75, 0, c_white, 1.0 );
 			draw_sprite_ext( s_InputCandy_device_icons, 0,ox+cw/2+cw/4,oy+rh/2+rh/4, 1.0/sprite_get_width(s_InputCandy_device_icons)*swh*0.25, 1.0/sprite_get_height(s_InputCandy_device_icons)*swh*0.25, 0, c_white, 1.0 );
 		} else
@@ -827,6 +836,8 @@ function ICUI_Draw_device_select() {
 	
 	
 	if ( __INPUTCANDY.ui.device_select.inspecting ) {	// This section is only drawn once you have selected a player
+		
+		var SDL_picker = (__INPUTCANDY.allow_SDL_remapping and global.SDLDB_Entries > 0);
 		
 		var player_index=__INPUTCANDY.ui.device_select.influencing;
 		var player=__INPUTCANDY.players[player_index];
@@ -856,6 +867,13 @@ function ICUI_Draw_device_select() {
 		var rightside = rectangle ( region.x+topregion.h, topregion.y, topregion.w-topregion.h, topregion.h );
 		
 		if ( device != none ) {
+			var sdlinfo="";
+			if ( SDL_picker ) {
+				sdlinfo=
+				"SDL Name: "+device.sdl.name+"\n"
+			   +"SDL DB matched? "+(string_length(device.sdl.remapping)>0?"Yes":"No")+"\n"
+			   +"SDL Mapping Active:\n"+device.SDL_Mapping;
+			}
 			draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(device), topregion.x + topregion.h/2, topregion.y + topregion.h/2,
 				1.0/sprite_get_width(s_InputCandy_device_icons)*cw*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*rh*0.75, 0, c_white, 1.0 );
 			draw_set_halign(fa_left);
@@ -863,42 +881,47 @@ function ICUI_Draw_device_select() {
 				"Gamepad: "+device.desc+" (Slot #"+int(player.device+1)+")\n"
 			   +"GUID: "+device.guid+"\n"
 			   +"Buttons: "+int(device.button_count)+"   Axis: "+int(device.axis_count)+"   Hats: "+int(device.hat_count)+"\n"
-		       +"SDL Name: "+device.sdl.name+"\n"
-			   +"SDL DB matched? "+(string_length(device.sdl.remapping)>0?"Yes":"No")+"\n"
-			   +"SDL Mapping Active:\n"+device.SDL_Mapping,
+		       +sdlinfo,
 			 rightside.x+rightside.w/2, rightside.y+rightside.h/2
 			);
 			draw_set_halign(fa_center);
 		}
 		
 		sx = menu_margin+region.x;
-		var max_menuitem=4;
+		var max_menuitem= SDL_picker ? 4 : 3;
 		sy += 5*btn_height+btn_height/5;
 		r =rectangle( sx, sy, btn_width, btn_height );
-		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=1;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 1, "Select Different Gamepad", r.x,r.y,r.w,r.h );
+		var mi=1;
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=mi;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == mi, "Select Different Gamepad", r.x,r.y,r.w,r.h );
 		sy += btn_height+btn_height/5;
+		mi++;
+		if ( SDL_picker ) {
+			r =rectangle( sx, sy, btn_width, btn_height );
+			if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=mi;
+			ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == mi, "Pick Gamepad SDL Remapping", r.x,r.y,r.w,r.h );
+			sy += btn_height+btn_height/5;
+			mi++;
+		}
 		r =rectangle( sx, sy, btn_width, btn_height );
-		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=2;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 2, "Pick Gamepad SDL Remapping", r.x,r.y,r.w,r.h );
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=mi;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == mi, "Customize Gamepad Input", r.x,r.y,r.w,r.h );
 		sy += btn_height+btn_height/5;
+		mi++;
 		r =rectangle( sx, sy, btn_width, btn_height );
-		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=3;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 3, "Customize Gamepad Input", r.x,r.y,r.w,r.h );
-		sy += btn_height+btn_height/5;
-		r =rectangle( sx, sy, btn_width, btn_height );
-		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=4;
-		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 4, "Test on Gamepad Simulator", r.x,r.y,r.w,r.h );
+		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=mi;
+		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == mi, "Test on Gamepad Simulator", r.x,r.y,r.w,r.h );
+		mi++;
 		
-		if ( player_index == 0 ) {
+		if ( player_index == __INPUTCANDY.player_using_keyboard_mouse ) {
 			var kms="Keyboard and Mouse Settings";
 			if ( device.type == ICDeviceType_keyboard ) kms="Keyboard Settings";
 			else if ( device.type == ICDeviceType_mouse ) kms="Mouse Settings";
-			max_menuitem=5;
+			max_menuitem=mi;
 			sy += btn_height+btn_height/5;
 			r =rectangle( sx, sy, btn_width, btn_height );
-			if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=5;
-			ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 5, kms, r.x,r.y,r.w,r.h );
+			if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=mi;
+			ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == mi, kms, r.x,r.y,r.w,r.h );
 		}		
 
 		if ( __INPUTCANDY.ui.input(ICUI_right) ) {
@@ -923,7 +946,7 @@ function ICUI_Draw_device_select() {
 		}
 		if( __INPUTCANDY.ui.input(ICUI_button) ) {
 		 	audio_play_sound(a_ICUI_tone,100,0);
-			switch ( __INPUTCANDY.ui.device_select.menuitem ) {
+			if ( SDL_picker ) switch ( __INPUTCANDY.ui.device_select.menuitem ) {
 				case 0:
 				audio_play_sound(a_ICUI_pageflip,100,0);
 			 	 __INPUTCANDY.ui.device_select.inspecting=false;
@@ -948,7 +971,7 @@ function ICUI_Draw_device_select() {
 				 __INPUTCANDY.ui.input_binding.mode=true;
 				 __INPUTCANDY.ui.input_binding.influencing=-1;
 				 __INPUTCANDY.ui.input_binding.scrolled=0;
-				 __INPUTCANDY.ui.input_binding.keyboard_mouse=false;
+				 __INPUTCANDY.ui.input_binding.keyboard_and_mouse=false;
 				break;
 				case 4:
 				audio_play_sound(a_ICUI_pageflip,100,0);
@@ -961,7 +984,39 @@ function ICUI_Draw_device_select() {
 				 __INPUTCANDY.ui.input_binding.mode=true;
 				 __INPUTCANDY.ui.input_binding.influencing=-1;
 				 __INPUTCANDY.ui.input_binding.scrolled=0;
-				 __INPUTCANDY.ui.input_binding.keyboard_mouse=true;
+				 __INPUTCANDY.ui.input_binding.keyboard_and_mouse=true;
+				break;
+			} else switch ( __INPUTCANDY.ui.device_select.menuitem ) {
+				case 0:
+				audio_play_sound(a_ICUI_pageflip,100,0);
+			 	 __INPUTCANDY.ui.device_select.inspecting=false;
+				break;
+				case 1:
+				audio_play_sound(a_ICUI_tone,100,0);
+				 __INPUTCANDY.ui.device_select.swapping_select=0;
+ 				 __INPUTCANDY.ui.device_select.swapping=true;
+				 __INPUTCANDY.ui.device_select.menuitem=0;
+				break;
+				case 2:
+				audio_play_sound(a_ICUI_pageflip,100,0);
+				 __INPUTCANDY.ui.device_select.mode=false;
+				 __INPUTCANDY.ui.input_binding.mode=true;
+				 __INPUTCANDY.ui.input_binding.influencing=-1;
+				 __INPUTCANDY.ui.input_binding.scrolled=0;
+				 __INPUTCANDY.ui.input_binding.keyboard_and_mouse=false;
+				break;
+				case 3:
+				audio_play_sound(a_ICUI_pageflip,100,0);
+				 __INPUTCANDY.ui.device_select.mode=false;
+				 __INPUTCANDY.ui.gamepad_test.mode=true;
+				break;
+				case 4:
+				audio_play_sound(a_ICUI_pageflip,100,0);
+				 __INPUTCANDY.ui.device_select.mode=false;
+				 __INPUTCANDY.ui.input_binding.mode=true;
+				 __INPUTCANDY.ui.input_binding.influencing=-1;
+				 __INPUTCANDY.ui.input_binding.scrolled=0;
+				 __INPUTCANDY.ui.input_binding.keyboard_and_mouse=true;
 				break;
 			}
 		}
@@ -1244,20 +1299,28 @@ function ICUI_Draw_input_binding() {
 
 	// Back Button
 	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
-	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.influencing=max_menuitem;
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.influencing=mi_back;
 	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_back, "", r.x,r.y,r.w,r.h );
 	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
 
     // Title
 	oy+=eh;
 	ICUI_text( false, "Input Settings #"+int(__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings+1), ox+__INPUTCANDY.ui.region.w/2, oy );
-	ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+		ICUI_text( false, "Keyboard and Mouse Configuration", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	} else {
+		ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	}
 	oy+=smidge+eh*2;
 
       var buttons_region=rectangle( __INPUTCANDY.ui.region.x+eh, oy-eh, __INPUTCANDY.ui.region.w-(eh*5), eh );
-	  
-	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_new, "New Profile", buttons_region.x, buttons_region.y, buttons_region.w/2-smidge, buttons_region.h );
-	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_load, "Choose Profile", buttons_region.x + buttons_region.w/2, buttons_region.y, buttons_region.w/2, buttons_region.h );  
+	
+	r=rectangle(buttons_region.x, buttons_region.y, buttons_region.w/2-smidge, buttons_region.h);
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.influencing=mi_new;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_new, "New Profile", r.x,r.y,r.w,r.h );
+	r=rectangle(buttons_region.x + buttons_region.w/2, buttons_region.y, buttons_region.w/2, buttons_region.h);
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.influencing=mi_load;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_load, "Choose Profile", r.x,r.y,r.w,r.h );  
 	  
 	  var lines_region=rectangle(__INPUTCANDY.ui.region.x+eh,oy+smidge,__INPUTCANDY.ui.region.w-(eh*5),__INPUTCANDY.ui.region.y2-oy-eh*3);
 	  var lineh=eh*2;
@@ -1280,21 +1343,25 @@ function ICUI_Draw_input_binding() {
 			var action=__INPUTCANDY.actions[bindable_action_index[i]];
 			var bound=__ICI.GetBindingData( __INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings, bindable_action_index[i] );
 			ICUI_text_in_box( false, string_replace(action.group+" ","None ","")+action.name, ox,oy, lines_region.w/2-smidge/2, lineh );
+			r=rectangle( ox + lines_region.w/2 - smidge/4, oy, lines_region.w/2, lineh);
+			if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.influencing=i;
 			ICUI_text_in_box( __INPUTCANDY.ui.input_binding.influencing == i, "", ox + lines_region.w/2 - smidge/4, oy, lines_region.w/2, lineh );
 			if ( bound != none ) {
-				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
-				ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
-				 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
-				);
+				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+					ICUI_draw_ICaction( bound.bound_action.keyboard, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
+					 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
+					);
+				}
 				else
 				ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, action.mouse_keyboard_combo, 
 				 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
 				);
 			} else {
-				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
-				ICUI_draw_ICaction( action.gamepad, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
-				 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
-				);
+				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+					ICUI_draw_ICaction( action.keyboard, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
+					 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
+					);
+				}
 				else
 				ICUI_draw_ICaction( action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, action.mouse_keyboard_combo, 
 				 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
@@ -1302,8 +1369,10 @@ function ICUI_Draw_input_binding() {
 			}
 			oy+=lineh+lineskip;
 		}
+		if ( cwithin(mouse_x,mouse_y,sb_dn) ) __INPUTCANDY.ui.input_binding.influencing=mi_scrdn;
 		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 3, sb_dn.x, sb_dn.y, sb_dn.w, sb_dn.h, c_white, 0.65, 0, 0.5 );
+		if ( cwithin(mouse_x,mouse_y,sb_up) ) __INPUTCANDY.ui.input_binding.influencing=mi_scrup;
 		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.influencing == mi_scrup, "", sb_up.x,sb_up.y,sb_up.w,sb_up.h);
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 2, sb_up.x, sb_up.y, sb_up.w, sb_up.h, c_white, 0.65, 0, 0.5 );
 		ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
@@ -1314,12 +1383,15 @@ function ICUI_Draw_input_binding() {
 	}
 
 	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
+		if ( cwithin(mouse_x,mouse_y,dz1) ) __INPUTCANDY.ui.input_binding.influencing=mi_dz1;
 		ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz1, dz1.x, dz1.y, dz1.w, dz1.h );
 	}
 	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2 != none ) {
+		if ( cwithin(mouse_x,mouse_y,dz2) ) __INPUTCANDY.ui.input_binding.influencing=mi_dz2;
 		ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz2, dz2.x, dz2.y, dz2.w, dz2.h );
 	}
 
+	// Draw this part second (that's why the ifs are identical)
 	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
 		ICUI_text( false, 
 			"Axis DeadZone: "+string_format(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1,1,2),
@@ -1486,12 +1558,13 @@ function ICUI_Draw_input_binding_choice() {
 	if ( bound != none ) {
 		ICUI_text( false, "Current Binding:", ox+__INPUTCANDY.ui.region.w/4, oy	);
 		oy+=smidge;
-		if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
-		ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
-		 rectangle( ox + __INPUTCANDY.ui.region.w/4, oy, __INPUTCANDY.ui.region.w/2, eh*2 )
-		);
+		if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+			ICUI_draw_ICaction( bound.bound_action.keyboard, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
+			 rectangle( ox + __INPUTCANDY.ui.region.w/4, oy, __INPUTCANDY.ui.region.w/2, eh*2 )
+			);
+		}
 		else
-		ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, action.mouse_keyboard_combo, 
+		ICUI_draw_ICaction( bound.bound_action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, false, 
 		 rectangle( ox + __INPUTCANDY.ui.region.w/4, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
 		);
 		oy-=smidge;
@@ -1501,12 +1574,13 @@ function ICUI_Draw_input_binding_choice() {
 	
 	ICUI_text( false, "Default:", ox+__INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy );	
 	oy+=smidge;
-	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
-	ICUI_draw_ICaction( action.gamepad, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
-	 rectangle( ox + __INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
-	);
+	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+		ICUI_draw_ICaction( action.keyboard, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
+		 rectangle( ox + __INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
+		);
+	}
 	else
-	ICUI_draw_ICaction( action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, action.mouse_keyboard_combo, 
+	ICUI_draw_ICaction( action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, false, 
 	 rectangle( ox + __INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
 	);
 	oy+=smidge+eh*2;
@@ -1584,9 +1658,9 @@ function ICUI_Draw_input_binding_choice() {
 			case mi_set_to_default:
 				audio_play_sound(a_ICUI_tone,100,0);
 				var b_index=__ICI.GetBinding( settings_index, action_index );
-				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse )
+				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
 					__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=action.keyboard;
-				else
+				} else
 					__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=action.gamepad;
 	 			__INPUTCANDY.ui.input_binding.choosing=false;
 			break;
@@ -1616,7 +1690,7 @@ function ICUI_Draw_input_binding_choice_pick() {
 	var bindables=[];
 	var target_deviceType=ICDeviceType_gamepad;
 	var target_is_combo = action.gamepad_combo;
-	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) { // Setting up the options for Keyboard/Mouse config
 		target_deviceType=ICDeviceType_keyboard_mouse;
 		target_is_combo = action.keyboard_combo;
 		if ( action.is_directional ) {
@@ -1629,7 +1703,7 @@ function ICUI_Draw_input_binding_choice_pick() {
 				bindables[array_length(bindables)]={ type: ICDeviceType_keyboard, code: __INPUTCANDY.signals[i].code, name: __INPUTCANDY.signals[i].name };
 			}
 		}
-	} else { // Gamepad
+	} else { // Gamepad device config
 		target_deviceType=ICDeviceType_gamepad;
 		target_is_combo = action.gamepad_combo;
 		if ( action.is_directional ) {
@@ -1684,15 +1758,18 @@ function ICUI_Draw_input_binding_choice_pick() {
 
 	// Back Button
 	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
-	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_pick_select=max_menuitem;
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_pick_select=mi_back;
 	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_pick_select == mi_back, "", r.x,r.y,r.w,r.h );
 	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
 
     // Title
 	oy+=eh;
 	ICUI_text( false, "Input Settings #"+int(__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings+1), ox+__INPUTCANDY.ui.region.w/2, oy );
-	ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")",
-		ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+		ICUI_text( false, "Keyboard and Mouse Configuration", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	} else {
+		ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")",	ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	}
 	ICUI_text( false, "For Action: "+string_replace(action.group+" "+action.name,"None ",""), ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
 	oy+=smidge+eh*3;
 	
@@ -1718,8 +1795,10 @@ function ICUI_Draw_input_binding_choice_pick() {
 		oy=lines_region.y;
 		for ( var i=start_item; (i<bindables_count) and (i-start_item<lines); i++ ) {
 			var is_focused=__INPUTCANDY.ui.input_binding.choosing_pick_select == i;
+			r=rectangle(ox + lines_region.w/2 - smidge/4, oy, lines_region.w/2, lineh);
+			if ( cwithin(mouse_x,mouse_y,r) ) is_focused=true;
 			ICUI_text_in_box( false, bindables[i].name, ox,oy, lines_region.w/2-smidge/2, lineh );
-			ICUI_text_in_box( is_focused, "", ox + lines_region.w/2 - smidge/4, oy, lines_region.w/2, lineh );
+			ICUI_text_in_box( is_focused, "", r.x,r.y,r.w,r.h );
 			ICUI_draw_ICaction( bindables[i].code, target_deviceType, action.is_directional, target_is_combo, action.mouse_keyboard_combo, 
 			 rectangle( ox + lines_region.w/2 - smidge/4 + smidge, oy+1, lines_region.w/2 - smidge*2 - smidge/2, lineh-2 )
 			);
@@ -1743,8 +1822,10 @@ function ICUI_Draw_input_binding_choice_pick() {
 				}
 			}
 		}
+		if ( cwithin(mouse_x,mouse_y,sb_dn) ) __INPUTCANDY.ui.input_binding.choosing_pick_select=mi_scrdn;
 		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_pick_select == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 3, sb_dn.x, sb_dn.y, sb_dn.w, sb_dn.h, c_white, 0.65, 0, 0.5 );
+		if ( cwithin(mouse_x,mouse_y,sb_up) ) __INPUTCANDY.ui.input_binding.choosing_pick_select=mi_scrup;
 		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_pick_select == mi_scrup, "", sb_up.x,sb_up.y,sb_up.w,sb_up.h);
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 2, sb_up.x, sb_up.y, sb_up.w, sb_up.h, c_white, 0.65, 0, 0.5 );
 		ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
@@ -1854,14 +1935,18 @@ function ICUI_Draw_input_binding_set_profile() {
 
 	// Back Button
 	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
-	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.loading_select=max_menuitem;
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.loading_select=mi_back;
 	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.loading_select == mi_back, "", r.x,r.y,r.w,r.h );
 	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
 
     // Title
 	oy+=eh;
 	ICUI_text( false, "Current Settings: Profile #"+int(__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings+1), ox+__INPUTCANDY.ui.region.w/2, oy );
-	ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+		ICUI_text( false, "Keyboard and Mouse Configuration", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	} else {
+		ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	}
 	oy+=smidge+eh*2;
 	
 
@@ -1883,11 +1968,15 @@ function ICUI_Draw_input_binding_set_profile() {
 	    ox=lines_region.x;
 		oy=lines_region.y;
 		for ( var i=start_item; (i<settings_count) and (i-start_item<lines); i++ ) {
-			ICUI_text_in_box(  __INPUTCANDY.ui.input_binding.loading_select == i, "Settings #"+int(i+1)+" ("+__INPUTCANDY.settings[i].deviceInfo.desc+")", ox,oy, lines_region.w-smidge/2, lineh );
+			r=rectangle(ox,oy, lines_region.w-smidge/2, lineh);
+			if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.loading_select=i;
+			ICUI_text_in_box(  __INPUTCANDY.ui.input_binding.loading_select == i, "Settings #"+int(i+1)+" ("+__INPUTCANDY.settings[i].deviceInfo.desc+")", r.x,r.y,r.w,r.h );
 			oy+=lineh+lineskip;
 		}
+		if ( cwithin(mouse_x,mouse_y,sb_dn) ) __INPUTCANDY.ui.input_binding.loading_select=mi_scrdn;
 		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.loading_select == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 3, sb_dn.x, sb_dn.y, sb_dn.w, sb_dn.h, c_white, 0.65, 0, 0.5 );
+		if ( cwithin(mouse_x,mouse_y,sb_up) ) __INPUTCANDY.ui.input_binding.loading_select=mi_scrup;
 		ICUI_labeled_button( __INPUTCANDY.ui.input_binding.loading_select == mi_scrup, "", sb_up.x,sb_up.y,sb_up.w,sb_up.h);
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 2, sb_up.x, sb_up.y, sb_up.w, sb_up.h, c_white, 0.65, 0, 0.5 );
 		ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
@@ -2133,7 +2222,7 @@ function ICUI_Draw_SDLDB_select() {
 
 	// Back Button
 	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
-	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.SDLDB_select.influencing=max_menuitem;
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.SDLDB_select.influencing=mi_back;
 	ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_back, "", r.x,r.y,r.w,r.h );
 	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
 
@@ -2166,11 +2255,15 @@ function ICUI_Draw_SDLDB_select() {
 	    ox=lines_region.x;
 		oy=lines_region.y;
 		for ( var i=start_item; (i<settings_count) and (i-start_item<lines); i++ ) {
-			ICUI_text_in_box(  __INPUTCANDY.ui.SDLDB_select.influencing == i, "SDL #"+int(i+1)+" "+global.SDLDB[i].name+" ::"+global.SDLDB[i].short, ox,oy, lines_region.w-smidge/2, lineh );
+			r=rectangle(ox,oy, lines_region.w-smidge/2, lineh );
+			if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.SDLDB_select.influencing=i;
+			ICUI_text_in_box(  __INPUTCANDY.ui.SDLDB_select.influencing == i, "SDL #"+int(i+1)+" "+global.SDLDB[i].name+" ::"+global.SDLDB[i].short, r.x,r.y,r.w,r.h );
 			oy+=lineh+lineskip;
 		}
+		if ( cwithin(mouse_x,mouse_y,sb_dn) ) __INPUTCANDY.ui.SDLDB_select.influencing=mi_scrdn;
 		ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_scrdn, "", sb_dn.x,sb_dn.y,sb_dn.w,sb_dn.h);
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 3, sb_dn.x, sb_dn.y, sb_dn.w, sb_dn.h, c_white, 0.65, 0, 0.5 );
+		if ( cwithin(mouse_x,mouse_y,sb_up) ) __INPUTCANDY.ui.SDLDB_select.influencing=mi_scrup;
 		ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_scrup, "", sb_up.x,sb_up.y,sb_up.w,sb_up.h);
 		ICUI_fit_image( s_InputCandy_ICUI_icons, 2, sb_up.x, sb_up.y, sb_up.w, sb_up.h, c_white, 0.65, 0, 0.5 );
 		ICUI_box(sb_mid.x,sb_mid.y,sb_mid.w,sb_mid.h);
