@@ -1725,10 +1725,10 @@ function ICUI_Draw_input_binding_choice_pick() {
 		if ( action.is_directional ) {
 			bindables[array_length(bindables)]={ code: IC_dpad, name:"D-Pad" };
 			if ( device != none ) {
-				if ( device.hat_count > 0 ) bindables[array_length(bindables)]={ code: IC_hat0, name: "Hat0" };
-				for ( var j=1; j<device.hat_count; j++ ) bindables[array_length(bindables)]={ code: IC_hat0+j, name: "Hat"+int(j) };
-				if ( device.axis_count > 0 ) bindables[array_length(bindables)]={ code: IC_axis0, name: "Axis0" };
-				for ( var j=2; j<device.axis_count; j+=2 ) if ( j+1 < device.axis_count ) bindables[array_length(bindables)]={ code: IC_axis0+j, name: "Axis"+int(j)+"&"+int(j+1) };
+				if ( device.hat_count > 0 ) bindables[array_length(bindables)]={ type: ICDeviceType_gamepad, code: IC_hat0, name: "Hat0" };
+				for ( var j=1; j<device.hat_count; j++ ) bindables[array_length(bindables)]={ type: ICDeviceType_gamepad, code: IC_hat0+j, name: "Hat"+int(j) };
+				if ( device.axis_count > 0 ) bindables[array_length(bindables)]={ type: ICDeviceType_gamepad, code: IC_axis0, name: "Axis0" };
+				for ( var j=2; j<device.axis_count; j+=2 ) if ( j+1 < device.axis_count ) bindables[array_length(bindables)]={ type: ICDeviceType_gamepad, code: IC_axis0+j, name: "Axis"+int(j)+"&"+int(j+1) };
 			}
 		} else {
 			for ( var i=__FIRST_GAMEPAD_SIGNAL; i<__LAST_GAMEPAD_SIGNAL_PLUS_1; i++ ) {
