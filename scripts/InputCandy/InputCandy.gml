@@ -2372,7 +2372,7 @@ function New_InputCandy_Private() {
 	
 	PostLoadBinding: function( json_struct ) {
 		var new_json=json_struct;
-		new_json.action = __ICI.GetAction( new_json.action, new_json.group );
+		new_json.action = __IC.GetAction( new_json.action, new_json.group );
 		return new_json;
 	},
 	
@@ -2406,7 +2406,7 @@ function New_InputCandy_Private() {
 			s.deviceInfo=a[i].deviceInfo;
 			s.bindings=[];
 			var blen=array_length(a[i].bindings);
-			for ( var j=0; j<blen; j++ ) s.bindings[j]=__ICI.PostLoadBinding(a[i].binding[j]);
+			for ( var j=0; j<blen; j++ ) s.bindings[j]=__ICI.PostLoadBinding(a[i].bindings[j]);
 			__INPUTCANDY.settings[i]=s;
 		}
 	},
@@ -2423,7 +2423,7 @@ function New_InputCandy_Private() {
 	},
 	
 	// Since setups are driven by the current state, we create an IC setup from the existing configuration.
-	CaptureSetup: function() {
+	CurrentSetup: function() {
 		var setup=__ICI.New_ICSetup();		
 		for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
 			setup.devices[array_length(setup.devices)]=__INPUTCANDY.players[i].device;
@@ -2431,12 +2431,13 @@ function New_InputCandy_Private() {
 			if ( __INPUTCANDY.players[i].device == none ) setup.deviceInfo[array_length(setup.deviceInfo)]=none;
 			else setup.deviceInfo[array_length(setup.deviceInfo)]=__INPUTCANDY.devices[__INPUTCANDY.players[i].device];
 		}
+		return setup;
 	},
 
 	// Saves prior setups to disk.  Limits prior setups, tossing away earliest in list if beyond limit.  TODO: throw away duplicates and least useful
 	SaveSetups: function() {
 		var len=array_length(__INPUTCANDY.setups);
-		if ( len < IC_MAX_SETUPS ) __INPUTCANDY.e_save_file(__INPUTCANDY.setups_filename,__INPUTCANDY.setups);
+		if ( len > 0 and len < IC_MAX_SETUPS ) __INPUTCANDY.e_save_file(__INPUTCANDY.setups_filename,__INPUTCANDY.setups);
 		else {
 			var list=[];
 			for ( var i=len-IC_MAX_SETUPS; i<len; i++ ) {
@@ -2457,16 +2458,18 @@ function New_InputCandy_Private() {
 	//    - settings are created for a specific device, but may be used by other devices at the player's discretion
 	//    - removing a device does disconnect a player, but what if
 	MatchSetup: function() {
-		var current=__ICI.CaptureSetup();
+		var current=__ICI.CurrentSetup();
+		var dlen=array_length(current.devices);
 		var len=array_length(__INPUTCANDY.setups);
 		var candidate=-1;
 		var confidence=0;
 		// See if we can find a complete match on devices based on latest setup.
 		// This query asks the question:
 		// "From the newest to the oldest setup memories, which one matches precisely on player+device association?"
-		for ( var i=len-1; i>=0; i-- ) {
+		if ( len > 0 ) for ( var i=len-1; i>=0; i-- ) {
 		    var matches=0;
-			for ( var j=0; j<global.max_players; j++ ) {
+			if ( array_length(current.devices) != array_length(__INPUTCANDY.setups[i].devices) ) continue;
+			for ( var j=0; j<__INPUTCANDY.max_players; j++ ) {
 			   if ( current.devices[j] == __INPUTCANDY.setups[i].devices[j] ) matches++;
 			}
 			if ( matches == 8 ) {
