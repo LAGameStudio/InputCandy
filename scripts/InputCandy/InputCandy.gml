@@ -2377,7 +2377,7 @@ function New_InputCandy_Private() {
 	},
 	
 	PreSaveBinding: function( binding ) {
-		var action=__ICI.actions[binding.action];
+		var action=__INPUTCANDY.actions[binding.action];
 		var new_jsonifiable=binding;
 		new_jsonifiable.action = action.name;
 		new_jsonifiable.group = action.group;

@@ -461,17 +461,17 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 				if ( is_directional ) {
 					if ( code == IC_wasd ) {
 						var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
-						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y-keyh, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx,key.y,"W",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
-						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y-keyh, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx,key.y,"A",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+r.h/2,key.y,"W",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx,key.y,"S",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						draw_text_transformed_color(sx+r.h/2,key.y,"A",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx,key.y,"D",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						draw_text_transformed_color(sx+r.h/2,key.y,"S",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						sx+=swh+spacing;
+						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						draw_text_transformed_color(sx+r.h/2,key.y,"D",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						sx+=swh+spacing;
 					} else if ( code == IC_arrows ) {
 						ICUI_image( s_InputCandy_ICUI_icons, 49, sx, r.y, swh, r.h, c_white, 0, 1.0 );
@@ -483,18 +483,18 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 						ICUI_image( s_InputCandy_ICUI_icons, 50, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						sx+=swh+spacing;
 					} else if ( code == IC_numpad ) { 
-						var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
+						//var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
 						ICUI_image( s_InputCandy_ICUI_icons, 75, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,key.y,"8",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						//draw_text_transformed_color(sx+swh/2,key.y,"8",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 76, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,key.y,"2",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						//draw_text_transformed_color(sx+swh/2,key.y,"2",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 77, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,key.y,"4",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+						//draw_text_transformed_color(sx+swh/2,key.y,"4",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 78, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx+swh/2,key.y,"6",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
+						//draw_text_transformed_color(sx+swh/2,key.y,"6",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						sx+=swh+spacing;
 					}
 				} else if ( code >= IC_key_A and code <= IC_key_9 ) {
