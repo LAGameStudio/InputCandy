@@ -1825,7 +1825,7 @@ function ICUI_Draw_input_binding_choice_pick() {
 					ICUI_text( false, "Choosing "+bindables[i].name+" when already in use by", lines_region.x+lines_region.w/2, lines_region.y2+eh );
 					var results="";
 					for ( var k=0; k<conflicting.bindings_count; k++ ) {
-						results+=conflicting.bindings[k]+((k>0 and kconflicting.bindings_count-1)?",":"");
+						results+=conflicting.bindings[k]+((k>0 and conflicting.bindings_count-1)?",":"");
 					}
 					if ( string_length(results) > 0 and conflicting.actions_count > 0 ) {
 						results+=" and ";
