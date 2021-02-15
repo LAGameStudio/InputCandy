@@ -36,6 +36,7 @@ function Process_SDL_GameControllerDB(txt) {
 		if ( pound != 0 ) line = string_copy(line,0,pound); // Comment Removal
 		var parts=string_split(line,",");
 		if ( array_length(parts) < 4 ) continue; // Not a CSV with minimum number of columns
+		var vid,pid;
 		out[j++]={
 			index: j,
 			guid: string_lower(parts[0]),
@@ -123,7 +124,7 @@ function SDLDB_Process_Step() {
 					global.SDLDB[__INPUTCANDY.SDLDB_Process_j]={
 						index: __INPUTCANDY.SDLDB_Process_j,
 						guid: fomo,
-						short: string_delete(fomo,1,8),  // Remove the 03000000 at the beginning
+						short: string_delete(fomo,1,8),  // Remove the 03000000 or 05000000 from the beginning
 						brief: string_copy(string_delete(fomo,1,8),1,8),
 						name: string_lower(parts[1]),
 						remapping: line,
@@ -144,6 +145,21 @@ function SDLDB_Process_Step() {
 }
 
 /// Lookup functions.
+
+function SDLDB_Lookup_VID_PID( guid ) {
+	var vendor,product;
+	if ( os_type == os_windows ) {
+        vendor  = string_copy(guid, 1, 4);
+        product = string_copy(guid, 5, 4);
+	} else if ( (os_type == os_macosx) || (os_type == os_linux) || (os_type == os_ios) || (os_type == os_android) ) {
+        vendor  = string_copy(guid,  9, 4);
+        product = string_copy(guid, 17, 4);
+	} else {
+        vendor  = "";
+        product = "";
+	}
+	return SDLDB_Lookup_GUID( vendor+product );
+}
 
 function SDLDB_Lookup_GUID( guid ) {
 	guid=string_lower(guid);
@@ -176,7 +192,9 @@ function SDLDB_Lookup_MatchName( name ) {
 // Device identification.
 
 function SDLDB_Lookup_Device( device ) {
-	var lookup=SDLDB_Lookup_GUID(device);
+	var lookup=SDLDB_Lookup_VID_PID(device.guid);
+	if ( lookup.index != -1 ) return lookup;
+	var lookup=SDLDB_Lookup_GUID(device.guid);
 	if ( lookup.index != -1 ) return lookup;
 	lookup=SDLDB_Lookup_Name(device.desc);
 	if ( lookup.index != -1 ) return lookup;

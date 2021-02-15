@@ -480,7 +480,7 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 51, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						sx+=swh+spacing;
-						ICUI_image( s_InputCandy_ICUI_icons, 47, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+						ICUI_image( s_InputCandy_ICUI_icons, 50, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						sx+=swh+spacing;
 					} else if ( code == IC_numpad ) { 
 						var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
@@ -692,6 +692,22 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 						break;
 						case IC_f12:
 							ICUI_image( s_InputCandy_ICUI_icons, 74, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_key_arrow_U:
+							ICUI_image( s_InputCandy_ICUI_icons, 48, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_key_arrow_D:
+							ICUI_image( s_InputCandy_ICUI_icons, 49, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_key_arrow_L:
+							ICUI_image( s_InputCandy_ICUI_icons, 50, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+							sx+=swh+spacing;
+						break;
+						case IC_key_arrow_R:
+							ICUI_image( s_InputCandy_ICUI_icons, 51, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 							sx+=swh+spacing;
 						break;
 					}
@@ -1573,15 +1589,15 @@ function ICUI_Draw_input_binding_choice() {
 	}
 	
 	ICUI_text( false, "Default:", ox+__INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy );	
-	oy+=smidge;
+	oy+=eh+smidge;
 	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
 		ICUI_draw_ICaction( action.keyboard, ICDeviceType_keyboard, action.is_directional, action.keyboard_combo, action.mouse_keyboard_combo, 
-		 rectangle( ox + __INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
+		 rectangle( ox + __INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
 		);
 	}
 	else
 	ICUI_draw_ICaction( action.gamepad, ICDeviceType_gamepad, action.is_directional, action.gamepad_combo, false, 
-	 rectangle( ox + __INPUTCANDY.ui.region.w/4+__INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
+	 rectangle( ox + __INPUTCANDY.ui.region.w/2, oy, __INPUTCANDY.ui.region.w/2,  eh*2 )
 	);
 	oy+=smidge+eh*2;
 	
