@@ -1813,7 +1813,7 @@ function New_InputCandy_Private() {
 			if ( binding == unknown ) binding=__ICI.GetBinding( __INPUTCANDY.players[player_index].settings, action.index );
 			if ( binding != none ) return __ICI.MatchAction( player_index, binding.bound_action, type );
 		}
-		return ___ICI.MatchAction(player_number,action,type);
+		return __ICI.MatchAction(player_number,action,type);
 	},
 	GetDirectional: function ( player_index, moving, type ) {
 		var player_number=player_index+1;
@@ -2390,7 +2390,9 @@ function New_InputCandy_Private() {
 		for ( var i=0; i<len; i++ ){
 			output[i]=__INPUTCANDY.settings[i];
 			var blen=array_length(output[i].bindings);
-			for ( var j=0; j<blen; j++ ) output[i].bindings[j]=__ICI.PreSaveBinding(output[i].bindings[j]);
+			for ( var j=0; j<blen; j++ )
+			 if ( output[i].bindings[j].action == none ) continue;
+			  else output[i].bindings[j]=__ICI.PreSaveBinding(output[i].bindings[j]);
 		}
 		__INPUTCANDY.e_save_file(__INPUTCANDY.settings_filename,output);
 		__ICI.SaveSetups();
@@ -2487,11 +2489,18 @@ function New_InputCandy_Private() {
 	},
 	
 	// Updates the active setup based on
-	UpdateActiveSetup: function () {
-		if ( __INPUTCANDY.active_setup == none ) return;
+	UpdateActiveSetup: function ( create_it ) {
+		if ( __INPUTCANDY.active_setup == none ) {
+			if ( create_it ) {
+				var index=array_length(__INPUTCANDY.setups);
+				__INPUTCANDY.setups[index]=__ICI.CurrentSetup();
+				__INPUTCANDY.active_setup=index;
+			}
+			return;
+		}
 		var k=__INPUTCANDY.active_setup;
-		__INPUTCANDY.setups[k]=__ICI.CaptureSetup();
-		__ICI.SaveSetups();
+		__INPUTCANDY.setups[k]=__ICI.CurrentSetup();
+		__ICI.SaveSettings();
 	},
 	
 	ApplySDLMappings: function () {

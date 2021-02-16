@@ -121,14 +121,22 @@ function SDLDB_Process_Step() {
 					/* Do nothing */
 				} else {
 					var fomo=string_lower(parts[0]);
+					var platform=string_replace(parts[array_length(parts)-1],"platform:","");
+					var vid,pid;
+					vid  = string_copy(fomo,  9, 4);
+				    if (os_type == os_windows) {
+					    pid = string_copy(fomo, 14, 4);
+					} else if ((os_type == os_macosx) || (os_type == os_linux) || (os_type == os_ios) || (os_type == os_android)) {
+					    pid = string_copy(fomo, 17, 4);
+					} else pid="";
 					global.SDLDB[__INPUTCANDY.SDLDB_Process_j]={
 						index: __INPUTCANDY.SDLDB_Process_j,
 						guid: fomo,
 						short: string_delete(fomo,1,8),  // Remove the 03000000 or 05000000 from the beginning
-						brief: string_copy(string_delete(fomo,1,8),1,8),
+						vidpid: vid+pid,
 						name: string_lower(parts[1]),
 						remapping: line,
-						platform: string_replace(parts[array_length(parts)-1],"platform:","")
+						platform: platform
 					};
 					__INPUTCANDY.SDLDB_Process_j++;
 					__INPUTCANDY.SDLDB_Process_Completeness=0.5 + (__INPUTCANDY.SDLDB_Process_i/__INPUTCANDY.SDLDB_Process_len) * 0.5;
@@ -146,19 +154,18 @@ function SDLDB_Process_Step() {
 
 /// Lookup functions.
 
-function SDLDB_Lookup_VID_PID( guid ) {
-	var vendor,product;
-	if ( os_type == os_windows ) {
-        vendor  = string_copy(guid, 1, 4);
-        product = string_copy(guid, 5, 4);
-	} else if ( (os_type == os_macosx) || (os_type == os_linux) || (os_type == os_ios) || (os_type == os_android) ) {
-        vendor  = string_copy(guid,  9, 4);
-        product = string_copy(guid, 17, 4);
-	} else {
-        vendor  = "";
-        product = "";
-	}
-	return SDLDB_Lookup_GUID( vendor+product );
+function SDLDB_Lookup_VID_PID( guid_from_gamepad ) {
+	var vendor,product,guid=string_lower(guid_from_gamepad);
+    if (os_type == os_windows) {
+		vendor  = string_copy(guid,  1, 4);
+	    product = string_copy(guid, 5, 4);
+	} else if ((os_type == os_macosx) || (os_type == os_linux) || (os_type == os_ios) || (os_type == os_android)) {
+		vendor  = string_copy(guid,  9, 4);
+	    product = string_copy(guid, 17, 4);
+	} else return { index: -1, guid: "none", name: "Unknown", remapping: "", platform: "" };
+	guid=vendor+product;
+	for ( var i=0; i<global.SDLDB_Entries; i++ ) if ( string_pos(guid, global.SDLDB[i].short) == 1 ) return global.SDLDB[i];
+	return { index: -1, guid: "none", name: "Unknown", remapping: "", platform: "" };
 }
 
 function SDLDB_Lookup_GUID( guid ) {
