@@ -1766,7 +1766,7 @@ function New_InputCandy_Private() {
 	 }
 	},
 	MatchAction: function ( player_number, action, type ) {
-		switch ( binding_or_type ) { // type not binding
+		switch ( type ) { // type not binding
 			case ICDeviceType_gamepad:
 			 if ( is_array(action.gamepad) ) {
 				 return __ICI.MatchButtonList( player_number, action, action.gamepad_combo, action.gamepad );
