@@ -1679,11 +1679,13 @@ function ICUI_Draw_input_binding_choice() {
 			case mi_set_to_default:
 				audio_play_sound(a_ICUI_tone,100,0);
 				var b_index=__ICI.GetBinding( settings_index, action_index );
-				if ( b_index == none ) b_index=__ICI.AddBinding( settings_index, action_index );
-				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
-					__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=action.keyboard;
-				} else
-					__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=action.gamepad;
+				if ( b_index != none ) {
+					if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+						__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=action.keyboard;
+					} else
+						__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=action.gamepad;
+					}
+				}
 	 			__INPUTCANDY.ui.input_binding.choosing=false;
 			break;
 		}
