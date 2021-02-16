@@ -84,10 +84,6 @@ function IC_Action( verb_string, default_gamepad, default_keyboard /*mouse, grou
 #macro none noone
 #macro unknown -123456789
 
-// The value of "setups" stored in the setups memory list.  
-// Should be limited to at least the number of maximum players for good effect, more if desired
-#macro IC_MAX_SETUPS 20
-
 #macro AXIS_NO_VALUE -10000
 
 // Types of input devices.
@@ -416,7 +412,7 @@ global._INPUTCANDY_DEFAULTS_ = {
  skip_simplified_axis: false,             // Set this value to true to stop IC from registering simplified axis movements.
  use_network: false,                      // Turn this on if you are going to be using network transmits
  settings_filename: "settings.json",      // Where player-defined settings are saved.
- setups_filename:  "setups.json",         // This file is saved and attempts to remember which settings go with which player and which device, and which SDL remappings are desired
+ setup_filename:  "controller.setup.json",         // This file is saved and attempts to remember which settings go with which player and which device, and which SDL remappings are desired
  //// External and Internal interface objects
  interface: New_InputCandy(),             // Public - the programmer interface used in your game.  All you need to know.
  internal: New_InputCandy_Private(),      // Functions used internally, generally not to be called, use interface instead, "private"
@@ -432,8 +428,7 @@ global._INPUTCANDY_DEFAULTS_ = {
  signals: [],                             // Master collection of signals from all device types supported.
  players: [],                             // A list of player "slots", active setting info, and their status and device association, device state
  settings: [],                            // List of "stored" and associatable settings
- setups:  [],                             // Holds on to previous sessions where players have been associated with devices
- active_setup: none,                      // When we've previously loaded a setup, and done a match, the setup index value of the matched setup goes here.
+ setup: none,				              // Holds on to previous sessions where players have been associated with devices
  network: {},
  platform: {},                            // Platform information acquired from GML
  //// Events that can be overridden: ////
@@ -1114,16 +1109,19 @@ function New_InputCandy_Private() {
 		if ( __INPUTCANDY.steps < 5 ) {
 			__INPUTCANDY.steps++;
 			if ( __INPUTCANDY.steps == 5 ) {
-				__INPUTCANDY.active_setup=__ICI.MatchSetup();
+				show_debug_message("InputCandy reached step 5.");
+				__ICI.LoadSetup();
+				__ICI.ActivateSetup();
 				__ICI.ApplyDeviceSettings();
 				//__ICI.ApplySDLMappings();
+				show_debug_message("InputCandy leaving step 5.");
 			}
 		}
 	 },
 	 Init: function() {
 		__INPUTCANDY.platform = __ICI.GetPlatformSpecifics();
 		__ICI.LoadSettings();
-		__ICI.LoadSetups();
+		__ICI.LoadSetup();
 		__IC.SetMaxPlayers(__INPUTCANDY.max_players);
 		__INPUTCANDY.steps=0;
 	 },
@@ -2368,7 +2366,7 @@ function New_InputCandy_Private() {
 		__INPUTCANDY.settings[settings_index].bindings[binding_index].bound_action.keyboard=keyboard;
 	},	
 	
-	///// File saving and loading for settings and setups.
+	///// File saving and loading for settings and setup.
 	
 	PostLoadBinding: function( json_struct ) {
 		var new_json=json_struct;
@@ -2388,14 +2386,19 @@ function New_InputCandy_Private() {
 		var output=[];
 		var len=array_length(__INPUTCANDY.settings);
 		for ( var i=0; i<len; i++ ){
-			output[i]=__INPUTCANDY.settings[i];
-			var blen=array_length(output[i].bindings);
-			for ( var j=0; j<blen; j++ )
-			 if ( output[i].bindings[j].action == none ) continue;
-			  else output[i].bindings[j]=__ICI.PreSaveBinding(output[i].bindings[j]);
+			var s=__INPUTCANDY.settings[i];
+			output[i]=s;
+			output[i].bindings=[];
+			var blen=array_length(s.bindings);
+			var k=0;
+			for ( var j=0; j<blen; j++ ) {
+			   if ( s.bindings[j].action == none ) continue;
+			   output[i].bindings[k]=__ICI.PreSaveBinding(s.bindings[j]);
+			   k++;
+			}
 		}
 		__INPUTCANDY.e_save_file(__INPUTCANDY.settings_filename,output);
-		__ICI.SaveSetups();
+		__ICI.SaveSetup();
 	},
 	
 	LoadSettings: function() {
@@ -2424,7 +2427,7 @@ function New_InputCandy_Private() {
 		};
 	},
 	
-	// Since setups are driven by the current state, we create an IC setup from the existing configuration.
+	// Since setup is driven by the current state, we create an IC setup from the existing configuration.
 	CurrentSetup: function() {
 		var setup=__ICI.New_ICSetup();		
 		for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
@@ -2436,70 +2439,46 @@ function New_InputCandy_Private() {
 		return setup;
 	},
 
-	// Saves prior setups to disk.  Limits prior setups, tossing away earliest in list if beyond limit.  TODO: throw away duplicates and least useful
-	SaveSetups: function() {
-		var len=array_length(__INPUTCANDY.setups);
-		if ( len > 0 and len < IC_MAX_SETUPS ) __INPUTCANDY.e_save_file(__INPUTCANDY.setups_filename,__INPUTCANDY.setups);
-		else {
-			var list=[];
-			for ( var i=len-IC_MAX_SETUPS; i<len; i++ ) {
-				list[array_length(list)]=__INPUTCANDY.setups[i];
+	// Saves prior setup to disk.
+	SaveSetup: function() {
+		__INPUTCANDY.e_save_file(__INPUTCANDY.setup_filename,__INPUTCANDY.setup);
+	},
+	
+	// Loads previous setup from disk.
+	LoadSetup: function() {
+		__INPUTCANDY.setup = __INPUTCANDY.e_load_file(__INPUTCANDY.setup_filename,__ICI.New_ICSetup());
+	},
+	
+	Is_Valid_Setting: function (setting_index) {
+		if ( setting_index == none ) return true;
+		if ( setting_index < array_length(__INPUTCANDY.settings) and setting_index >= 0 ) return true;
+	},
+	
+	Is_Valid_Device: function (device_index) {
+		if ( device_index == none ) return true;
+		if ( device_index < array_length(__INPUTCANDY.devices) and device_index >= 0 ) return true;
+	},
+	
+	// Activate Setup applies device swapping, settings, call on "Frame 5", and only then. 
+	ActivateSetup: function() {
+		for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
+			if ( !__ICI.Is_Valid_Setting(__INPUTCANDY.setup.settings[i]) ) {
+				__INPUTCANDY.players[i].settings=none;
+				if ( !__ICI.Is_Valid_Device(__INPUTCANDY.setup.devices[i]) ) __INPUTCANDY.players[i].device=none;
+				continue;
 			}
-			__INPUTCANDY.e_save_file(__INPUTCANDY.setups_filename,list);
+			if ( !__ICI.Is_Valid_Device(__INPUTCANDY.setup.devices[i]) ) {
+				__INPUTCANDY.players[i].device=none;
+				continue;
+			}
+			__INPUTCANDY.players[i].settings=__INPUTCANDY.setup.settings[i];
+			__INPUTCANDY.players[i].device=__INPUTCANDY.setup.devices[i];
 		}
 	},
 	
-	// Loads previous setups from disk.
-	LoadSetups: function() {
-		__INPUTCANDY.setups = __INPUTCANDY.e_load_file(__INPUTCANDY.setups_filename,[]);
-	},
-
-    // A matching algorithm determines which setup is most appropriate and applies it.	If it fails, it returns a fresh capture.
-	// Consider the problem:
-	//    - slot_ids are assigned based on their USB port, not the device port.  if a user swaps devices, this creates a distinct setup.
-	//    - settings are created for a specific device, but may be used by other devices at the player's discretion
-	//    - removing a device does disconnect a player, but what if
-	MatchSetup: function() {
-		var current=__ICI.CurrentSetup();
-		var dlen=array_length(current.devices);
-		var len=array_length(__INPUTCANDY.setups);
-		var candidate=-1;
-		var confidence=0;
-		// See if we can find a complete match on devices based on latest setup.
-		// This query asks the question:
-		// "From the newest to the oldest setup memories, which one matches precisely on player+device association?"
-		if ( len > 0 ) for ( var i=len-1; i>=0; i-- ) {
-		    var matches=0;
-			if ( array_length(current.devices) != array_length(__INPUTCANDY.setups[i].devices) ) continue;
-			for ( var j=0; j<__INPUTCANDY.max_players; j++ ) {
-			   if ( current.devices[j] == __INPUTCANDY.setups[i].devices[j] ) matches++;
-			}
-			if ( matches == 8 ) {
-				candidate=i;
-				break;
-			}
-		}
-		if ( candidate != -1 ) { // Ok, we found a perfect match
-			return candidate;
-		}
-		// Otherwise, let's go with the current setup, so let's create one.
-		var new_index=array_length(__INPUTCANDY.setups);
-		__INPUTCANDY.setups[new_index]=current;
-		return new_index;
-	},
-	
-	// Updates the active setup based on
-	UpdateActiveSetup: function ( create_it ) {
-		if ( __INPUTCANDY.active_setup == none ) {
-			if ( create_it ) {
-				var index=array_length(__INPUTCANDY.setups);
-				__INPUTCANDY.setups[index]=__ICI.CurrentSetup();
-				__INPUTCANDY.active_setup=index;
-			}
-			return;
-		}
-		var k=__INPUTCANDY.active_setup;
-		__INPUTCANDY.setups[k]=__ICI.CurrentSetup();
+	// Updates the active setup based on current settings then saves it.
+	UpdateActiveSetup: function () {
+		__INPUTCANDY.setup=__ICI.CurrentSetup();
 		__ICI.SaveSettings();
 	},
 	
@@ -2524,7 +2503,7 @@ function New_InputCandy_Private() {
 			var player=__INPUTCANDY.players[i];
 			if ( player.device == none ) continue;
 			var device=__INPUTCANDY.devices[__INPUTCANDY.players[i].device];
-			if ( player.settings != none ) {
+			if ( player.settings >= 0 and player.settings < array_length(__INPUTCANDY.settings) ) {
 				var settings=__INPUTCANDY.settings[player.settings];
 				gamepad_set_axis_deadzone(device.slot_id,settings.deadzone1);
 				gamepad_set_button_threshold(device.slot_id,settings.deadzone2);

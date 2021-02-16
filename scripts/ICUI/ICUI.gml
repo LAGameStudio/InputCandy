@@ -868,6 +868,7 @@ function ICUI_Draw_device_select() {
 		var sy=region.y;
 		ICUI_text( false, "Player "+int(__INPUTCANDY.ui.device_select.influencing+1), region.x+region.w/2, sy+eh );
 		
+		// Back button
 		r=rectangle(region.x, region.y, eh*2, eh*2);
 		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.menuitem=0;
 		ICUI_labeled_button( __INPUTCANDY.ui.device_select.menuitem == 0, "", r.x,r.y,r.w,r.h );
@@ -1040,7 +1041,7 @@ function ICUI_Draw_device_select() {
 		
 		var max_menuitem=__INPUTCANDY.max_players;
 		
-		// Back Button for background area of device_select (returns to ui's exit area
+		// Back Button for background area of device_select (returns to ui's exit area)
 		r=rectangle(__INPUTCANDY.ui.region.x2-eh*2, __INPUTCANDY.ui.region.y, eh*2, eh*2);
 		if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.device_select.influencing=max_menuitem;		
 		ICUI_labeled_button( __INPUTCANDY.ui.device_select.influencing == max_menuitem, "", r.x,r.y,r.w,r.h );
@@ -1080,6 +1081,7 @@ function ICUI_Draw_device_select() {
 			__INPUTCANDY.ui.device_select.inspecting=true;
 			__INPUTCANDY.ui.device_select.menuitem=0;
 			} else {
+				__ICI.UpdateActiveSetup();
 				audio_play_sound(a_ICUI_pageflip,100,0);
 				room_goto(__INPUTCANDY.ui.exit_to);
 			}				
@@ -1212,7 +1214,7 @@ function ICUI_device_select_swapping() {
 					__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].device=__INPUTCANDY.ui.device_select.swapping_select;
 				}
 				__INPUTCANDY.ui.device_select.swapping=false;
-				__ICI.UpdateActiveSetup(true);
+				__ICI.UpdateActiveSetup();
 				audio_play_sound(a_ICUI_tone,100,0);
 			break;
 		}
@@ -1239,7 +1241,7 @@ function ICUI_Draw_input_binding() {
 				__INPUTCANDY.settings[0].deviceInfo.desc="Keyboard and Mouse";
 				__INPUTCANDY.settings[0].deviceInfo.type=ICDeviceType_keyboard_mouse;
 				__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings = 0;
-				__ICI.UpdateActiveSetup(true);
+				__ICI.UpdateActiveSetup();
 			}
 		} else if ( array_length(__INPUTCANDY.settings) == 0 ) {
 			__INPUTCANDY.settings[0]=__ICI.New_ICSettings();
@@ -1248,7 +1250,7 @@ function ICUI_Draw_input_binding() {
 			__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings = 0;
 			__INPUTCANDY.settings[0].deadzone1=gamepad_get_axis_deadzone(__INPUTCANDY.settings[0].deviceInfo.slot_id);
 			__INPUTCANDY.settings[0].deadzone2=gamepad_get_button_threshold(__INPUTCANDY.settings[0].deviceInfo.slot_id);
-			__ICI.UpdateActiveSetup(true);			
+			__ICI.UpdateActiveSetup();			
 		} else __INPUTCANDY.ui.input_binding.loading=true;
 	}
 	
@@ -1466,7 +1468,7 @@ function ICUI_Draw_input_binding() {
 					__INPUTCANDY.settings[next_profile].deviceInfo.desc="Keyboard and Mouse";
 					__INPUTCANDY.settings[next_profile].deviceInfo.type=ICDeviceType_keyboard_mouse;
 					__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings = next_profile;
-					__ICI.UpdateActiveSetup(true);
+					__ICI.UpdateActiveSetup();
 					}
 				} else {
 					__INPUTCANDY.settings[next_profile]=__ICI.New_ICSettings();
@@ -1476,7 +1478,7 @@ function ICUI_Draw_input_binding() {
 					__INPUTCANDY.settings[next_profile].deadzone1=gamepad_get_axis_deadzone(__INPUTCANDY.settings[next_profile].deviceInfo.slot_id);
 					__INPUTCANDY.settings[next_profile].deadzone2=gamepad_get_button_threshold(__INPUTCANDY.settings[next_profile].deviceInfo.slot_id);
 					__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings = next_profile;
-					__ICI.UpdateActiveSetup(true);
+					__ICI.UpdateActiveSetup();
 				}
 				__INPUTCANDY.ui.input_binding.scrolled=0;
 				__INPUTCANDY.ui.input_binding.influencing=mi_scrdn;
@@ -1677,6 +1679,7 @@ function ICUI_Draw_input_binding_choice() {
 			case mi_set_to_default:
 				audio_play_sound(a_ICUI_tone,100,0);
 				var b_index=__ICI.GetBinding( settings_index, action_index );
+				if ( b_index == none ) b_index=__ICI.AddBinding( settings_index, action_index );
 				if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
 					__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=action.keyboard;
 				} else
@@ -2202,7 +2205,7 @@ function ICUI_Draw_SDLDB_select() {
 			__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings = next_profile;
 			__INPUTCANDY.settings[next_profile].deadzone1=gamepad_get_axis_deadzone(__INPUTCANDY.settings[next_profile].deviceInfo.slot_id);
 			__INPUTCANDY.settings[next_profile].deadzone2=gamepad_get_button_threshold(__INPUTCANDY.settings[next_profile].deviceInfo.slot_id);
-			__ICI.UpdateActiveSetup(true);			
+			__ICI.UpdateActiveSetup();			
 		} 
 	}	
 	
