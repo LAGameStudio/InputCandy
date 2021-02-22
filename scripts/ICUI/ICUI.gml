@@ -57,6 +57,8 @@ function __Init_ICUI() {
 				 case ICUI_gamepad_test:
 				  __INPUTCANDY.ui.mode(ICUI_none);
 				  __INPUTCANDY.ui.gamepad_test.mode=true;
+				  __INPUTCANDY.ui.gamepad_test.expired=0.0;
+				  __INPUTCANDY.ui.gamepad_test.exitting=false;
                  break;
 				 case ICUI_input_binding:
 				  __INPUTCANDY.ui.mode(ICUI_none);
@@ -135,7 +137,8 @@ function __Init_ICUI() {
 		// UI mode where we're testing a gamepad (leads to SDLDB_select and input_binding)
 		gamepad_test: {
 			mode: false,
-			influencing: 0
+			expired: 0.0,
+			exitting: false
 		},
 		// UI mode where we're mapping controls for a gamepad or loading settings
 		input_binding: {
@@ -380,10 +383,11 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 					else if (code >= IC_hat2_U and code <= IC_hat2_R) hatnum=2;
 					else if (code >= IC_hat3_U and code <= IC_hat3_R) hatnum=3;
 					switch ( d ) {
-						case 0: break;
+						case 0: index=5; break;
 						case 1: index=6; break;
 						case 2: index=7; break;
 						case 3: index=8; break;
+						default: break;
 					}
 					ICUI_image( s_InputCandy_ICUI_icons, 17, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 					ICUI_image( s_InputCandy_ICUI_icons, index, sx, r.y, swh, r.h, c_white, 0, 1.0 );
@@ -438,27 +442,6 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 			case ICDeviceType_mouse:
 			case ICDeviceType_keyboard:
 				if ( is_directional ) {
-				} else {
-					switch ( code ) {
-						case IC_mouse_left:
-							ICUI_image( s_InputCandy_ICUI_icons, 24, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						break;
-						case IC_mouse_right:
-							ICUI_image( s_InputCandy_ICUI_icons, 26, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						break;
-						case IC_mouse_middle:
-							ICUI_image( s_InputCandy_ICUI_icons, 25, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						break;
-						case IC_mouse_scrollup:
-							ICUI_image( s_InputCandy_ICUI_icons, 27, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						break;
-						case IC_mouse_scrolldown:
-							ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						break;
-					}
-					sx+=swh+spacing;
-				}
-				if ( is_directional ) {
 					if ( code == IC_wasd ) {
 						var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
 						ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
@@ -483,20 +466,15 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 						ICUI_image( s_InputCandy_ICUI_icons, 50, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 						sx+=swh+spacing;
 					} else if ( code == IC_numpad ) { 
-						//var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
 						ICUI_image( s_InputCandy_ICUI_icons, 75, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						//draw_text_transformed_color(sx+swh/2,key.y,"8",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 76, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						//draw_text_transformed_color(sx+swh/2,key.y,"2",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 77, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						//draw_text_transformed_color(sx+swh/2,key.y,"4",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
 						sx+=swh+spacing;
 						ICUI_image( s_InputCandy_ICUI_icons, 78, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						//draw_text_transformed_color(sx+swh/2,key.y,"6",key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);						
 						sx+=swh+spacing;
-					}
+					} //else if ( code == IC_mouse_move ) { // could be added here
 				} else if ( code >= IC_key_A and code <= IC_key_9 ) {
 					ICUI_image( s_InputCandy_ICUI_icons, 29, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 					var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
@@ -512,232 +490,94 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 						break;
 					}
 					sx+=swh+spacing;
-				} else if ( code >= IC_backspace and code <= IC_f12 ) {
+				} else if ( code >= IC_key_arrow_L and code <= IC_f12 ) {
 					switch ( code ) {
-						case IC_backspace:
-							ICUI_image( s_InputCandy_ICUI_icons, 31, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_any_alt:	
-							ICUI_image( s_InputCandy_ICUI_icons, 39, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_any_shift:		
-							ICUI_image( s_InputCandy_ICUI_icons, 33, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_any_control:	
-							ICUI_image( s_InputCandy_ICUI_icons, 36, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_lalt:			
-							ICUI_image( s_InputCandy_ICUI_icons, 41, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_ralt:			
-							ICUI_image( s_InputCandy_ICUI_icons, 40, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_lctrl:			
-							ICUI_image( s_InputCandy_ICUI_icons, 37, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_rctrl:			
-							ICUI_image( s_InputCandy_ICUI_icons, 38, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_lshift:		
-							ICUI_image( s_InputCandy_ICUI_icons, 34, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_rshift:		
-							ICUI_image( s_InputCandy_ICUI_icons, 35, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_tab:			
-							ICUI_image( s_InputCandy_ICUI_icons, 43, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_pause:			
-							ICUI_image( s_InputCandy_ICUI_icons, 55, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_print:			
-							ICUI_image( s_InputCandy_ICUI_icons, 56, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_pgup:			
-							ICUI_image( s_InputCandy_ICUI_icons, 57, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_pgdn:			
-							ICUI_image( s_InputCandy_ICUI_icons, 58, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_home:			
-							ICUI_image( s_InputCandy_ICUI_icons, 59, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_end:			
-							ICUI_image( s_InputCandy_ICUI_icons, 63, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_insert:		
-							ICUI_image( s_InputCandy_ICUI_icons, 61, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_delete:		
-							ICUI_image( s_InputCandy_ICUI_icons, 60, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad0:		
-							ICUI_image( s_InputCandy_ICUI_icons, 85, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad1:		
-							ICUI_image( s_InputCandy_ICUI_icons, 83, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad2:		
-							ICUI_image( s_InputCandy_ICUI_icons, 79, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad3:		
-							ICUI_image( s_InputCandy_ICUI_icons, 82, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad4:		
-							ICUI_image( s_InputCandy_ICUI_icons, 76, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad5:		
-							ICUI_image( s_InputCandy_ICUI_icons, 79, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad6:		
-							ICUI_image( s_InputCandy_ICUI_icons, 77, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad7:		
-							ICUI_image( s_InputCandy_ICUI_icons, 81, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad8:		
-							ICUI_image( s_InputCandy_ICUI_icons, 75, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad9:		
-							ICUI_image( s_InputCandy_ICUI_icons, 81, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad_multiply:
-							ICUI_image( s_InputCandy_ICUI_icons, 89, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad_divide:  
-							ICUI_image( s_InputCandy_ICUI_icons, 88, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad_subtract:
-							ICUI_image( s_InputCandy_ICUI_icons, 87, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_numpad_decimal: 
-							ICUI_image( s_InputCandy_ICUI_icons, 84, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f1:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 63, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f2:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 64, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f3:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 65, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f4:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 66, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f5:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 67, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f6:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 68, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f7:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 69, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f8:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 70, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f9:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 71, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f10:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 72, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f11:		     
-							ICUI_image( s_InputCandy_ICUI_icons, 73, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_f12:
-							ICUI_image( s_InputCandy_ICUI_icons, 74, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_key_arrow_U:
-							ICUI_image( s_InputCandy_ICUI_icons, 48, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_key_arrow_D:
-							ICUI_image( s_InputCandy_ICUI_icons, 49, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_key_arrow_L:
-							ICUI_image( s_InputCandy_ICUI_icons, 50, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_key_arrow_R:
-							ICUI_image( s_InputCandy_ICUI_icons, 51, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
+						case IC_key_arrow_U:		ICUI_image( s_InputCandy_ICUI_icons, 49, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_key_arrow_D:		ICUI_image( s_InputCandy_ICUI_icons, 48, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_key_arrow_L:		ICUI_image( s_InputCandy_ICUI_icons, 51, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_key_arrow_R:		ICUI_image( s_InputCandy_ICUI_icons, 50, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_backspace:			ICUI_image( s_InputCandy_ICUI_icons, 30, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_any_alt:			ICUI_image( s_InputCandy_ICUI_icons, 39, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_any_shift:			ICUI_image( s_InputCandy_ICUI_icons, 33, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_any_control:		ICUI_image( s_InputCandy_ICUI_icons, 36, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_lalt:				ICUI_image( s_InputCandy_ICUI_icons, 41, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_ralt:				ICUI_image( s_InputCandy_ICUI_icons, 40, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_lctrl:				ICUI_image( s_InputCandy_ICUI_icons, 37, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_rctrl:				ICUI_image( s_InputCandy_ICUI_icons, 38, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_lshift:				ICUI_image( s_InputCandy_ICUI_icons, 34, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_rshift:				ICUI_image( s_InputCandy_ICUI_icons, 35, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_tab:				ICUI_image( s_InputCandy_ICUI_icons, 43, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_pause:				ICUI_image( s_InputCandy_ICUI_icons, 55, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_print:				ICUI_image( s_InputCandy_ICUI_icons, 56, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_pgup:				ICUI_image( s_InputCandy_ICUI_icons, 57, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_pgdn:				ICUI_image( s_InputCandy_ICUI_icons, 58, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_home:				ICUI_image( s_InputCandy_ICUI_icons, 59, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_end:				ICUI_image( s_InputCandy_ICUI_icons, 63, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_insert:				ICUI_image( s_InputCandy_ICUI_icons, 61, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_delete:				ICUI_image( s_InputCandy_ICUI_icons, 60, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad0:			ICUI_image( s_InputCandy_ICUI_icons, 85, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad1:			ICUI_image( s_InputCandy_ICUI_icons, 83, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad2:			ICUI_image( s_InputCandy_ICUI_icons, 78, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad3:			ICUI_image( s_InputCandy_ICUI_icons, 82, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad4:			ICUI_image( s_InputCandy_ICUI_icons, 76, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad5:			ICUI_image( s_InputCandy_ICUI_icons, 79, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad6:			ICUI_image( s_InputCandy_ICUI_icons, 77, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad7:			ICUI_image( s_InputCandy_ICUI_icons, 80, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad8:			ICUI_image( s_InputCandy_ICUI_icons, 75, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad9:			ICUI_image( s_InputCandy_ICUI_icons, 81, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad_multiply:	ICUI_image( s_InputCandy_ICUI_icons, 89, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad_divide:		ICUI_image( s_InputCandy_ICUI_icons, 88, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad_subtract:	ICUI_image( s_InputCandy_ICUI_icons, 87, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad_add:			ICUI_image( s_InputCandy_ICUI_icons, 86, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_numpad_decimal:		ICUI_image( s_InputCandy_ICUI_icons, 84, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f1:					ICUI_image( s_InputCandy_ICUI_icons, 63, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f2:					ICUI_image( s_InputCandy_ICUI_icons, 64, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f3:					ICUI_image( s_InputCandy_ICUI_icons, 65, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f4:					ICUI_image( s_InputCandy_ICUI_icons, 66, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f5:					ICUI_image( s_InputCandy_ICUI_icons, 67, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f6:					ICUI_image( s_InputCandy_ICUI_icons, 68, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f7:					ICUI_image( s_InputCandy_ICUI_icons, 69, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f8:					ICUI_image( s_InputCandy_ICUI_icons, 70, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f9:					ICUI_image( s_InputCandy_ICUI_icons, 71, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f10:				ICUI_image( s_InputCandy_ICUI_icons, 72, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f11:				ICUI_image( s_InputCandy_ICUI_icons, 73, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_f12:				ICUI_image( s_InputCandy_ICUI_icons, 74, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						default:
+							{
+								var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
+								draw_text_transformed_color(sx+swh/2,key.y,"?", key.w,key.h,0,c_white,c_dkgray,c_white,c_dkgray,1.0);						
+							}
 						break;
 					}
+					sx+=swh+spacing;					
 				} else if ( code >= IC_key_backtick and code <= IC_key_apostrophe ) {
-						var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
-						ICUI_image( s_InputCandy_ICUI_icons, 30, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-						draw_text_transformed_color(sx,key.y,__INPUTCANDY.signals[code].keychar,key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
-						sx+=swh+spacing;
+					var key=ICUI_get_key_size(sx,r.y+r.h/2,fontsize,swh);
+					ICUI_image( s_InputCandy_ICUI_icons, 30, sx, r.y, swh, r.h, c_white, 0, 1.0 );
+					draw_text_transformed_color(sx,key.y,__INPUTCANDY.signals[code].keychar,key.w,key.h,0,c_black,c_dkgray,c_black,c_dkgray,1.0);
+					sx+=swh+spacing;
 				} else if ( code >= IC_enter and code <= IC_key_escape ) {
 					switch ( code ) {
-						case IC_enter:
-							ICUI_image( s_InputCandy_ICUI_icons, 45, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_space:
-							ICUI_image( s_InputCandy_ICUI_icons, 91, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
-						case IC_key_escape:
-							ICUI_image( s_InputCandy_ICUI_icons, 46, sx, r.y, swh, r.h, c_white, 0, 1.0 );
-							sx+=swh+spacing;
-						break;
+						case IC_enter:				ICUI_image( s_InputCandy_ICUI_icons, 45, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_space:				ICUI_image( s_InputCandy_ICUI_icons, 90, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_key_escape:			ICUI_image( s_InputCandy_ICUI_icons, 46, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
 					}
+					sx+=swh+spacing;
+				} else if ( code >= IC_mouse_left and code <= IC_mouse_scrollup ) {
+					switch ( code ) {
+						case IC_mouse_left:			ICUI_image( s_InputCandy_ICUI_icons, 24, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_mouse_right:		ICUI_image( s_InputCandy_ICUI_icons, 26, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_mouse_middle:		ICUI_image( s_InputCandy_ICUI_icons, 25, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_mouse_scrollup:		ICUI_image( s_InputCandy_ICUI_icons, 27, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+						case IC_mouse_scrolldown:	ICUI_image( s_InputCandy_ICUI_icons, 28, sx, r.y, swh, r.h, c_white, 0, 1.0 ); break;
+					}
+					sx+=swh+spacing;
 				}
 			break;
 		}
 		if ( i+1 != len ) {
 			ICUI_text( false, (is_combo or key_mouse_combo) ? "and" : "or", sx + spacing, sy );
 		//	sx += spacing;
-			sx -= fontsize+spacing;
+			sx += ( (is_combo or key_mouse_combo) ? 3 : 2 ) * fontsize+spacing*2;
 		}
 	}	
 }
@@ -994,6 +834,8 @@ function ICUI_Draw_device_select() {
 				audio_play_sound(a_ICUI_pageflip,100,0);
 				 __INPUTCANDY.ui.device_select.mode=false;
 				 __INPUTCANDY.ui.gamepad_test.mode=true;
+				  __INPUTCANDY.ui.gamepad_test.expired=0.0;
+				  __INPUTCANDY.ui.gamepad_test.exitting=false;
 				break;
 				case 5:
 				audio_play_sound(a_ICUI_pageflip,100,0);
@@ -1680,11 +1522,11 @@ function ICUI_Draw_input_binding_choice() {
 				audio_play_sound(a_ICUI_tone,100,0);
 				var b_index=__ICI.GetBinding( settings_index, action_index );
 				if ( b_index != none ) {
-					if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
-						__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=action.keyboard;
-					} else
-						__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=action.gamepad;
-					}
+						if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
+							__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=action.keyboard;
+						} else {
+							__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=action.gamepad;
+						}
 				}
 	 			__INPUTCANDY.ui.input_binding.choosing=false;
 			break;
@@ -1927,7 +1769,13 @@ function ICUI_Draw_input_binding_choice_capture() {
 function ICUI_Draw_input_binding_set_profile() {
 	
     var settings_count=array_length(__INPUTCANDY.settings);
-	
+	var player_index=__INPUTCANDY.ui.device_select.influencing;
+    var setting_index=__INPUTCANDY.players[player_index].settings;
+	if ( settings_index == none ) {
+		 	 __INPUTCANDY.ui.input_binding.loading=false;
+			 audio_play_sound(a_ICUI_pageflip,100,0);
+	}
+
     var max_menuitem=settings_count+2;  // 0 Back button, 2/3 Up/Down Scroll
 	var mi_back=max_menuitem-2;  // Back
 	var mi_scrup=max_menuitem-1; // Up
@@ -1968,8 +1816,9 @@ function ICUI_Draw_input_binding_set_profile() {
 	ICUI_text( false, "Current Settings: Profile #"+int(__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings+1), ox+__INPUTCANDY.ui.region.w/2, oy );
 	if ( __INPUTCANDY.ui.input_binding.keyboard_and_mouse ) {
 		ICUI_text( false, "Keyboard and Mouse Configuration", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
-	} else {
-		ICUI_text( false, "(Created for "+__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deviceInfo.desc+")", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	} else if ( __INPUTCANDY.settings[setting_index].deviceInfo != none ) {
+		var desc=__INPUTCANDY.settings[setting_index].deviceInfo.desc;
+		ICUI_text( false, "(Created for "+desc+")", ox+__INPUTCANDY.ui.region.w/2, oy+eh );
 	}
 	oy+=smidge+eh*2;
 	
@@ -2372,6 +2221,155 @@ function ICUI_Draw_SDLDB_select() {
 }
 
 function ICUI_Draw_gamepad_test() {
+	
+	var player_index=__INPUTCANDY.ui.device_select.influencing;
+	var player_number=player_index+1;
+	var player=__INPUTCANDY.players[player_index];
+	var km=__INPUTCANDY.player_using_keyboard_mouse == player_index and __INPUTCANDY.allow_keyboard_mouse;
+	
+	var settings_index=player.settings;
+	var settings=settings_index == none ? none : __INPUTCANDY.settings[settings_index];
+	
+	var device=player.device==none?none:__INPUTCANDY.devices[player.device];
+	
+	var ox=__INPUTCANDY.ui.region.x;
+	var oy=__INPUTCANDY.ui.region.y;
+	var ew=__INPUTCANDY.ui.style.wide*__INPUTCANDY.ui.region.w;
+	var eh=__INPUTCANDY.ui.style.high*__INPUTCANDY.ui.region.h;
+	var smidge=__INPUTCANDY.ui.region.w*__INPUTCANDY.ui.style.smidge;
+	var icon_sprite_wh=sprite_get_width(s_InputCandy_device_icons);
+	var icon_scale=1.0/icon_sprite_wh;
+	var fontsize=eh;
+	var oldfont = draw_get_font();
+	var oldhalign = draw_get_halign();
+	var oldvalign = draw_get_valign();
+	draw_set_halign(fa_center);
+	draw_set_valign(fa_middle);
+	draw_set_font(__INPUTCANDY.ui.style.font);
+
+    var mi_back=1;  // Back
+
+		
+	// Draws a background
+	ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
+
+	var sx=__INPUTCANDY.ui.region.x;
+	var sy=__INPUTCANDY.ui.region.y;
+
+	// Back Button
+//	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
+//	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.SDLDB_select.influencing=mi_back;
+//	ICUI_labeled_button( __INPUTCANDY.ui.SDLDB_select.influencing == mi_back, "", r.x,r.y,r.w,r.h );
+//	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
+
+    // Title
+	oy+=eh;
+	ICUI_text( false, "Testing Player #"+int(player_number)+"  Settings "+(settings==none?"(none)":("#"+int(settings_index+1))), ox+__INPUTCANDY.ui.region.w/2, oy );
+	ICUI_text( false, (player.device==none?"":("For "+device.desc))+(km?" with Keyboard and Mouse" : ""), ox+__INPUTCANDY.ui.region.w/2, oy+eh );
+	var held=8-__INPUTCANDY.ui.gamepad_test.expired;
+	if ( held < 0 )	ICUI_text( false, "Release button to exit",  ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
+	else ICUI_text( false, "Hold a button for "+int(held)+" seconds to exit",  ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
+	oy+=smidge+eh*4;
+	
+	var found=false;
+	var r;
+
+    if ( device != none ) {
+     var len =array_length(__INPUTCANDY.states[player.device].signals);
+	 if ( len > 0 ) found=true;
+	 var codes=[];
+	 var j=0;
+	 for ( i=0; i<len; i++ ) if ( __INPUTCANDY.states[player.device].signals[i].is_held ) {
+		 codes[j]=__INPUTCANDY.states[player.device].signals[i].signal_index;
+		 j++;
+		 if ( j == 8 ) {
+			r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+  			ICUI_draw_ICaction(codes,ICDeviceType_gamepad,false,true,false,r);
+			 oy+=smidge+eh*2;
+			 codes=[];
+			 j=0;
+		 }
+	 }
+	 if ( array_length(codes) > 0 ) {
+		 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+		 ICUI_draw_ICaction(codes,ICDeviceType_gamepad,false,true,false,r);
+		 oy+=smidge+eh*2;
+	 }
+	 
+	 var state=__INPUTCANDY.states[player.device];
+//	 var hat_icon=16;
+//	 var axis_icon=17;
+	 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/4,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+	 if ( (state.LV != AXIS_NO_VALUE or state.LH != AXIS_NO_VALUE) and ( floor(state.LV*10)/10 != 0 or floor(state.LH*10)/10 != 0 ) ) {
+		 ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+		 ICUI_text( false, "Left Stick Axis:\nH:"+(state.LH != AXIS_NO_VALUE ? string_format(state.LH,1,1) : "-")+" V:"+(state.LV != AXIS_NO_VALUE ? string_format(state.LV,1,1) : "-"), r.x, r.y );
+	 }
+	 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/2,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+	 if ( (state.RV != AXIS_NO_VALUE or state.RH != AXIS_NO_VALUE) and ( floor(state.RV*10)/10 != 0 or floor(state.RH*10)/10 != 0 ) ) {
+		 ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+		 ICUI_text( false, "Right Stick Axis:\nH:"+(state.RH != AXIS_NO_VALUE ? string_format(state.RH,1,1) : "-")+" V:"+(state.RV != AXIS_NO_VALUE ? string_format(state.RV,1,1) : "-"), r.x, r.y );
+	 }
+	 oy += smidge+eh*2;
+	 
+	}
+
+	if ( km ) {
+	 var len =array_length(__INPUTCANDY.mouseStates);
+	 if ( len > 0 ) found=true;
+	 var codes=[];
+	 var j=0;
+	 for ( i=0; i<len; i++ ) if ( __INPUTCANDY.mouseStates[i].is_held ) {
+		 codes[j]=__INPUTCANDY.mouseStates[i].signal_index;
+		 j++;
+		 if ( j == 8 ) {
+			r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+  			ICUI_draw_ICaction(codes,ICDeviceType_mouse,false,true,false,r);
+			 oy+=smidge+eh*2;
+			 codes=[];
+			 j=0;
+		 }
+	 }
+	 if ( array_length(codes) > 0 ) {
+		 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+		 ICUI_draw_ICaction(codes,ICDeviceType_mouse,false,true,false,r);
+		 oy+=smidge+eh*2;
+	 }
+	 len =array_length(__INPUTCANDY.keys);
+	 if ( len > 0 ) found=true;
+	 var codes=[];
+	 var j=0;
+	 for ( i=0; i<len; i++ ) if ( __INPUTCANDY.keys[i].is_held ) {
+		 codes[j]=__INPUTCANDY.keys[i].signal_index;
+		 j++;
+		 if ( j == 8 ) {
+			r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+  			ICUI_draw_ICaction(codes,ICDeviceType_keyboard,false,true,false,r);
+			 oy+=smidge+eh*2;
+			 codes=[];
+			 j=0;
+		 }
+	 }
+	 if ( array_length(codes) > 0 ) {
+		 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+		 ICUI_draw_ICaction(codes,ICDeviceType_keyboard,false,true,false,r);
+		 oy+=smidge+eh*2;
+	 } 
+	}
+
+	if ( found == false ) __INPUTCANDY.ui.gamepad_test.expired=0;
+	else __INPUTCANDY.ui.gamepad_test.expired += 1.0/room_speed;
+	if ( __INPUTCANDY.ui.gamepad_test.expired > 8.0 ) {
+		__INPUTCANDY.ui.gamepad_test.exitting=true;
+	}
+	if ( __INPUTCANDY.ui.gamepad_test.exitting and found == false ) {  // go back
+		__INPUTCANDY.ui.gamepad_test.mode=false;
+		__INPUTCANDY.ui.gamepad_test.exitting=false;
+		__INPUTCANDY.ui.device_select.mode=true;
+	}
+
+	draw_set_font(oldfont);
+	draw_set_halign(oldhalign);
+	draw_set_valign(oldvalign);
 }
 
 
