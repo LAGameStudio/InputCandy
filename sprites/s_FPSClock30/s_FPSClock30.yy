@@ -183,9 +183,10 @@
   "layers": [
     {"visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default","resourceVersion":"1.0","name":"d7644607-4663-4fab-9c38-0f40f3850ae2","tags":[],"resourceType":"GMImageLayer",},
   ],
+  "nineSlice": null,
   "parent": {
     "name": "InputCandy",
-    "path": "InputCandy.yyp",
+    "path": "folders/Sprites/InputCandy.yy",
   },
   "resourceVersion": "1.0",
   "name": "s_FPSClock30",

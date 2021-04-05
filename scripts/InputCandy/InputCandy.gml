@@ -81,7 +81,7 @@ function IC_Action( verb_string, default_gamepad, default_keyboard /*mouse, grou
 
 ////////// enumerations and global macros
 
-#macro none noone
+#macro none -4
 #macro unknown -123456789
 
 #macro AXIS_NO_VALUE -10000
@@ -318,54 +318,157 @@ function ICDeviceTypeString(i) {
 #macro IC_axis8 408
 #macro IC_axis9 409
 
+/// STICKS, a stick is two axis used in tandem to create an analog thumbstick.  Since we support 10 axis, we support 100 sticks.
+
+// IC_stick_XY, where X is the left-right axis and Y is the up-down axis
+
+#macro IC_stick_01 410
+#macro IC_stick_02 411
+#macro IC_stick_03 412
+#macro IC_stick_04 413
+#macro IC_stick_05 414
+#macro IC_stick_06 415
+#macro IC_stick_07 416
+#macro IC_stick_08 417
+#macro IC_stick_09 418
+
+#macro IC_stick_10 419
+#macro IC_stick_12 420
+#macro IC_stick_13 421
+#macro IC_stick_14 422
+#macro IC_stick_15 423
+#macro IC_stick_16 424
+#macro IC_stick_17 425
+#macro IC_stick_18 426
+#macro IC_stick_19 427
+
+#macro IC_stick_20 428
+#macro IC_stick_21 429
+#macro IC_stick_23 430
+#macro IC_stick_24 431
+#macro IC_stick_25 432
+#macro IC_stick_26 433
+#macro IC_stick_27 434
+#macro IC_stick_28 435
+#macro IC_stick_29 436
+
+#macro IC_stick_30 437
+#macro IC_stick_31 438
+#macro IC_stick_32 439
+#macro IC_stick_34 440
+#macro IC_stick_35 441
+#macro IC_stick_36 442
+#macro IC_stick_37 443
+#macro IC_stick_38 444
+#macro IC_stick_39 445
+
+#macro IC_stick_40 446
+#macro IC_stick_41 447
+#macro IC_stick_42 448
+#macro IC_stick_43 449
+#macro IC_stick_45 450
+#macro IC_stick_46 451
+#macro IC_stick_47 452
+#macro IC_stick_48 453
+#macro IC_stick_49 454
+
+#macro IC_stick_50 455
+#macro IC_stick_51 456
+#macro IC_stick_52 457
+#macro IC_stick_53 458
+#macro IC_stick_54 459
+#macro IC_stick_56 460
+#macro IC_stick_57 461
+#macro IC_stick_58 462
+#macro IC_stick_59 463
+
+#macro IC_stick_60 464
+#macro IC_stick_61 465
+#macro IC_stick_62 466
+#macro IC_stick_63 467
+#macro IC_stick_64 468
+#macro IC_stick_65 469
+#macro IC_stick_67 470
+#macro IC_stick_68 471
+#macro IC_stick_69 472
+
+#macro IC_stick_70 473
+#macro IC_stick_71 474
+#macro IC_stick_72 475
+#macro IC_stick_73 476
+#macro IC_stick_74 477
+#macro IC_stick_75 478
+#macro IC_stick_76 479
+#macro IC_stick_78 480
+#macro IC_stick_79 481
+
+#macro IC_stick_80 482
+#macro IC_stick_81 483
+#macro IC_stick_82 484
+#macro IC_stick_83 485
+#macro IC_stick_84 486
+#macro IC_stick_85 487
+#macro IC_stick_86 488
+#macro IC_stick_87 489
+#macro IC_stick_89 490
+
+#macro IC_stick_90 491
+#macro IC_stick_91 492
+#macro IC_stick_92 493
+#macro IC_stick_93 494
+#macro IC_stick_94 495
+#macro IC_stick_95 496
+#macro IC_stick_96 497
+#macro IC_stick_97 498
+#macro IC_stick_98 499
 
 /// BUTTONS
 
-#macro IC_btn0   440
-#macro IC_btn1   441
-#macro IC_btn2   442
-#macro IC_btn3   443
-#macro IC_btn4   444
-#macro IC_btn5   445
-#macro IC_btn6   446
-#macro IC_btn7   447
-#macro IC_btn8   448
-#macro IC_btn9   449
-#macro IC_btn10  450
-#macro IC_btn11  451
-#macro IC_btn12  452
-#macro IC_btn13  453
-#macro IC_btn14  454
-#macro IC_btn15  455
-#macro IC_btn16  456
-#macro IC_btn17  457
-#macro IC_btn18  458
-#macro IC_btn19  459
-#macro IC_btn20  460
-#macro IC_btn21  461
-#macro IC_btn22  462
-#macro IC_btn23  463
-#macro IC_btn24  464
-#macro IC_btn25  465
-#macro IC_btn26  466
-#macro IC_btn27  467
-#macro IC_btn28  468
-#macro IC_btn29  469
-#macro IC_btn30  470
-#macro IC_btn31  471
-#macro IC_btn32  472
-#macro IC_btn33  473
-#macro IC_btn34  474
-#macro IC_btn35  475
-#macro IC_btn36  476
-#macro IC_btn37  477
-#macro IC_btn38  478
-#macro IC_btn39  479
+#macro IC_btn0   500
+#macro IC_btn1   501
+#macro IC_btn2   502
+#macro IC_btn3   503
+#macro IC_btn4   504
+#macro IC_btn5   505
+#macro IC_btn6   506
+#macro IC_btn7   507
+#macro IC_btn8   508
+#macro IC_btn9   509
+#macro IC_btn10  510
+#macro IC_btn11  511
+#macro IC_btn12  512
+#macro IC_btn13  513
+#macro IC_btn14  514
+#macro IC_btn15  515
+#macro IC_btn16  516
+#macro IC_btn17  517
+#macro IC_btn18  518
+#macro IC_btn19  519
+#macro IC_btn20  520
+#macro IC_btn21  521
+#macro IC_btn22  522
+#macro IC_btn23  523
+#macro IC_btn24  524
+#macro IC_btn25  525
+#macro IC_btn26  526
+#macro IC_btn27  527
+#macro IC_btn28  528
+#macro IC_btn29  529
+#macro IC_btn30  530
+#macro IC_btn31  531
+#macro IC_btn32  532
+#macro IC_btn33  533
+#macro IC_btn34  534
+#macro IC_btn35  535
+#macro IC_btn36  536
+#macro IC_btn37  537
+#macro IC_btn38  538
+#macro IC_btn39  539
 
 // Arrow keys, a movement option
-#macro IC_arrows 500
-#macro IC_wasd   501
-#macro IC_numpad 502
+#macro IC_arrows 600
+#macro IC_wasd   601
+#macro IC_numpad 602
 
 // Mouse movement.  Not used but could be.
 /*
@@ -580,26 +683,143 @@ __INPUTCANDY.signals = [
  {	index:126,  code: IC_enter,          name: "Enter",			azerty_name: "Enter",         qwertz_name:"Enter",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_enter  },
  {	index:127,  code: IC_space,          name: "Space",			azerty_name: "Space",         qwertz_name:"Space",         deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_space  },
  {	index:128,  code: IC_key_escape,     name: "Escape",		azerty_name: "Escape",        qwertz_name:"Escape",        deviceType: ICDeviceType_keyboard, keyboardMethod: ICKeyboardMethod_keycheck, keycode: vk_escape },
- {	index:129,  code: IC_hat0_U,		 name: "Hat0 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:130,  code: IC_hat0_D,		 name: "Hat0 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:131,  code: IC_hat0_L,		 name: "Hat0 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:132,  code: IC_hat0_R,	     name: "Hat0 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:133,  code: IC_hat1_U,		 name: "Hat1 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:134,  code: IC_hat1_D,		 name: "Hat1 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:135,  code: IC_hat1_L,		 name: "Hat1 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:136,  code: IC_hat1_R,	     name: "Hat1 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:137,  code: IC_hat2_U,		 name: "Hat2 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:138,  code: IC_hat2_D,		 name: "Hat2 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:139,  code: IC_hat2_L,		 name: "Hat2 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:140,  code: IC_hat2_R,	     name: "Hat2 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:141,  code: IC_hat3_U,		 name: "Hat3 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:142,  code: IC_hat3_D,		 name: "Hat3 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:143,  code: IC_hat3_L,		 name: "Hat3 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:144,  code: IC_hat3_R,	     name: "Hat3 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:145,  code: IC_hat4_U,		 name: "Hat4 Up",       deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:146,  code: IC_hat4_D,		 name: "Hat4 Down",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:147,  code: IC_hat4_L,		 name: "Hat4 Left",     deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
- {	index:148,  code: IC_hat4_R,	     name: "Hat4 Right",	deviceType: ICDeviceType_gamepad, deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:129,  code: IC_hat0_U,		 name: "Hat0 Up",       deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:130,  code: IC_hat0_D,		 name: "Hat0 Down",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:131,  code: IC_hat0_L,		 name: "Hat0 Left",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:132,  code: IC_hat0_R,	     name: "Hat0 Right",	deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:133,  code: IC_hat1_U,		 name: "Hat1 Up",       deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:134,  code: IC_hat1_D,		 name: "Hat1 Down",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:135,  code: IC_hat1_L,		 name: "Hat1 Left",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:136,  code: IC_hat1_R,	     name: "Hat1 Right",	deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:137,  code: IC_hat2_U,		 name: "Hat2 Up",       deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:138,  code: IC_hat2_D,		 name: "Hat2 Down",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:139,  code: IC_hat2_L,		 name: "Hat2 Left",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:140,  code: IC_hat2_R,	     name: "Hat2 Right",	deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:141,  code: IC_hat3_U,		 name: "Hat3 Up",       deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:142,  code: IC_hat3_D,		 name: "Hat3 Down",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:143,  code: IC_hat3_L,		 name: "Hat3 Left",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:144,  code: IC_hat3_R,	     name: "Hat3 Right",	deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:145,  code: IC_hat4_U,		 name: "Hat4 Up",       deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:146,  code: IC_hat4_D,		 name: "Hat4 Down",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:147,  code: IC_hat4_L,		 name: "Hat4 Left",     deviceType: ICDeviceType_gamepad, deviceCode: none },
+ {	index:148,  code: IC_hat4_R,	     name: "Hat4 Right",	deviceType: ICDeviceType_gamepad, deviceCode: none },
+];
+
+__INPUTCANDY.directionals=[
+ { index:0,    code: IC_dpad,     name: "D-Pad",      deviceType: ICDeviceType_gamepad },
+ { index:1,    code: IC_hat0,     name: "Hat0",       deviceType: ICDeviceType_gamepad },
+ { index:2,    code: IC_hat1,     name: "Hat1",       deviceType: ICDeviceType_gamepad },
+ { index:3,    code: IC_hat2,     name: "Hat2",       deviceType: ICDeviceType_gamepad },
+ { index:4,    code: IC_hat3,     name: "Hat3",       deviceType: ICDeviceType_gamepad },
+ { index:5,    code: IC_hat4,     name: "Hat4",       deviceType: ICDeviceType_gamepad },
+ { index:6,    code: IC_hat5,     name: "Hat5",       deviceType: ICDeviceType_gamepad },
+ { index:7,    code: IC_hat6,     name: "Hat6",       deviceType: ICDeviceType_gamepad },
+ { index:8,    code: IC_hat7,     name: "Hat7",       deviceType: ICDeviceType_gamepad },
+ { index:9,    code: IC_hat8,     name: "Hat8",       deviceType: ICDeviceType_gamepad },
+ { index:10,   code: IC_hat9,     name: "Hat9",       deviceType: ICDeviceType_gamepad },
+ { index:11,   code: IC_axis0,    name: "Axis0",      deviceType: ICDeviceType_gamepad },
+ { index:12,   code: IC_axis1,    name: "Axis1",      deviceType: ICDeviceType_gamepad },
+ { index:13,   code: IC_axis2,    name: "Axis2",      deviceType: ICDeviceType_gamepad },
+ { index:14,   code: IC_axis3,    name: "Axis3",      deviceType: ICDeviceType_gamepad },
+ { index:15,   code: IC_axis4,    name: "Axis4",      deviceType: ICDeviceType_gamepad },
+ { index:16,   code: IC_axis5,    name: "Axis5",      deviceType: ICDeviceType_gamepad },
+ { index:17,   code: IC_axis6,    name: "Axis6",      deviceType: ICDeviceType_gamepad },
+ { index:18,   code: IC_axis7,    name: "Axis7",      deviceType: ICDeviceType_gamepad },
+ { index:19,   code: IC_axis8,    name: "Axis8",      deviceType: ICDeviceType_gamepad },
+ { index:20,   code: IC_axis9,    name: "Axis9",      deviceType: ICDeviceType_gamepad },
+ { index:21,   code: IC_stick_01, name: "Stick 0+1",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 1 },
+ { index:22,   code: IC_stick_02, name: "Stick 0+2",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 2 },
+ { index:23,   code: IC_stick_03, name: "Stick 0+3",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 3 },
+ { index:24,   code: IC_stick_04, name: "Stick 0+4",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 4 },
+ { index:25,   code: IC_stick_05, name: "Stick 0+5",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 5 },
+ { index:26,   code: IC_stick_06, name: "Stick 0+6",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 6 },
+ { index:27,   code: IC_stick_07, name: "Stick 0+7",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 7 },
+ { index:28,   code: IC_stick_08, name: "Stick 0+8",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 8 },
+ { index:29,   code: IC_stick_09, name: "Stick 0+9",  deviceType: ICDeviceType_gamepad, stickH: 0, stickV: 9 },
+ { index:30,   code: IC_stick_10, name: "Stick 1+0",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 0 },
+ { index:31,   code: IC_stick_12, name: "Stick 1+2",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 2 },
+ { index:32,   code: IC_stick_13, name: "Stick 1+3",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 3 },
+ { index:33,   code: IC_stick_14, name: "Stick 1+4",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 4 },
+ { index:34,   code: IC_stick_15, name: "Stick 1+5",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 5 },
+ { index:35,   code: IC_stick_16, name: "Stick 1+6",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 6 },
+ { index:36,   code: IC_stick_17, name: "Stick 1+7",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 7 },
+ { index:37,   code: IC_stick_18, name: "Stick 1+8",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 8 },
+ { index:38,   code: IC_stick_19, name: "Stick 1+9",  deviceType: ICDeviceType_gamepad, stickH: 1, stickV: 9 },
+ { index:39,   code: IC_stick_20, name: "Stick 2+0",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 0 },
+ { index:40,   code: IC_stick_21, name: "Stick 2+1",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 1 },
+ { index:41,   code: IC_stick_23, name: "Stick 2+3",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 3 },
+ { index:42,   code: IC_stick_24, name: "Stick 2+4",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 4 },
+ { index:43,   code: IC_stick_25, name: "Stick 2+5",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 5 },
+ { index:44,   code: IC_stick_26, name: "Stick 2+6",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 6 },
+ { index:45,   code: IC_stick_27, name: "Stick 2+7",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 7 },
+ { index:46,   code: IC_stick_28, name: "Stick 2+8",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 8 },
+ { index:47,   code: IC_stick_29, name: "Stick 2+9",  deviceType: ICDeviceType_gamepad, stickH: 2, stickV: 9 },
+ { index:48,   code: IC_stick_30, name: "Stick 3+0",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 0 },
+ { index:49,   code: IC_stick_31, name: "Stick 3+1",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 1 },
+ { index:50,   code: IC_stick_32, name: "Stick 3+2",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 2 },
+ { index:51,   code: IC_stick_34, name: "Stick 3+4",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 4 },
+ { index:52,   code: IC_stick_35, name: "Stick 3+5",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 5 },
+ { index:53,   code: IC_stick_36, name: "Stick 3+6",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 6 },
+ { index:54,   code: IC_stick_37, name: "Stick 3+7",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 7 },
+ { index:55,   code: IC_stick_38, name: "Stick 3+8",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 8 },
+ { index:56,   code: IC_stick_39, name: "Stick 3+9",  deviceType: ICDeviceType_gamepad, stickH: 3, stickV: 9 },
+ { index:57,   code: IC_stick_40, name: "Stick 4+0",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 0 },
+ { index:58,   code: IC_stick_41, name: "Stick 4+1",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 1 },
+ { index:59,   code: IC_stick_42, name: "Stick 4+2",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 2 },
+ { index:60,   code: IC_stick_43, name: "Stick 4+3",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 3 },
+ { index:61,   code: IC_stick_45, name: "Stick 4+5",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 5 },
+ { index:62,   code: IC_stick_46, name: "Stick 4+6",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 6 },
+ { index:63,   code: IC_stick_47, name: "Stick 4+7",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 7 },
+ { index:64,   code: IC_stick_48, name: "Stick 4+8",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 8 },
+ { index:65,   code: IC_stick_49, name: "Stick 4+9",  deviceType: ICDeviceType_gamepad, stickH: 4, stickV: 9 },
+ { index:66,   code: IC_stick_50, name: "Stick 5+0",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 0 },
+ { index:67,   code: IC_stick_51, name: "Stick 5+1",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 1 },
+ { index:68,   code: IC_stick_52, name: "Stick 5+2",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 2 },
+ { index:69,   code: IC_stick_53, name: "Stick 5+3",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 3 },
+ { index:70,   code: IC_stick_54, name: "Stick 5+4",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 4 },
+ { index:71,   code: IC_stick_56, name: "Stick 5+6",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 6 },
+ { index:72,   code: IC_stick_57, name: "Stick 5+7",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 7 },
+ { index:73,   code: IC_stick_58, name: "Stick 5+8",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 8 },
+ { index:74,   code: IC_stick_59, name: "Stick 5+9",  deviceType: ICDeviceType_gamepad, stickH: 5, stickV: 9 },
+ { index:75,   code: IC_stick_60, name: "Stick 6+0",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 0 },
+ { index:76,   code: IC_stick_61, name: "Stick 6+1",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 1 },
+ { index:77,   code: IC_stick_62, name: "Stick 6+2",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 2 },
+ { index:78,   code: IC_stick_63, name: "Stick 6+3",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 3 },
+ { index:79,   code: IC_stick_64, name: "Stick 6+4",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 4 },
+ { index:80,   code: IC_stick_65, name: "Stick 6+5",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 5 },
+ { index:81,   code: IC_stick_67, name: "Stick 6+7",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 7 },
+ { index:82,   code: IC_stick_68, name: "Stick 6+8",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 8 },
+ { index:83,   code: IC_stick_69, name: "Stick 6+9",  deviceType: ICDeviceType_gamepad, stickH: 6, stickV: 9 },
+ { index:84,   code: IC_stick_70, name: "Stick 7+0",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 0 },
+ { index:85,   code: IC_stick_71, name: "Stick 7+1",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 1 },
+ { index:86,   code: IC_stick_72, name: "Stick 7+2",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 2 },
+ { index:87,   code: IC_stick_73, name: "Stick 7+3",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 3 },
+ { index:88,   code: IC_stick_74, name: "Stick 7+4",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 4 },
+ { index:89,   code: IC_stick_75, name: "Stick 7+5",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 5 },
+ { index:90,   code: IC_stick_76, name: "Stick 7+6",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 6 },
+ { index:91,   code: IC_stick_78, name: "Stick 7+8",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 8 },
+ { index:92,   code: IC_stick_79, name: "Stick 7+9",  deviceType: ICDeviceType_gamepad, stickH: 7, stickV: 9 },
+ { index:93,   code: IC_stick_80, name: "Stick 8+0",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 0 },
+ { index:94,   code: IC_stick_81, name: "Stick 8+1",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 1 },
+ { index:95,   code: IC_stick_82, name: "Stick 8+2",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 2 },
+ { index:96,   code: IC_stick_83, name: "Stick 8+3",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 3 },
+ { index:97,   code: IC_stick_84, name: "Stick 8+4",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 4 },
+ { index:98,   code: IC_stick_85, name: "Stick 8+5",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 5 },
+ { index:99,   code: IC_stick_86, name: "Stick 8+6",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 6 },
+ { index:100,  code: IC_stick_87, name: "Stick 8+7",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 7 },
+ { index:101,  code: IC_stick_89, name: "Stick 8+9",  deviceType: ICDeviceType_gamepad, stickH: 8, stickV: 9 },
+ { index:102,  code: IC_stick_90, name: "Stick 9+0",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 0 },
+ { index:103,  code: IC_stick_91, name: "Stick 9+1",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 1 },
+ { index:104,  code: IC_stick_92, name: "Stick 9+2",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 2 },
+ { index:105,  code: IC_stick_93, name: "Stick 9+3",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 3 },
+ { index:106,  code: IC_stick_94, name: "Stick 9+4",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 4 },
+ { index:107,  code: IC_stick_95, name: "Stick 9+5",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 5 },
+ { index:108,  code: IC_stick_96, name: "Stick 9+6",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 6 },
+ { index:109,  code: IC_stick_97, name: "Stick 9+7",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 7 },
+ { index:110,  code: IC_stick_98, name: "Stick 9+8",  deviceType: ICDeviceType_gamepad, stickH: 9, stickV: 8 },
+ { index:111,  code: IC_arrows,   name: "Arrow Keys", deviceType: ICDeviceType_keyboard, azerty_name: "Arrow Keys",  qwertz_name: "Arrow Keys"  },
+ { index:112,  code: IC_wasd,     name: "WASD Keys",  deviceType: ICDeviceType_keyboard, azerty_name: "ZQSD Keys",   qwertz_name: "WASD Keys"   },
+ { index:113,  code: IC_numpad,   name: "Numpad 2468",deviceType: ICDeviceType_keyboard, azerty_name: "Numpad 2468", qwertz_name: "Numpad 2468" }
 ];
 
 __INPUTCANDY.SDL_GameControllerDB = [];
@@ -619,6 +839,7 @@ function New_InputCandy() {
 	return {
 		// Call this in a controller object's Step event, once per frame
 		Step: function () { __ICI.Step(); },
+		ClearActions: function () { __INPUTCANDY.actions=[]; },
 		// @description This function installs a new action.  You can call it with 3, but it can take up to 7 parameters:
 		// verb_string - the name of your action you will look it up by
 		// default_gamepad - this expects an IC_ button code, like IC_dpad_U, for gamepad default suggestion, IC_none otherwise/default
@@ -629,7 +850,6 @@ function New_InputCandy() {
 		// requires_angle - a true/false value that further specifies we are expecting a vert/horiz axis to be used (false by default)
 		// enabled - optional, a true/false (true is default) that starts this action as deactivated or activated
 		// @returns integer index of new action from __INPUTCANDY.actions[] array
-		ClearActions: function () { __INPUTCANDY.actions=[]; },
 		Action: function ( verb_string, default_gamepad, default_keyboard ) {
 			var a=__ICI.New_ICAction();
 			a.name=verb_string;
@@ -915,6 +1135,7 @@ function New_InputCandy() {
 				 and __INPUTCANDY.states[device].signals[i].was_held 
 				 and !__INPUTCANDY.states[device].signals[i].is_held ) return true;
 			}
+			return false;
 		},
 		// Directly checks signals from any device, bypassing the Actions system
 		SignalAnyReleased: function ( button_id ) {
@@ -927,7 +1148,7 @@ function New_InputCandy() {
 					 and !__INPUTCANDY.states[i].signals[j].is_held ) return true;
 				}
 			}
-			return 0;
+			return false;
 		},
 		GetHatSignal: function ( player_number, hat_number ) {
 			var hat={ up: false, down: false, left: false, right: false, not_available: false };
@@ -947,30 +1168,45 @@ function New_InputCandy() {
 						hat.down=__IC.Signal(player_number,IC_hat0_D);
 						hat.left=__IC.Signal(player_number,IC_hat0_L);
 						hat.right=__IC.Signal(player_number,IC_hat0_R);
+			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
+			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
+			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
 					break;
 					case 1:
 						hat.up=__IC.Signal(player_number,IC_hat1_U);
 						hat.down=__IC.Signal(player_number,IC_hat1_D);
 						hat.left=__IC.Signal(player_number,IC_hat1_L);
 						hat.right=__IC.Signal(player_number,IC_hat1_R);
+			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
+			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
+			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
 					break;
 					case 2:
 						hat.up=__IC.Signal(player_number,IC_hat2_U);
 						hat.down=__IC.Signal(player_number,IC_hat2_D);
 						hat.left=__IC.Signal(player_number,IC_hat2_L);
 						hat.right=__IC.Signal(player_number,IC_hat2_R);
+			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
+			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
+			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
 					break;
 					case 3:
 						hat.up=__IC.Signal(player_number,IC_hat3_U);
 						hat.down=__IC.Signal(player_number,IC_hat3_D);
 						hat.left=__IC.Signal(player_number,IC_hat3_L);
 						hat.right=__IC.Signal(player_number,IC_hat3_R);
+			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
+			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
+			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
 					break;
 					case 4:
 						hat.up=__IC.Signal(player_number,IC_hat4_U);
 						hat.down=__IC.Signal(player_number,IC_hat4_D);
 						hat.left=__IC.Signal(player_number,IC_hat4_L);
 						hat.right=__IC.Signal(player_number,IC_hat4_R);
+			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
+			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
+			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
 					break;
 				}
 				return hat;
@@ -980,10 +1216,13 @@ function New_InputCandy() {
 			hat.down=hat_value & ICGamepad_Hat_D;
 			hat.left=hat_value & ICGamepad_Hat_L;
 			hat.right=hat_value & ICGamepad_Hat_R;
+			hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
+			hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
+			hat.angle=__IC.AxisToAngle( hat.H, hat.V );
 			return hat;
 		},
 		GetAxisSignal: function ( player_number, axis_number ) {
-			var axis={ up: false, down: false, left: false, right: false, value: AXIS_NO_VALUE, angle: AXIS_NO_VALUE, H: AXIS_NO_VALUE, V: AXIS_NO_VALUE, not_available: false };
+			var axis={ up: false, down: false, left: false, right: false, value: AXIS_NO_VALUE, angle: AXIS_NO_VALUE, H: AXIS_NO_VALUE, V: AXIS_NO_VALUE, rH: AXIS_NO_VALUE, rV: AXIS_NO_VALUE, not_available: false };
 			var device=__INPUTCANDY.players[player_number-1].device;
 			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) {
 				axis.not_available=true;
@@ -993,9 +1232,33 @@ function New_InputCandy() {
 				axis.not_available=true;
 				return axis;
 			}
-			axis.values=gamepad_axis_value(0, axis_number);
-			axis.H=gamepad_axis_value(0, gp_axislh);
-			axis.V=gamepad_axis_value(0, gp_axislv);
+			axis.values=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, axis_number);
+			axis.H=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, gp_axislh);
+			axis.V=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, gp_axislv);
+			axis.rH=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, gp_axisrh);
+			axis.rV=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, gp_axisrv);
+			axis.angle=__IC.AxisToAngle( axis.H, axis.V );
+			var hat_value=__IC.AxisToHat( axis.H, axis.V );
+			axis.up=hat_value & ICGamepad_Hat_U;
+			axis.down=hat_value & ICGamepad_Hat_D;
+			axis.left=hat_value & ICGamepad_Hat_L;
+			axis.right=hat_value & ICGamepad_Hat_R;
+			return axis;
+		},
+		GetStickSignal: function ( player_number, axis_number_X, axis_number_Y ) {
+			var axis={ up: false, down: false, left: false, right: false, value: AXIS_NO_VALUE, angle: AXIS_NO_VALUE, H: AXIS_NO_VALUE, V: AXIS_NO_VALUE, rH: AXIS_NO_VALUE, rV: AXIS_NO_VALUE, not_available: false };
+			var device=__INPUTCANDY.players[player_number-1].device;
+			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) {
+				axis.not_available=true;
+				return axis;
+			}
+			if ( axis_number_X >= __INPUTCANDY.devices[device].axis_count or axis_number_Y >= __INPUTCANDY.devices[device].axis_count ) {
+				axis.not_available=true;
+				return axis;
+			}
+			axis.indices=[ axis_number_X, axis_number_Y ];
+			axis.H=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, axis_number_X);
+			axis.V=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, axis_number_Y);
 			axis.angle=__IC.AxisToAngle( axis.H, axis.V );
 			var hat_value=__IC.AxisToHat( axis.H, axis.V );
 			axis.up=hat_value & ICGamepad_Hat_U;
@@ -1035,6 +1298,14 @@ function New_InputCandy() {
 			if ( player_index >= array_length(__INPUTCANDY.max_players) ) return 2;
 			if ( __INPUTCANDY.players[player_index].active ) return 3;
 			__INPUTCANDY.players[player_index].active=true;
+			return 1;
+		},
+		// Returns 1 if the player has been deactivated, 2 if the player doesn't exist or 3 was already not active
+		DeactivatePlayer: function ( player_number ) {
+			var player_index=player_number-1;
+			if ( player_index >= array_length(__INPUTCANDY.max_players) ) return 2;
+			if ( !__INPUTCANDY.players[player_index].active ) return 3;
+			__INPUTCANDY.players[player_index].active=false;
 			return 1;
 		},
 		ParseDeviceGUIDs: function() {
@@ -1815,6 +2086,56 @@ function New_InputCandy_Private() {
 		}
 		return __ICI.MatchAction(player_number,action,type);
 	},
+	// Establish a "Moving" state object
+	New_ICMoving: function () {
+		return { up: false, down: false, left: false, right: false, value: AXIS_NO_VALUE, angle: AXIS_NO_VALUE, H: AXIS_NO_VALUE, V: AXIS_NO_VALUE, H2:[], V2:[], not_available: false };
+	},
+	_MovingOr: function ( moving, or_moving ) {
+		if ( or_moving.up    ) moving.up=true;
+		if ( or_moving.down  ) moving.down=true;
+		if ( or_moving.left  ) moving.left=true;
+		if ( or_moving.right ) moving.right=true;
+		moving.H2[array_length(moving.H2)] = or_moving.H;
+		moving.V2[array_length(moving.V2)] = or_moving.V;
+        moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+		return moving;
+	},
+	_MovingAnd: function ( moving, and_moving ) {
+		moving.up=    moving.up and and_moving.up;
+		moving.down=  moving.down and and_moving.down;
+		moving.left=  moving.left and and_moving.left;
+		moving.right= moving.right and and_moving.right;
+		moving.H2[array_length(moving.H2)] = and_moving.H;
+		moving.V2[array_length(moving.V2)] = and_moving.V;
+        moving.angle = __IC.AxisToAngle( moving.H, moving.V );
+		return moving;
+	},
+    // When using bindings, special options can modify a "moving" state
+	ApplyBindingToMoving: function ( binding, moving ) {
+		if ( binding.rotate ) { // Swap Left-Right for Up-Down
+			var V=moving.V;
+			moving.V=moving.H;
+			moving.H=V;
+			var up=moving.up;
+			moving.up=moving.right;
+			moving.right=up;
+			var down=moving.down;
+			moving.down=moving.left;
+			moving.left=down;
+		}
+		if ( binding.reverse ) { // Swap Left for Right
+			var left=moving.left;
+			moving.left=moving.right;
+			moving.right=left;
+			if ( moving.H != AXIS_NO_VALUE ) moving.H=-moving.H;
+		}
+		if ( binding.invert ) { // Swap Up for Down
+			var up=moving.up;
+			moving.up=moving.down;
+			moving.down=up;
+			if ( moving.V != AXIS_NO_VALUE ) moving.V=-moving.V;
+		}
+	},
 	GetDirectional: function ( player_index, moving, type ) {
 		var player_number=player_index+1;
 		if ( __INPUTCANDY.players[player_index].device == none ) return moving;
@@ -1825,283 +2146,249 @@ function New_InputCandy_Private() {
 			 moving.down=__IC.Signal(player_number,IC_padd);
 			 moving.left=__IC.Signal(player_number,IC_padl);
 			 moving.right=__IC.Signal(player_number,IC_padr);
-			 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 moving.H=moving.left ? -1 : (moving.right ? 1 : 0);
+			 moving.V=moving.up ? -1 : (moving.down ? 1 : 0);
+			 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
 			break;
-			case IC_hat0:
-			 var sig=__IC.GetHatSignal( player_number, 0 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat1:
-			 var sig=__IC.GetHatSignal( player_number, 1 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat2:
-			 var sig=__IC.GetHatSignal( player_number, 2 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat3:
-			 var sig=__IC.GetHatSignal( player_number, 3 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat4:
-			 var sig=__IC.GetHatSignal( player_number, 4 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat5:
-			 var sig=__IC.GetHatSignal( player_number, 5 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat6:
-			 var sig=__IC.GetHatSignal( player_number, 6 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat7:
-			 var sig=__IC.GetHatSignal( player_number, 7 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat8:
-			 var sig=__IC.GetHatSignal( player_number, 8 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_hat9:
-			 var sig=__IC.GetHatSignal( player_number, 9 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
-			 }
-			break;
-			case IC_axis0:
-			 var sig=__IC.GetAxisSignal( player_number, 0 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis1:
-			 var sig=__IC.GetAxisSignal( player_number, 1 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis2:
-			 var sig=__IC.GetAxisSignal( player_number, 2 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis3:
-			 var sig=__IC.GetAxisSignal( player_number, 3 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis4:
-			 var sig=__IC.GetAxisSignal( player_number, 4 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis5:
-			 var sig=__IC.GetAxisSignal( player_number, 5 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis6:
-			 var sig=__IC.GetAxisSignal( player_number, 6 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis7:
-			 var sig=__IC.GetAxisSignal( player_number, 7 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis8:
-			 var sig=__IC.GetAxisSignal( player_number, 8 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
-			case IC_axis9:
-			 var sig=__IC.GetAxisSignal( player_number, 9 );
-			 if ( !sig.not_available ) {
-				 moving.up=sig.up;
-				 moving.down=sig.down;
-				 moving.left=sig.left;
-				 moving.right=sig.right;
-				 moving.angle = __IC.AxisToAngle( moving.H, moving.V );
-			 }
-			break;
+			case IC_hat0: { var sig=__IC.GetHatSignal( player_number, 0 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat1: { var sig=__IC.GetHatSignal( player_number, 1 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat2: { var sig=__IC.GetHatSignal( player_number, 2 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat3: { var sig=__IC.GetHatSignal( player_number, 3 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat4: { var sig=__IC.GetHatSignal( player_number, 4 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat5: { var sig=__IC.GetHatSignal( player_number, 5 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat6: { var sig=__IC.GetHatSignal( player_number, 6 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat7: { var sig=__IC.GetHatSignal( player_number, 7 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat8: { var sig=__IC.GetHatSignal( player_number, 8 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_hat9: { var sig=__IC.GetHatSignal( player_number, 9 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis0: { var sig=__IC.GetAxisSignal( player_number, 0 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis1: { var sig=__IC.GetAxisSignal( player_number, 1 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis2: { var sig=__IC.GetAxisSignal( player_number, 2 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis3: { var sig=__IC.GetAxisSignal( player_number, 3 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis4: { var sig=__IC.GetAxisSignal( player_number, 4 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis5: { var sig=__IC.GetAxisSignal( player_number, 5 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis6: { var sig=__IC.GetAxisSignal( player_number, 6 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis7: { var sig=__IC.GetAxisSignal( player_number, 7 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis8: { var sig=__IC.GetAxisSignal( player_number, 8 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_axis9: { var sig=__IC.GetAxisSignal( player_number, 9 ); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=__IC.AxisToAngle( moving.H, moving.V ); } } break;
+			case IC_stick_01: { var sig=__IC.GetStickSignal(player_number,0,1); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_02: { var sig=__IC.GetStickSignal(player_number,0,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_03: { var sig=__IC.GetStickSignal(player_number,0,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_04: { var sig=__IC.GetStickSignal(player_number,0,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_05: { var sig=__IC.GetStickSignal(player_number,0,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_06: { var sig=__IC.GetStickSignal(player_number,0,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_07: { var sig=__IC.GetStickSignal(player_number,0,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_08: { var sig=__IC.GetStickSignal(player_number,0,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_09: { var sig=__IC.GetStickSignal(player_number,0,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_10: { var sig=__IC.GetStickSignal(player_number,1,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_12: { var sig=__IC.GetStickSignal(player_number,1,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_13: { var sig=__IC.GetStickSignal(player_number,1,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_14: { var sig=__IC.GetStickSignal(player_number,1,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_15: { var sig=__IC.GetStickSignal(player_number,1,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_16: { var sig=__IC.GetStickSignal(player_number,1,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_17: { var sig=__IC.GetStickSignal(player_number,1,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_18: { var sig=__IC.GetStickSignal(player_number,1,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_19: { var sig=__IC.GetStickSignal(player_number,1,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_20: { var sig=__IC.GetStickSignal(player_number,2,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_21: { var sig=__IC.GetStickSignal(player_number,2,1); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_23: { var sig=__IC.GetStickSignal(player_number,2,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_24: { var sig=__IC.GetStickSignal(player_number,2,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_25: { var sig=__IC.GetStickSignal(player_number,2,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_26: { var sig=__IC.GetStickSignal(player_number,2,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_27: { var sig=__IC.GetStickSignal(player_number,2,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_28: { var sig=__IC.GetStickSignal(player_number,2,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_29: { var sig=__IC.GetStickSignal(player_number,2,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_30: { var sig=__IC.GetStickSignal(player_number,3,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_31: { var sig=__IC.GetStickSignal(player_number,3,1); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_32: { var sig=__IC.GetStickSignal(player_number,3,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_34: { var sig=__IC.GetStickSignal(player_number,3,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_35: { var sig=__IC.GetStickSignal(player_number,3,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_36: { var sig=__IC.GetStickSignal(player_number,3,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_37: { var sig=__IC.GetStickSignal(player_number,3,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_38: { var sig=__IC.GetStickSignal(player_number,3,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_39: { var sig=__IC.GetStickSignal(player_number,3,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_40: { var sig=__IC.GetStickSignal(player_number,4,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_41: { var sig=__IC.GetStickSignal(player_number,4,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_42: { var sig=__IC.GetStickSignal(player_number,4,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_43: { var sig=__IC.GetStickSignal(player_number,4,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_45: { var sig=__IC.GetStickSignal(player_number,4,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_46: { var sig=__IC.GetStickSignal(player_number,4,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_47: { var sig=__IC.GetStickSignal(player_number,4,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_48: { var sig=__IC.GetStickSignal(player_number,4,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_49: { var sig=__IC.GetStickSignal(player_number,4,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_50: { var sig=__IC.GetStickSignal(player_number,5,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_51: { var sig=__IC.GetStickSignal(player_number,5,1); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_52: { var sig=__IC.GetStickSignal(player_number,5,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_53: { var sig=__IC.GetStickSignal(player_number,5,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_54: { var sig=__IC.GetStickSignal(player_number,5,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_56: { var sig=__IC.GetStickSignal(player_number,5,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_57: { var sig=__IC.GetStickSignal(player_number,5,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_58: { var sig=__IC.GetStickSignal(player_number,5,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_59: { var sig=__IC.GetStickSignal(player_number,5,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_60: { var sig=__IC.GetStickSignal(player_number,6,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_61: { var sig=__IC.GetStickSignal(player_number,6,1); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_62: { var sig=__IC.GetStickSignal(player_number,6,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_63: { var sig=__IC.GetStickSignal(player_number,6,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_64: { var sig=__IC.GetStickSignal(player_number,6,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_65: { var sig=__IC.GetStickSignal(player_number,6,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_67: { var sig=__IC.GetStickSignal(player_number,6,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_68: { var sig=__IC.GetStickSignal(player_number,6,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_69: { var sig=__IC.GetStickSignal(player_number,6,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_70: { var sig=__IC.GetStickSignal(player_number,7,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_71: { var sig=__IC.GetStickSignal(player_number,7,1); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_72: { var sig=__IC.GetStickSignal(player_number,7,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_73: { var sig=__IC.GetStickSignal(player_number,7,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_74: { var sig=__IC.GetStickSignal(player_number,7,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_75: { var sig=__IC.GetStickSignal(player_number,7,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_76: { var sig=__IC.GetStickSignal(player_number,7,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_78: { var sig=__IC.GetStickSignal(player_number,7,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_79: { var sig=__IC.GetStickSignal(player_number,7,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_80: { var sig=__IC.GetStickSignal(player_number,8,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_81: { var sig=__IC.GetStickSignal(player_number,8,1); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_82: { var sig=__IC.GetStickSignal(player_number,8,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_83: { var sig=__IC.GetStickSignal(player_number,8,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_84: { var sig=__IC.GetStickSignal(player_number,8,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_85: { var sig=__IC.GetStickSignal(player_number,8,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_86: { var sig=__IC.GetStickSignal(player_number,8,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_87: { var sig=__IC.GetStickSignal(player_number,8,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_89: { var sig=__IC.GetStickSignal(player_number,8,9); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_90: { var sig=__IC.GetStickSignal(player_number,9,0); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_91: { var sig=__IC.GetStickSignal(player_number,9,1); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_92: { var sig=__IC.GetStickSignal(player_number,9,2); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_93: { var sig=__IC.GetStickSignal(player_number,9,3); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_94: { var sig=__IC.GetStickSignal(player_number,9,4); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_95: { var sig=__IC.GetStickSignal(player_number,9,5); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_96: { var sig=__IC.GetStickSignal(player_number,9,6); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_97: { var sig=__IC.GetStickSignal(player_number,9,7); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;
+			case IC_stick_98: { var sig=__IC.GetStickSignal(player_number,9,8); if ( !sig.not_available ) { moving.H=sig.H; moving.V=sig.V; moving.up=sig.up; moving.down=sig.down; moving.left=sig.left; moving.right=sig.right; moving.angle=sig.angle; } } break;			
 			case IC_arrows:
-			 if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1 ) {
-				 moving.up=__IC.KeyHeld( IC_key_arrow_U );
-				 moving.down=__IC.KeyHeld( IC_key_arrow_D );
-				 moving.left=__IC.KeyHeld( IC_key_arrow_L );
-				 moving.right=__IC.KeyHeld( IC_key_arrow_R );
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 if ( __INPUTCANDY.allow_keyboard_mouse and player_index == __INPUTCANDY.player_using_keyboard_mouse ) {
+				moving.up=__IC.KeyHeld( IC_key_arrow_U );
+				moving.down=__IC.KeyHeld( IC_key_arrow_D );
+				moving.left=__IC.KeyHeld( IC_key_arrow_L );
+				moving.right=__IC.KeyHeld( IC_key_arrow_R );
+				moving.H=moving.left ? -1 : (moving.right ? 1 : 0);
+				moving.V=moving.up ? -1 : (moving.down ? 1 : 0);
+				moving.angle = __IC.AxisToAngle( moving.H, moving.V );
 			 }
 			break;
 			case IC_wasd:
-			 if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1 ) {
-				 moving.up=__IC.KeyHeld( IC_key_W );
-				 moving.down=__IC.KeyHeld( IC_key_S );
-				 moving.left=__IC.KeyHeld( IC_key_A );
-				 moving.right=__IC.KeyHeld( IC_key_D );
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 if ( __INPUTCANDY.allow_keyboard_mouse and player_index == __INPUTCANDY.player_using_keyboard_mouse ) {
+				moving.up=__IC.KeyHeld( IC_key_W );
+				moving.down=__IC.KeyHeld( IC_key_S );
+				moving.left=__IC.KeyHeld( IC_key_A );
+				moving.right=__IC.KeyHeld( IC_key_D );
+				moving.H=moving.left ? -1 : (moving.right ? 1 : 0);
+				moving.V=moving.up ? -1 : (moving.down ? 1 : 0);
+				moving.angle = __IC.AxisToAngle( moving.H, moving.V );
 			 }
 			break;
 			case IC_numpad:
-			 if ( __INPUTCANDY.allow_keyboard_mouse and player_number == 1 ) {
-				 moving.up=__IC.KeyHeld( IC_numpad8 );
-				 moving.down=__IC.KeyHeld( IC_numpad2 );
-				 moving.left=__IC.KeyHeld( IC_numpad4 );
-				 moving.right=__IC.KeyHeld( IC_numpad6 );
-				 moving.angle = __IC.AxisToAngle( moving.left ? -1 : (moving.right ? 1 : 0), moving.up ? -1 : (moving.down ? 1 : 0) );
+			 if ( __INPUTCANDY.allow_keyboard_mouse and player_index == __INPUTCANDY.player_using_keyboard_mouse ) {
+				moving.up=__IC.KeyHeld( IC_numpad8 );
+				moving.down=__IC.KeyHeld( IC_numpad2 );
+				moving.left=__IC.KeyHeld( IC_numpad4 );
+				moving.right=__IC.KeyHeld( IC_numpad6 );
+				moving.H=moving.left ? -1 : (moving.right ? 1 : 0);
+				moving.V=moving.up ? -1 : (moving.down ? 1 : 0);
+				moving.angle = __IC.AxisToAngle( moving.H, moving.V );
 			 }
 			break;
 		}
 		return moving;
 	},
-	_MovingOr: function ( moving, or_moving ) {
-		if ( or_moving.up ) {
-			moving.up=true;
-			if ( or_moving.angle != AXIS_NO_VALUE ) moving.angle=or_moving.angle;
+	GetDirectionalByCode: function ( code ) {
+		var len = array_length(__INPUTCANDY.directionals);
+		for ( var j=0; j<len; j++ ) {
+			if ( __INPUTCANDY.directionals[j].code == code ) return j;
 		}
-		if ( or_moving.down ) {
-			moving.down=true;
-			if ( or_moving.angle != AXIS_NO_VALUE ) moving.angle=or_moving.angle;
-		}
-		if ( or_moving.left ) {
-			moving.left=true;
-			if ( or_moving.angle != AXIS_NO_VALUE ) moving.angle=or_moving.angle;
-		}
-		if ( or_moving.right ) {
-			moving.right=true;
-			if ( or_moving.angle != AXIS_NO_VALUE ) moving.angle=or_moving.angle;
-		}
-		return moving;
+		return none;
 	},
-	_MovingAnd: function ( moving, and_moving ) {
-		moving.up=    moving.up and and_moving.up;
-		moving.down=  moving.down and and_moving.down;
-		moving.left=  moving.left and and_moving.left;
-		moving.right= moving.right and and_moving.right;		
-		if ( and_moving.angle != AXIS_NO_VALUE ) {
-			if ( moving.angle == AXIS_NO_VALUE ) moving.angle=and_moving.angle;
-			else moving.angle=(moving.angle+and_moving.angle)/2;
+	GetStickByAxisPair: function ( haxis, vaxis ) {
+		var len=__ICI.GetDirectionalByCode(IC_stick_98);
+		for ( var j=__ICI.GetDirectionalByCode(IC_stick_01); j<len; j++ ) {
+			if ( __INPUTCANDY.directionals[j].stickH == haxis
+			 and __INPUTCANDY.directionals[j].stickV == vaxis ) return j;
 		}
-		return moving;
+		return none;
+	},
+	DirectionalSupported: function ( device, directional_index ) {
+		if ( device == none ) return false;
+		var d=__INPUTCANDY.directionals[directional_index];
+		if ( d.code == IC_dpad ) return true;
+		if ( d.code >= IC_hat0 and d.code <= IC_hat9 ) {
+			var hat_index=d.code - IC_hat0;
+			if ( hat_index < device.hat_count ) return true;
+		}
+		if ( d.code >= IC_axis0 and d.code <= IC_axis9 ) {
+			var ax_index=d.code - IC_axis0;
+			if ( ax_index < device.axis_count ) return true;
+		}
+		if ( d.code >= IC_stick_01 and d.code <= IC_stick_98 ) {
+			if ( device.axis_count >= 10 ) return true;
+			if ( device.axis_count <= 1 ) return false;
+			if ( d.stickH < device.axis_count and d.stickV < device.axis_count ) return true;
+		}
+		return false;
+	},
+	MatchBoundDirectional: function (player_index,action_index,action,binding,moving) {
+		var first_found=false;
+		if ( is_array(binding.bound_action.gamepad) ) {
+			var len=array_length(binding.bound_action.gamepad);
+			for ( var i=0; i<len; i++ ) {
+				if ( binding.bound_action.gamepad == IC_dpad
+				  or (binding.bound_action.gamepad >= IC_hat0 and binding.bound_action.gamepad <= IC_hat9)
+				  or (binding.bound_action.gamepad >= IC_axis0 and binding.bound_action.gamepad <= IC_axis9) ) {
+				  var value=__ICI.GetDirectional(player_index,moving,binding.bound_action.gamepad);
+				  if ( !first_found ) { moving=value; first_found=true; }
+				  else if ( binding.bound_action.gamepad_combo ) moving=__ICI._MovingAnd(moving,value);
+				  else moving=__ICI._MovingOr(moving,value);
+				}
+			}
+		} else {
+			if ( binding.bound_action.gamepad == IC_dpad
+			  or (binding.bound_action.gamepad >= IC_hat0 and binding.bound_action.gamepad <= IC_hat9)
+			  or (binding.bound_action.gamepad >= IC_axis0 and binding.bound_action.gamepad <= IC_axis9) ) {
+				  first_found=true;
+				  moving=__ICI.GetDirectional(player_index,moving,binding.bound_action.gamepad);
+			}
+		}
+		if ( player_index == 0 ) {
+			if ( is_array(binding.bound_action.keyboard) ) {
+				var len=array_length(binding.bound_action.keyboard);
+				for ( var i=0; i<len; i++ ) {
+					if ( binding.bound_action.keyboard == IC_arrows
+					  or binding.bound_action.keyboard == IC_numpad
+					  or binding.bound_action.keyboard == IC_wasd ) {
+					  var value=__ICI.GetDirectional(player_index,moving,binding.bound_action.keyboard);
+					  if ( !first_found ) { moving=value; first_found=true; }
+					  else if ( binding.bound_action.keyboard_combo ) moving=__ICI._MovingAnd(moving,value);
+					  else moving=__ICI._MovingOr(moving,value);
+					}
+				}
+			} else if ( binding.bound_action.keyboard != IC_none ) {				
+				if ( binding.bound_action.keyboard == IC_arrows
+				  or binding.bound_action.keyboard == IC_numpad
+				  or binding.bound_action.keyboard == IC_wasd ) {
+					if ( first_found ) {
+						moving=__ICI._MovingOr(moving,__ICI.GetDirectional(player_index,moving,binding.bound_action.keyboard));
+					} else moving=__ICI.GetDirectional(player_index,moving,binding.bound_action.keyboard);
+				}
+			}
+		}
+		return __ICI.ApplyBindingToMoving(moving);
 	},
 	// Call only on actions that are is_directional
 	MatchDirectional: function (player_index,action_index,action) {
 		var settings_index = __INPUTCANDY.players[player_index].settings;
-		var device_index = __INPUTCANDY.players[player_index].device;
-		var moving={ up: false, down: false, left: false, right: false, angle: AXIS_NO_VALUE }
-		var first_found=false;
+		//var device_index = __INPUTCANDY.players[player_index].device;
+		var moving=__ICI.New_ICMoving();
 		if ( settings_index >= 0 ) {
 		 var settings=__INPUTCANDY.settings[settings_index];
-		 var binding=__ICI.BindingForAction( settings, action_index );
-		 if ( binding != none ) {
-			 
-			 return moving;
-		 }
+		 var binding=__ICI.GetBinding( settings, action_index );
+		 if ( binding != none and binding.bound_action != none and binding.bound_action.is_directional ) return MatchBoundDirectional(player_index,action_index,action,binding,moving);
 		}
 		// No binding found.
+		var first_found=false;
 		if ( is_array(action.gamepad) ) {
 			var len=array_length(action.gamepad);
 			for ( var i=0; i<len; i++ ) {
@@ -2196,6 +2483,7 @@ function New_InputCandy_Private() {
 		__INPUTCANDY.settings[index]=New_ICSettings();
 		__INPUTCANDY.settings[index].index=index;
 		if ( argument_count > 0 ) __ICI.SetSettings(argument0,index);
+		return index;
 	},
 	
 	RemoveSettings: function( settings_index ) {
@@ -2215,7 +2503,10 @@ function New_InputCandy_Private() {
 			index: none,
 			action: none,     // Saves as a string, loads and is turned into an int
 			group: "",        // Used in the loading and saving process.
-			bound_action: none
+			bound_action: none,
+			rotate: false,    // Swaps Up/Down for Left/Right
+			reverse: false,  // Reverses Left-Right after rotation
+			invert: false    // Inverts (Reverses) the Up/Down after rotation
 		};
 	},	
 	
@@ -2389,8 +2680,13 @@ function New_InputCandy_Private() {
 		var len=array_length(__INPUTCANDY.settings);
 		for ( var i=0; i<len; i++ ){
 			var s=__INPUTCANDY.settings[i];
-			output[i]=s;
-			output[i].bindings=[];
+			output[i]={				
+			    index: s.index,
+			    deviceInfo: s.deviceInfo,
+			    deadzone1: s.deadzone1,
+			    deadzone2: s.deadzone2,
+				bindings:[]
+			}
 			var blen=array_length(s.bindings);
 			var k=0;
 			for ( var j=0; j<blen; j++ ) {
