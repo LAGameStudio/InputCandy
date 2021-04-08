@@ -48,7 +48,7 @@ function IC_Step() { __IC.Step(); }
 function IC_ClearActions() { __IC.ClearActions(); }
 
 // Returns an empty action struct you can modify, then push in.
-function IC_NewAction() {  return __ICI.New_ICAction(); }
+function IC_NewAction() { return __ICI.New_ICAction(); }
 function IC_ActionPush( action_in ) { return __IC.ActionPush( action_in ); }
 
 function IC_Action_ext( n, g, gp, gpcombo, kb, kcombo, m, mcombo, kmcombo, UDLR, angled, held_s, flimit, on_rel, enabled, forbid ) {
@@ -515,8 +515,8 @@ global._INPUTCANDY_DEFAULTS_ = {
  keyboard_layout: ICKeyboardLayout_qwerty,   // Changing to Azerty or Qwertz provides a sorta-remapping for keyboards, but there isn't a good way to detect what keyboard
  skip_simplified_axis: false,             // Set this value to true to stop IC from registering simplified axis movements.
  use_network: false,                      // Turn this on if you are going to be using network transmits
- settings_filename: "settings.json",      // Where player-defined settings are saved.
- setup_filename:  "controller.setup.json",         // This file is saved and attempts to remember which settings go with which player and which device, and which SDL remappings are desired
+ settings_filename: "inputcandy.settings.json",      // Where player-defined settings are saved.
+ setup_filename:  "inputcandy.controller.setup.json",         // This file is saved and attempts to remember which settings go with which player and which device, and which SDL remappings are desired
  //// External and Internal interface objects
  interface: New_InputCandy(),             // Public - the programmer interface used in your game.  All you need to know.
  internal: New_InputCandy_Private(),      // Functions used internally, generally not to be called, use interface instead, "private"
@@ -567,7 +567,7 @@ __INPUTCANDY.signals = [
  {	index:10,   code: IC_Y,			     name: "Y",              deviceType: ICDeviceType_gamepad, deviceCode: gp_face4 },
  {	index:11,   code: IC_XandY,		     name: "XandY",          deviceType: ICDeviceType_gamepad, deviceCode: none },
  {	index:12,   code: IC_start,		     name: "Start",          deviceType: ICDeviceType_gamepad, deviceCode: gp_start },
- {	index:13,   code: IC_back_select,    name: "Back/Select", deviceType: ICDeviceType_gamepad, deviceCode: gp_select },
+ {	index:13,   code: IC_back_select,    name: "Back/Select",    deviceType: ICDeviceType_gamepad, deviceCode: gp_select },
  {	index:14,   code: IC_Ltrigger,	     name: "Left Trigger",   deviceType: ICDeviceType_gamepad, deviceCode: gp_shoulderlb },
  {	index:15,   code: IC_Rtrigger,	     name: "Right Trigger",  deviceType: ICDeviceType_gamepad, deviceCode: gp_shoulderrb },
  {	index:16,   code: IC_Lshoulder,	     name: "Left Shoulder",  deviceType: ICDeviceType_gamepad, deviceCode: gp_shoulderl },
@@ -1237,6 +1237,7 @@ function New_InputCandy() {
 			axis.V=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, gp_axislv);
 			axis.rH=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, gp_axisrh);
 			axis.rV=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, gp_axisrv);
+			axis.deadzone = gamepad_get_axis_deadzone(__INPUTCANDY.devices[device].slot_id);
 			axis.angle=__IC.AxisToAngle( axis.H, axis.V );
 			var hat_value=__IC.AxisToHat( axis.H, axis.V );
 			axis.up=hat_value & ICGamepad_Hat_U;
@@ -1259,6 +1260,7 @@ function New_InputCandy() {
 			axis.indices=[ axis_number_X, axis_number_Y ];
 			axis.H=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, axis_number_X);
 			axis.V=gamepad_axis_value(__INPUTCANDY.devices[device].slot_id, axis_number_Y);
+			axis.deadzone = gamepad_get_axis_deadzone(__INPUTCANDY.devices[device].slot_id);
 			axis.angle=__IC.AxisToAngle( axis.H, axis.V );
 			var hat_value=__IC.AxisToHat( axis.H, axis.V );
 			axis.up=hat_value & ICGamepad_Hat_U;
@@ -2319,10 +2321,12 @@ function New_InputCandy_Private() {
 			var hat_index=d.code - IC_hat0;
 			if ( hat_index < device.hat_count ) return true;
 		}
+		/*
 		if ( d.code >= IC_axis0 and d.code <= IC_axis9 ) {
 			var ax_index=d.code - IC_axis0;
 			if ( ax_index < device.axis_count ) return true;
 		}
+		*/
 		if ( d.code >= IC_stick_01 and d.code <= IC_stick_98 ) {
 			if ( device.axis_count >= 10 ) return true;
 			if ( device.axis_count <= 1 ) return false;
@@ -2615,6 +2619,8 @@ function New_InputCandy_Private() {
 	 }
 	 result.actions=list;
 	 result.actions_count=array_length(result.actions);
+	 //show_debug_message("GetActionsBindingByCode:");
+	 //show_debug_message(json_stringify(result));
 	 return result;
 	},
 	
@@ -2661,17 +2667,25 @@ function New_InputCandy_Private() {
 	
 	///// File saving and loading for settings and setup.
 	
-	PostLoadBinding: function( json_struct ) {
-		var new_json=json_struct;
-		new_json.action = __IC.GetAction( new_json.action, new_json.group );
+	PostLoadBinding: function( binding ) {
+		var new_json=json_parse(json_stringify(binding));
+		var action_for_index =  __IC.GetAction( binding.action, binding.group );
+		new_json.action = action_for_index.index;
+		new_json.bound_action.index = action_for_index.index;
 		return new_json;
 	},
 	
 	PreSaveBinding: function( binding ) {
 		var action=__INPUTCANDY.actions[binding.action];
-		var new_jsonifiable=binding;
-		new_jsonifiable.action = action.name;
-		new_jsonifiable.group = action.group;
+		var new_jsonifiable={
+			action: action.name,
+			group: action.group,
+			rotate: binding.rotate,
+			index: binding.index,
+			invert: binding.invert,
+		    reverse: binding.reverse,
+			bound_action: json_parse(json_stringify(binding.bound_action))
+		};
 		return new_jsonifiable;
 	},
 	
@@ -2696,6 +2710,8 @@ function New_InputCandy_Private() {
 			}
 		}
 		__INPUTCANDY.e_save_file(__INPUTCANDY.settings_filename,output);
+		show_debug_message("SaveSettings:");
+		show_debug_message(json_stringify(__INPUTCANDY.settings));
 		__ICI.SaveSetup();
 	},
 	
@@ -2705,15 +2721,23 @@ function New_InputCandy_Private() {
 		var len=array_length(a);
 		__INPUTCANDY.settings=[];
 		for ( var i=0; i<len; i++ ) {
-			var s={ index:i };
+			var s={ index: i };
 			s.deviceInfo=a[i].deviceInfo;
 			s.bindings=[];
 			s.deadzone1 =a[i].deadzone1;
 			s.deadzone2 =a[i].deadzone2;
 			var blen=array_length(a[i].bindings);
-			for ( var j=0; j<blen; j++ ) s.bindings[j]=__ICI.PostLoadBinding(a[i].bindings[j]);
+			var k=0;
+			for ( var j=0; j<blen; j++ ) {
+				var res=__ICI.PostLoadBinding(a[i].bindings[j]);
+				if ( res.index == none ) continue;
+				s.bindings[k]=res;
+				k++;
+			}
 			__INPUTCANDY.settings[i]=s;
 		}
+		show_debug_message("LoadSettings:");
+		show_debug_message(json_stringify(__INPUTCANDY.settings));
 	},
 	
 	//// Associates device configurations with their players and settings, 

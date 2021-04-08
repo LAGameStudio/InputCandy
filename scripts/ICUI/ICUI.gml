@@ -1337,6 +1337,7 @@ function ICUI_Draw_input_binding() {
 		 	 __INPUTCANDY.ui.input_binding.mode=false;
 			 __INPUTCANDY.ui.device_select.mode=true;
 			 audio_play_sound(a_ICUI_pageflip,100,0);
+			__ICI.SaveSettings();
 			break;
 			case mi_new: // New Profile mode
 			 {
@@ -1566,6 +1567,7 @@ function ICUI_Draw_input_binding_choice() {
 			case mi_back: // Back
 				audio_play_sound(a_ICUI_pageflip,100,0);
 		 		__INPUTCANDY.ui.input_binding.choosing=false;
+				__ICI.SaveSettings();
 			break;
 			case mi_select_from_list:
 				audio_play_sound(a_ICUI_pageflip,100,0);
@@ -1673,7 +1675,8 @@ function ICUI_Draw_input_binding_choice_pick() {
 			for ( var j=0; j<len; j++ ) {
 				var d=__INPUTCANDY.directionals[j];
 				if ( d.deviceType == ICDeviceType_gamepad and d.code != IC_dpad 
-				 and (d.code < IC_axis0 or d.code > IC_axis9) and __ICI.DirectionalSupported(device,j) )
+				 and ( (d.code >= IC_hat0 and d.code <= IC_hat9) or (d.code >= IC_stick_01 and d.code <= IC_stick_98) )
+				 and __ICI.DirectionalSupported(device,j) )
 				   bindables[array_length(bindables)]={ type: ICDeviceType_gamepad, code: d.code, name: d.name }
 			}
 		} else {
@@ -1771,14 +1774,15 @@ function ICUI_Draw_input_binding_choice_pick() {
 					ICUI_text( false, "Choosing "+bindables[i].name+" when already in use by", lines_region.x+lines_region.w/2, lines_region.y2+eh );
 					var results="";
 					for ( var k=0; k<conflicting.bindings_count; k++ ) {
-						results+=conflicting.bindings[k]+((k>0 and conflicting.bindings_count-1)?",":"");
+						results+=string_replace(conflicting.bindings[k].bound_action.group+" "+conflicting.bindings[k].bound_action.name,"None ","");
+						if ( k > 0 and (k!=conflicting.bindings_count-1) ) results+=",";
 					}
 					if ( string_length(results) > 0 and conflicting.actions_count > 0 ) {
 						results+=" and ";
 					}
 					for ( var k=0; k<conflicting.actions_count; k++ ) {
-						results+=string_replace(conflicting.actions[k].group+" "+conflicting.actions[k].name,"None ","")
-						        +((k>0 and kconflicting.bindings_count-1)?",":"");
+						results+=string_replace(conflicting.actions[k].group+" "+conflicting.actions[k].name,"None ","");
+						if ( k > 0 and  k!= (conflicting.actions_count-1) ) results+=",";
 					}
 					ICUI_text( false, results, lines_region.x+lines_region.w/2, lines_region.y2+eh*2 );
 				}
@@ -2402,7 +2406,7 @@ function ICUI_Draw_gamepad_test() {
 	var held=ICUI_test_duration_s-__INPUTCANDY.ui.gamepad_test.expired;
 	if ( held < 0 )	ICUI_text( false, "Release button to exit",  ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
 	else ICUI_text( false, "Hold a button for "+int(held)+" seconds to exit",  ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
-	oy+=smidge+eh*5;
+	oy+=smidge+eh*4;
 	
 	var found=false;
 	var r;
@@ -2418,7 +2422,7 @@ function ICUI_Draw_gamepad_test() {
 		 if ( j == test_wrap ) {
 			r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
   			ICUI_draw_ICaction(codes,ICDeviceType_gamepad,false,true,false,r);
-			 oy+=smidge+eh*2;
+			 oy+=smidge+eh*3;
 			 codes=[];
 			 j=0;
 		 }
@@ -2426,7 +2430,7 @@ function ICUI_Draw_gamepad_test() {
 	 if ( array_length(codes) > 0 ) {
 		 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
 		 ICUI_draw_ICaction(codes,ICDeviceType_gamepad,false,true,false,r);
-		 oy+=smidge+eh*2;
+		 oy+=smidge+eh*3;
 	 }
 	 
 	 var state=__INPUTCANDY.states[player.device];
@@ -2435,15 +2439,27 @@ function ICUI_Draw_gamepad_test() {
 	 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/4,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
 	 if ( (state.LV != AXIS_NO_VALUE or state.LH != AXIS_NO_VALUE) and ( floor(state.LV*10)/10 != 0 or floor(state.LH*10)/10 != 0 ) ) {
 		 ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
-		 ICUI_text( false, "Left Stick Axis:\nH:"+(state.LH != AXIS_NO_VALUE ? string_format(state.LH,1,1) : "-")+" V:"+(state.LV != AXIS_NO_VALUE ? string_format(state.LV,1,1) : "-"), r.x, r.y );
+		 ICUI_text( false, "Left Stick, Axes:\nH:"+(state.LH != AXIS_NO_VALUE ? string_format(state.LH,1,1) : "-")+" V:"+(state.LV != AXIS_NO_VALUE ? string_format(state.LV,1,1) : "-"), r.x, r.y );
 	 }
 	 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/2,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
 	 if ( (state.RV != AXIS_NO_VALUE or state.RH != AXIS_NO_VALUE) and ( floor(state.RV*10)/10 != 0 or floor(state.RH*10)/10 != 0 ) ) {
 		 ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
-		 ICUI_text( false, "Right Stick Axis:\nH:"+(state.RH != AXIS_NO_VALUE ? string_format(state.RH,1,1) : "-")+" V:"+(state.RV != AXIS_NO_VALUE ? string_format(state.RV,1,1) : "-"), r.x, r.y );
+		 ICUI_text( false, "Right Stick, Axes:\nH:"+(state.RH != AXIS_NO_VALUE ? string_format(state.RH,1,1) : "-")+" V:"+(state.RV != AXIS_NO_VALUE ? string_format(state.RV,1,1) : "-"), r.x, r.y );
 	 }
-	 oy += smidge+eh*2;
+	 oy += smidge+eh;
 	 
+	 var k=0;
+	 for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count; k++ ) {
+		 var axis_state=__IC.GetAxisSignal(player_number,k);
+		 if ( axis_state.values != AXIS_NO_VALUE and abs(axis_state.values) > (settings==none ? axis_state.deadzone : settings.deadzone1) ) {
+			r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+            ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+			ICUI_text( false, "Axis #"+int(k)+" = "+string_format(axis_state.values,1,2)+" (Dz:"+string_format((settings==none ? axis_state.deadzone : settings.deadzone1),1,2)+")", r.x, r.y );
+			oy += smidge+eh;
+		 }
+	 }
+	 
+	 oy += smidge+eh;
 	}
 
 	if ( km ) {
