@@ -322,6 +322,7 @@ function ICDeviceTypeString(i) {
 
 // IC_stick_XY, where X is the left-right axis and Y is the up-down axis
 
+
 #macro IC_stick_01 410
 #macro IC_stick_02 411
 #macro IC_stick_03 412
@@ -421,6 +422,9 @@ function ICDeviceTypeString(i) {
 #macro IC_stick_96 497
 #macro IC_stick_97 498
 #macro IC_stick_98 499
+
+#macro IC_stick_left IC_stick_01
+#macro IC_stick_right IC_stick_23
 
 /// BUTTONS
 
@@ -1151,7 +1155,7 @@ function New_InputCandy() {
 			return false;
 		},
 		GetHatSignal: function ( player_number, hat_number ) {
-			var hat={ up: false, down: false, left: false, right: false, not_available: false };
+			var hat={ up: false, down: false, left: false, right: false, H: AXIS_NO_VALUE, V: AXIS_NO_VALUE, value: AXIS_NO_VALUE, not_available: false };
 			var device=__INPUTCANDY.players[player_number-1].device;
 			if ( device == none or device >= array_length(__INPUTCANDY.devices) ) {
 				hat.not_available=true;
@@ -1171,6 +1175,7 @@ function New_InputCandy() {
 			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
 			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
 			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
+						hat.value=gamepad_hat_value( __INPUTCANDY.devices[device].slot_id, hat_number );
 					break;
 					case 1:
 						hat.up=__IC.Signal(player_number,IC_hat1_U);
@@ -1180,6 +1185,7 @@ function New_InputCandy() {
 			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
 			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
 			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
+						hat.value=gamepad_hat_value( __INPUTCANDY.devices[device].slot_id, hat_number );
 					break;
 					case 2:
 						hat.up=__IC.Signal(player_number,IC_hat2_U);
@@ -1189,6 +1195,7 @@ function New_InputCandy() {
 			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
 			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
 			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
+						hat.value=gamepad_hat_value( __INPUTCANDY.devices[device].slot_id, hat_number );
 					break;
 					case 3:
 						hat.up=__IC.Signal(player_number,IC_hat3_U);
@@ -1198,6 +1205,7 @@ function New_InputCandy() {
 			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
 			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
 			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
+						hat.value=gamepad_hat_value( __INPUTCANDY.devices[device].slot_id, hat_number );
 					break;
 					case 4:
 						hat.up=__IC.Signal(player_number,IC_hat4_U);
@@ -1207,6 +1215,7 @@ function New_InputCandy() {
 			            hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
 			            hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
 			            hat.angle=__IC.AxisToAngle( hat.H, hat.V );
+						hat.value=gamepad_hat_value( __INPUTCANDY.devices[device].slot_id, hat_number );
 					break;
 				}
 				return hat;
@@ -1219,6 +1228,7 @@ function New_InputCandy() {
 			hat.H=hat.left ? -1 : (hat.right ? 1 : 0); 
 			hat.V=hat.up ? -1 : (hat.down ? 1 : 0); 
 			hat.angle=__IC.AxisToAngle( hat.H, hat.V );
+			hat.value=hat_value;
 			return hat;
 		},
 		GetAxisSignal: function ( player_number, axis_number ) {

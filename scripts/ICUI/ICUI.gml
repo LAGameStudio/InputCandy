@@ -14,7 +14,6 @@
 #macro ICUI_SDLDB_select 1
 #macro ICUI_gamepad_test 2
 #macro ICUI_input_binding 3
-#macro ICUI_capture 4
 
 // UI signal options for ..ui.input(...)
 #macro ICUI_up 0
@@ -80,7 +79,6 @@ function __Init_ICUI() {
 			 if ( __INPUTCANDY.ui.SDLDB_select.mode ) return ICUI_SDLDB_select;
 			 if ( __INPUTCANDY.ui.gamepad_test.mode ) return ICUI_gamepad_test;
 			 if ( __INPUTCANDY.ui.input_binding.mode ) return ICUI_input_binding;
-			 if ( __INPUTCANDY.ui.capture.mode ) return ICUI_capture;
 			 return ICUI_error; // We weren't in any mode.
 			} else { // Passing a number selects the mode
 			 switch ( argument0 ) {
@@ -111,18 +109,15 @@ function __Init_ICUI() {
 				 case ICUI_input_binding:
 				  __INPUTCANDY.ui.mode(ICUI_none);
 				  __INPUTCANDY.ui.input_binding.mode=true;
-                 break;
-				 case ICUI_input_capture:
-				  __INPUTCANDY.ui.mode(ICUI_none);
-				  __INPUTCANDY.ui.capture.mode=true;
-			      __INPUTCANDY.ui.capture.capturing=true;
-			      __INPUTCANDY.ui.capture.get_baseline=true;
-			      __INPUTCANDY.ui.capture.expired=0.0;
-			      __INPUTCANDY.ui.capture.stage=0;
-			      __INPUTCANDY.ui.capture.captured=none;
-			      __INPUTCANDY.ui.capture.captured2=none;
-			      __INPUTCANDY.ui.capture.baseline=none;
-                 break;				 
+				  __INPUTCANDY.ui.input_binding.capture={ // Special mode where we're capturing input.
+		    	   capturing: false,         // When true, we are capturing, otherwise we are confirming.
+				   exitting: false,          // Leaving capturing mode
+		    	   expired: 0.0,             // How long we've been attempting to capture.
+		    	   stage: 0,                 // Used for directional capturing when you need to do more than 1 input
+		    	   refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
+		    	   baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
+		         };
+                 break;			 
 				 default: return false; break; // Couldn't set the mode.
 			 }
              return true;
@@ -165,26 +160,21 @@ function __Init_ICUI() {
 			choosing_pick_select: 0,
 			choosing_pick_scrolled: 0,
 			choosing_capture: false,
-			choosing_capture_expired: 0.0,			
-			choosing_capture_2: false,				// For choosing axis
 			choosing_capture_confirming: false,
 			choosing_capture_select: 0,
+            capture: { // Special mode where we're capturing input.
+		    	capturing: false,         // When true, we are capturing, otherwise we are confirming.
+				exitting: false,          // Leaving capturing mode
+		    	expired: 0.0,             // How long we've been attempting to capture.
+		    	stage: 0,                 // Used for directional capturing when you need to do more than 1 input
+		    	refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
+		    	baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
+		    },
 			loading: false,          // Set profile from list
 			loading_select: 0,
 			loading_scrolled: 0,
 			confirm_exit: false,
 			confirm_exit_message: ""
-		},
-		// Special mode where we're capturing input.
-		capture: {
-			mode: false,              // True when we're capturing input.
-			capturing: false,         // When true, we are capturing, otherwise we are confirming.
-			get_baseline: false,      // Turn this true to get a new baseline as we enter the capture frame.
-			expired: 0.0,             // How long we've been attempting to capture.
-			stage: 0,                 // Used for directional capturing when you need to do more than 1 input
-			captured: none,
-			captured2: none,
-			baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
 		},
 		// Assumptive UI signal check for global input on settings screens
 		input: function ( kind ) {
@@ -247,7 +237,6 @@ function ICUI_text_color( c1,c2,c3,c4, text, x, y ) {
 	if ( string_length(text) == 0 ) return;
 	draw_text_color( x, y, text, c1,c2,c3,c4, 1.0 );
 }
-	
 	
 function ICUI_box( x, y, w, h ) {
 	draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.box2,__INPUTCANDY.ui.style.box1,false);
@@ -622,7 +611,6 @@ function ICUI_Draw() {
 		case ICUI_gamepad_test: ICUI_Draw_gamepad_test(); break;
 		case ICUI_SDLDB_select: ICUI_Draw_SDLDB_select(); break;
 		case ICUI_input_binding: ICUI_Draw_input_binding(); break;
-		case ICUI_capture: ICUI_Draw_capture(); break;
 		default: return false;
 	}
 	return true;
@@ -1422,7 +1410,6 @@ function ICUI_Draw_input_binding() {
 	draw_set_valign(oldvalign);
 }
 
-
 function ICUI_Draw_input_binding_choice() {
 	
 	var region=__INPUTCANDY.ui.region;
@@ -1436,7 +1423,7 @@ function ICUI_Draw_input_binding_choice() {
 	var icon_sprite_wh=sprite_get_width(s_InputCandy_device_icons);
 	var icon_scale=1.0/icon_sprite_wh;
 	var fontsize=eh;
-	var oldfont = draw_get_font();
+	var oldfont   = draw_get_font();
 	var oldhalign = draw_get_halign();
 	var oldvalign = draw_get_valign();
 	draw_set_halign(fa_center);
@@ -1635,7 +1622,6 @@ function ICUI_Draw_input_binding_choice() {
 	draw_set_valign(oldvalign);
 	
 }
-
 
 function ICUI_Draw_input_binding_choice_pick() {
 	
@@ -1871,7 +1857,276 @@ function ICUI_Draw_input_binding_choice_pick() {
 }
 
 
+
+function ICUI_Draw_input_binding_choosing_capture_confirming() {
+	// How many input detected elements to display per line
+	var test_wrap=floor( (__INPUTCANDY.ui.region.w*0.75) / 128);
+	
+	var ox=__INPUTCANDY.ui.region.x;
+	var oy=__INPUTCANDY.ui.region.y;
+	var ew=__INPUTCANDY.ui.style.wide*__INPUTCANDY.ui.region.w;
+	var eh=__INPUTCANDY.ui.style.high*__INPUTCANDY.ui.region.h;
+	var smidge=__INPUTCANDY.ui.region.w*__INPUTCANDY.ui.style.smidge;
+	var icon_sprite_wh=sprite_get_width(s_InputCandy_device_icons);
+	var icon_scale=1.0/icon_sprite_wh;
+	var fontsize=eh;
+	var oldfont = draw_get_font();
+	var oldhalign = draw_get_halign();
+	var oldvalign = draw_get_valign();
+	draw_set_halign(fa_center);
+	draw_set_valign(fa_middle);
+	draw_set_font(__INPUTCANDY.ui.style.font);
+	
+	var player_index=__INPUTCANDY.ui.device_select.influencing;
+	var player_number=player_index+1;
+	var player=__INPUTCANDY.players[player_index];
+	var km=__INPUTCANDY.player_using_keyboard_mouse == player_index and __INPUTCANDY.allow_keyboard_mouse and __INPUTCANDY.ui.input_binding.keyboard_and_mouse;
+
+	var device_index=__INPUTCANDY.players[player_index].device;
+	var device=player.device==none?none:__INPUTCANDY.devices[player.device];
+		
+	// Draws a background
+	ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
+
+	var sx=__INPUTCANDY.ui.region.x;
+	var sy=__INPUTCANDY.ui.region.y;
+	
+	// Title
+	oy+=eh;
+	ICUI_text( false, "Capturing for Player #"+int(player_number)+"  Settings "+(settings==none?"(none)":("#"+int(settings_index+1))), ox+__INPUTCANDY.ui.region.w/2, oy );
+	oy+=eh;
+	ICUI_text( false, km?"From Keyboard and Mouse":(device==none?"":("From "+device.desc)), ox+__INPUTCANDY.ui.region.w/2, oy );
+	oy+=eh;
+	ICUI_text( false, "For action: "+action.name, ox+__INPUTCANDY.ui.region.w/2, oy );
+	oy+=eh;
+	
+	oy+=eh*2;
+	
+  	ICUI_draw_ICaction(__INPUTCANDY.ui.input_binding.capture.captured,ICDeviceType_gamepad,false,true,false,r);
+	
+	
+	draw_set_font(oldfont);
+	draw_set_halign(oldhalign);
+	draw_set_valign(oldvalign);
+}
+
+
+/*
+			choosing_capture: false,
+			choosing_capture_confirming: false,
+			choosing_capture_select: 0,
+            capture: { // Special mode where we're capturing input.
+		    	capturing: false,         // When true, we are capturing, otherwise we are confirming.
+		    	expired: 0.0,             // How long we've been attempting to capture.
+		    	stage: 0,                 // Used for directional capturing when you need to do more than 1 input
+		    	refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
+		    	baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
+		    },
+ */
+
 function ICUI_Draw_input_binding_choice_capture() {
+	
+	if ( __INPUTCANDY.ui.input_binding.choosing_capture_confirming ) {
+		ICUI_Draw_input_binding_choosing_capture_confirming();
+		return;
+	}
+	
+	var player_index=__INPUTCANDY.ui.device_select.influencing;
+	var player_number=player_index+1;
+	var player=__INPUTCANDY.players[player_index];
+	var km=__INPUTCANDY.player_using_keyboard_mouse == player_index and __INPUTCANDY.allow_keyboard_mouse and __INPUTCANDY.ui.input_binding.keyboard_and_mouse;
+
+	var device_index=__INPUTCANDY.players[player_index].device;
+	var device=player.device==none?none:__INPUTCANDY.devices[player.device];
+	
+	if ( device == none and !km ) {
+		__INPUTCANDY.ui.input_binding.choosing_capture=false;
+		return;
+	}
+	
+	var settings_index=__INPUTCANDY.players[player_index].settings;
+	var settings=settings_index==none ? none : __INPUTCANDY.settings[settings_index];
+	var action_index=__INPUTCANDY.ui.input_binding.choosing_action;
+	var action=__INPUTCANDY.actions[action_index];
+	
+	// How many input detected elements to display per line
+	var test_wrap=floor( (__INPUTCANDY.ui.region.w*0.75) / 128);
+	
+	var ox=__INPUTCANDY.ui.region.x;
+	var oy=__INPUTCANDY.ui.region.y;
+	var ew=__INPUTCANDY.ui.style.wide*__INPUTCANDY.ui.region.w;
+	var eh=__INPUTCANDY.ui.style.high*__INPUTCANDY.ui.region.h;
+	var smidge=__INPUTCANDY.ui.region.w*__INPUTCANDY.ui.style.smidge;
+	var icon_sprite_wh=sprite_get_width(s_InputCandy_device_icons);
+	var icon_scale=1.0/icon_sprite_wh;
+	var fontsize=eh;
+	var oldfont = draw_get_font();
+	var oldhalign = draw_get_halign();
+	var oldvalign = draw_get_valign();
+	draw_set_halign(fa_center);
+	draw_set_valign(fa_middle);
+	draw_set_font(__INPUTCANDY.ui.style.font);
+		
+	// Draws a background
+	ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
+
+	var sx=__INPUTCANDY.ui.region.x;
+	var sy=__INPUTCANDY.ui.region.y;
+	
+	// Title
+	oy+=eh;
+	ICUI_text( false, "Capturing for Player #"+int(player_number)+"  Settings "+(settings==none?"(none)":("#"+int(settings_index+1))), ox+__INPUTCANDY.ui.region.w/2, oy );
+	oy+=eh;
+	ICUI_text( false, km?"From Keyboard and Mouse":(device==none?"":("From "+device.desc)), ox+__INPUTCANDY.ui.region.w/2, oy );
+	oy+=eh;
+	ICUI_text( false, "For action: "+action.name, ox+__INPUTCANDY.ui.region.w/2, oy );
+	oy+=eh;
+    var held=ICUI_capture_duration_s-__INPUTCANDY.ui.input_binding.capture.expired;
+	if ( held < 0 )	ICUI_text( false, "Please Release",  ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
+	else {
+		ICUI_text( false, "Hold one or more buttons or diagonal with sticks for "+int(held)+" seconds to capture",  ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
+	}
+	oy+=smidge+eh*3;
+		
+	var found=false;
+	var r;
+	
+	// Codes we captured.
+	var captured=[];
+
+    if ( !km and device != none ) {
+     if ( !action.is_directional ) {
+       var len =array_length(__INPUTCANDY.states[player.device].signals);
+       var codes=[];
+       var j=0;
+       for ( i=0; i<len; i++ ) if ( __INPUTCANDY.states[player.device].signals[i].is_held ) {
+       	 codes[j]=__INPUTCANDY.states[player.device].signals[i].signal_index;
+		 captured[array_length(captured)]=codes[j];
+       	 j++;
+       	 if ( j == test_wrap ) {
+       		r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+       		ICUI_draw_ICaction(codes,ICDeviceType_gamepad,false,true,false,r);
+       		 oy+=smidge+eh*3;
+       		 codes=[];
+       		 j=0;
+       	 }
+       }
+       if ( array_length(codes) > 0 ) {
+       	 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+       	 ICUI_draw_ICaction(codes,ICDeviceType_gamepad,false,true,false,r);
+       	 oy+=smidge+eh*3;
+       }
+	   var k=0;
+	   for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count; k++ ) {
+	  	 var hat_state=__IC.GetHatSignal(player_number,k);
+	  	 if ( (hat_state.H != AXIS_NO_VALUE or hat_state.V != AXIS_NO_VALUE) and ( abs(hat_state.V) > 0.5 or abs(hat_state.H) > 0.5 ) ) {
+	  		r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+             ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+	  		ICUI_text( false, "(On Hat #"+int(k)+")", r.x, r.y );
+            captured[array_length(captured)]=IC_hat0+k;
+	  		oy += smidge+eh;
+	  	 }
+	   }  
+     } else { // Directional on Gamepad
+	
+	  var state=__INPUTCANDY.states[player.device];
+//	  var hat_icon=16;
+//	  var axis_icon=17;
+/*
+	   r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/4,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+	   if ( (state.LV != AXIS_NO_VALUE and state.LH != AXIS_NO_VALUE) and ( floor(state.LV*10)/10 != 0 and floor(state.LH*10)/10 != 0 ) ) {
+	 	ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+	 	ICUI_text( false, "Left Stick, Axes:\nH:"+(state.LH != AXIS_NO_VALUE ? string_format(state.LH,1,1) : "-")+" V:"+(state.LV != AXIS_NO_VALUE ? string_format(state.LV,1,1) : "-"), r.x, r.y );
+		found=true;
+		captured[array_length(captured)]=IC_stick_left;
+	   }
+	   
+	   r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/2,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+	   if ( (state.RV != AXIS_NO_VALUE and state.RH != AXIS_NO_VALUE) and ( floor(state.RV*10)/10 != 0 and floor(state.RH*10)/10 != 0 ) ) {
+	 	 ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+	 	 ICUI_text( false, "Right Stick, Axes:\nH:"+(state.RH != AXIS_NO_VALUE ? string_format(state.RH,1,1) : "-")+" V:"+(state.RV != AXIS_NO_VALUE ? string_format(state.RV,1,1) : "-"), r.x, r.y );
+         captured[array_length(captured)]=IC_stick_right;
+	   }
+       oy += smidge+eh;*/
+	   
+	   for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count; k++ ) {
+		 var l=0;
+		 for ( l=0; l<__INPUTCANDY.devices[player.device].axis_count; l++ ) {
+			 if ( l == k ) continue;
+			 if ( !__ICI.DirectionalSupported(device,k,l) ) continue;
+	  	     var stick=__IC.GetStickSignal(player_number,k,l);
+	  	     if ( (stick.H != AXIS_NO_VALUE and stick.V != AXIS_NO_VALUE) and ( abs(stick.V) > 0.5 and abs(stick.H) > 0.5 ) ) {
+	  	    	r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+                ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+	  	    	ICUI_text( false, "Stick #"+int(k), r.x, r.y );
+				captured[array_length(captured)]=__ICI.GetStickByAxisPair(k,l);
+	  	    	oy += smidge+eh;
+	  	     }
+		 }
+	  }	 
+	 }
+   } else if ( km ) {
+	 var len =array_length(__INPUTCANDY.mouseStates);
+	 if ( len > 0 ) found=true;
+	 var codes=[];
+	 var j=0;
+	 for ( i=0; i<len; i++ ) if ( __INPUTCANDY.mouseStates[i].is_held ) {
+		 codes[j]=__INPUTCANDY.mouseStates[i].signal_index;
+		 captured[array_length(captured)]=codes[j];
+		 j++;
+		 if ( j == test_wrap ) {
+			r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+  			ICUI_draw_ICaction(codes,ICDeviceType_mouse,false,true,false,r);
+			 oy+=smidge+eh*2;
+			 codes=[];
+			 j=0;
+		 }
+	 }
+	 if ( array_length(codes) > 0 ) {
+		 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+		 ICUI_draw_ICaction(codes,ICDeviceType_mouse,false,true,false,r);
+		 oy+=smidge+eh*2;
+	 }
+	 len =array_length(__INPUTCANDY.keys);
+	 if ( len > 0 ) found=true;
+	 var codes=[];
+	 var j=0;
+	 for ( i=0; i<len; i++ ) if ( __INPUTCANDY.keys[i].is_held ) {
+		 codes[j]=__INPUTCANDY.keys[i].signal_index;
+		 captured[array_length(captured)]=codes[j];
+		 j++;
+		 if ( j == test_wrap ) {
+			r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+  			ICUI_draw_ICaction(codes,ICDeviceType_keyboard,false,true,false,r);
+			 oy+=smidge+eh*2;
+			 codes=[];
+			 j=0;
+		 }
+	 }
+	 if ( array_length(codes) > 0 ) {
+		 r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+		 ICUI_draw_ICaction(codes,ICDeviceType_keyboard,false,true,false,r);
+		 oy+=smidge+eh*2;
+	 }
+	}
+	
+	found=array_length(captured)>0;
+	
+	if ( found == false ) __INPUTCANDY.ui.input_binding.capture.expired=0;
+	else __INPUTCANDY.ui.input_binding.capture.expired += 1.0/room_speed;
+	if ( __INPUTCANDY.ui.input_binding.capture.expired > ICUI_test_duration_s ) {
+		__INPUTCANDY.ui.input_binding.capture.captured=captured;
+		__INPUTCANDY.ui.input_binding.capture.exitting=true;
+	}	
+	
+	if ( __INPUTCANDY.ui.input_binding.capture.exitting and found == false ) {  // do something...
+		__INPUTCANDY.ui.input_binding.capture.exitting=false;
+	} else if ( __INPUTCANDY.ui.input_binding.capture.exitting and found == true ) {
+	    __INPUTCANDY.ui.input_binding.choosing_capture_confirming=true;
+	}
+	draw_set_font(oldfont);
+	draw_set_halign(oldhalign);
+	draw_set_valign(oldvalign);
 }
 
 
@@ -2519,101 +2774,4 @@ function ICUI_Draw_gamepad_test() {
 	draw_set_font(oldfont);
 	draw_set_halign(oldhalign);
 	draw_set_valign(oldvalign);
-}
-
-/*
-		// Special mode where we're capturing input.
-		capture: {
-			mode: false,              // True when we're capturing input.
-			capturing: false,         // When true, we are capturing, otherwise we are confirming.
-			expired: 0.0,             // How long we've been attempting to capture.
-			stage: 0,                 // Used for directional capturing when you need to do more than 1 input
-			refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
-			baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
-		},
-
-*/
-
-function ICUI_Draw_capture() {
-	
-	var km=__INPUTCANDY.player_using_keyboard_mouse == player_index and __INPUTCANDY.allow_keyboard_mouse and __INPUTCANDY.input_binding.keyboard_and_mouse;
-	var player_index=__INPUTCANDY.device_select.influencing;
-	var player_number=player_number+1;
-	var device_index=none;
-	device_index=__INPUTCANDY.players[player_index].device;
-	
-	var device=none,state=none;
-	var dlen=array_length(__INPUTCANDY.devices);
-	var slen=array_length(__INPUTCANDY.states);
-	if ( !km  ) {
-		if ( device_index==none ) { // We're trying to capture, not the keyboard, and the device isn't set to anything valid, return immediately.
-			__INPUTCANDY.ui.mode(ICUI_input_binding);
-			return;
-		}
-		if ( device_index < dlen ) device=__INPUTCANDY.devices[device];
-		if ( device_index < slen ) state=__INPUTCANDY.states[device_index];
-	}
-	
-	var settings_index=__INPUTCANDY.players[player_index].settings;
-	var settings=settings_index==none ? none : __INPUTCANDY.settings[settings_index];
-	var action_index=__INPUTCANDY.ui.input_binding.choosing_action;
-	var action=__INPUTCANDY.actions[action_index];
-	
-	
-	if ( __INPUTCANDY.ui.capture.get_baseline ) {
-		if ( device != none ) __INPUTCANDY.ui.capture.baseline=state;
-		__INPUTCANDY.ui.capture.get_baseline=false;
-	}
-	
-	if ( __INPUTCANDY.ui.capture.capturing ) {
-		var was_held = ICUI_capture_duration_s-__INPUTCANDY.ui.capture.expired;		
-		__INPUTCANDY.ui.capture.expired += 1.0/room_speed;
-		var held=ICUI_capture_duration_s-__INPUTCANDY.ui.capture.expired;		
-		var was_captured = (was_held <0);
-		var captured= ( held < 0 );
-		if ( captured and !was_captured ) {
-			if ( action.is_directional ) {
-				
-			} else {
-				if ( km ) {
-					var kcodes=[];
-					var len=array_length(__INPUTCANDY.keys);
-					for ( i=0; i<len; i++ ) if (__INPUTCANDY.keys[i].is_held) kcodes[array_length(codes)]=__INPUTCANDY.keys[i].signal_index;
-					var mcodes=[];
-					len=array_length(__INPUTCANDY.mouseStates);
-					for ( i=0; i<len; i++ ) if (__INPUTCANDY.mouseStates[i].is_held) mcodes[array_length(codes)]=__INPUTCANDY.mouseStates[i].signal_index;
-					__INPUTCANDY.ui.capture.captured={ k: kcodes, m: mcodes, g: none }
-				} else {
-					var codes=[];
-					var len=array_length(__INPUTCANDY.states[device].signals);
-					for ( i=0; i<len; i++ ) if (__INPUTCANDY.states[device].signals[i].is_held) codes[array_length(codes)]=__INPUTCANDY.states[device].signals[i].signal_index;
-					__INPUTCANDY.ui.capture.captured={ k: none, m: none, g: codes }
-				}
-			}
-		} 
-	}
-	
-	if ( found == false ) __INPUTCANDY.ui.capture.expired=0;
-	else __INPUTCANDY.ui.capture.expired += 1.0/room_speed;
-	if ( __INPUTCANDY.ui.capture.expired > ICUI_test_duration_s ) {
-		__INPUTCANDY.ui.capture.exitting=true;
-	}
-	if ( __INPUTCANDY.ui.capture.exitting and found == false ) {  // do something...
-		__INPUTCANDY.ui.capture.mode=false;
-		__INPUTCANDY.ui.capture.exitting=false;
-		__INPUTCANDY.ui.capture.mode=true;
-	}
-	
-	    // Title
-	oy+=eh;
-	ICUI_text( false, "Capturing for Player #"+int(player_number)+"  Settings "+(settings==none?"(none)":("#"+int(settings_index+1))), ox+__INPUTCANDY.ui.region.w/2, oy );
-	ICUI_text( false, km?"From Keyboard and Mouse":(device==none?"":("From "+device.desc)), ox+__INPUTCANDY.ui.region.w/2, oy+eh );
-	if ( __INPUTCANDY.ui.capture.capturing ) {
-		var held=ICUI_capture_duration_s-__INPUTCANDY.ui.capture.expired;
-		if ( held < 0 )	ICUI_text( false, "Please Release Buttons",  ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
-		else {
-			ICUI_text( false, "Hold one or more buttons or sticks for "+int(held)+" seconds to capture",  ox+__INPUTCANDY.ui.region.w/2, oy+eh*2 );
-		}
-	}
-	oy+=smidge+eh*4;
 }
