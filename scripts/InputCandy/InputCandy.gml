@@ -543,7 +543,7 @@ global._INPUTCANDY_DEFAULTS_ = {
  // Set this to a different function to trigger your own custom reaction to this event.
  e_controller_connected:    function( device_index, deviceInfo ) { show_debug_message("Controller connected! Device ID "+int(device_index)+" "+json_stringify(deviceInfo)); },
  // Set this to a different function to trigger your own custom reaction to this event.
- e_controller_disconnected: function( old_device_index, deviceInfo ) { show_debug_message("Controller disconnected! Device ID "+int(device_index)+" "+json_stringify(deviceInfo)); },
+ e_controller_disconnected: function( old_device_index, deviceInfo ) { show_debug_message("Controller disconnected! Device ID was "+int(old_device_index)+" "+json_stringify(deviceInfo)); },
  // Default action for saving the settings file (sandboxed on most systems, only change if you need to)
  e_save_file:      function( filename, json_data ) { string_as_file( filename, json_stringify(json_data) ); },
  e_load_file:      function( filename, default_json ) { if ( !file_exists(filename) ) return default_json; else return json_parse(file_as_string( filename )); },

@@ -110,10 +110,9 @@ function __Init_ICUI() {
 				  __INPUTCANDY.ui.mode(ICUI_none);
 				  __INPUTCANDY.ui.input_binding.mode=true;
 				  __INPUTCANDY.ui.input_binding.capture={ // Special mode where we're capturing input.
-		    	   capturing: false,         // When true, we are capturing, otherwise we are confirming.
 				   exitting: false,          // Leaving capturing mode
 		    	   expired: 0.0,             // How long we've been attempting to capture.
-		    	   stage: 0,                 // Used for directional capturing when you need to do more than 1 input
+		    	   select: 0,                 // Menu on confirming page.
 		    	   refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
 		    	   baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
 		         };
@@ -161,12 +160,10 @@ function __Init_ICUI() {
 			choosing_pick_scrolled: 0,
 			choosing_capture: false,
 			choosing_capture_confirming: false,
-			choosing_capture_select: 0,
             capture: { // Special mode where we're capturing input.
-		    	capturing: false,         // When true, we are capturing, otherwise we are confirming.
 				exitting: false,          // Leaving capturing mode
 		    	expired: 0.0,             // How long we've been attempting to capture.
-		    	stage: 0,                 // Used for directional capturing when you need to do more than 1 input
+		    	select: 0,                // Menu on confirming page
 		    	refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
 		    	baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
 		    },
@@ -1875,21 +1872,22 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 	var oldvalign = draw_get_valign();
 	draw_set_halign(fa_center);
 	draw_set_valign(fa_middle);
-	draw_set_font(__INPUTCANDY.ui.style.font);
+	draw_set_font(__INPUTCANDY.ui.style.font);	
 	
+	var action_index=__INPUTCANDY.ui.input_binding.choosing_action;
+	var action=__INPUTCANDY.actions[action_index];
 	var player_index=__INPUTCANDY.ui.device_select.influencing;
 	var player_number=player_index+1;
+	var settings_index=__INPUTCANDY.players[player_index].settings;
 	var player=__INPUTCANDY.players[player_index];
-	var km=__INPUTCANDY.player_using_keyboard_mouse == player_index and __INPUTCANDY.allow_keyboard_mouse and __INPUTCANDY.ui.input_binding.keyboard_and_mouse;
-
 	var device_index=__INPUTCANDY.players[player_index].device;
 	var device=player.device==none?none:__INPUTCANDY.devices[player.device];
+	var bound=__ICI.GetBindingData(settings_index,action_index);	
+	var km=__INPUTCANDY.player_using_keyboard_mouse == player_index and __INPUTCANDY.allow_keyboard_mouse and __INPUTCANDY.ui.input_binding.keyboard_and_mouse;
+
 		
 	// Draws a background
 	ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
-
-	var sx=__INPUTCANDY.ui.region.x;
-	var sy=__INPUTCANDY.ui.region.y;
 	
 	// Title
 	oy+=eh;
@@ -1902,27 +1900,93 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 	
 	oy+=eh*2;
 	
-  	ICUI_draw_ICaction(__INPUTCANDY.ui.input_binding.capture.captured,ICDeviceType_gamepad,false,true,false,r);
+  	ICUI_draw_ICaction(__INPUTCANDY.ui.input_binding.capture.captured,ICDeviceType_gamepad,false,true,false,r);	
 	
+	var conflicting=__ICI.GetActionsBindingsByCode( settings_index, __INPUTCANDY.ui.input_binding.capture.captured, bound == none ? none : bound.index, action_index );
+	if ( conflicting.bindings_count > 0 or conflicting.actions_count > 0 ) {
+        var lines_region=rectangle(__INPUTCANDY.ui.region.x+eh,oy+smidge,__INPUTCANDY.ui.region.w-(eh*5),__INPUTCANDY.ui.region.y2-oy-eh*3);
+		ICUI_text( false, "Warning: already in use by", lines_region.x+lines_region.w/2, lines_region.y2+eh );
+		var results="";
+		for ( var k=0; k<conflicting.bindings_count; k++ ) {
+			results+=string_replace(conflicting.bindings[k].bound_action.group+" "+conflicting.bindings[k].bound_action.name,"None ","");
+			if ( k > 0 and (k!=conflicting.bindings_count-1) ) results+=",";
+		}
+		if ( string_length(results) > 0 and conflicting.actions_count > 0 ) {
+			results+=" and ";
+		}
+		for ( var k=0; k<conflicting.actions_count; k++ ) {
+			results+=string_replace(conflicting.actions[k].group+" "+conflicting.actions[k].name,"None ","");
+			if ( k > 0 and  k!= (conflicting.actions_count-1) ) results+=",";
+		}
+		ICUI_text( false, results, lines_region.x+lines_region.w/2, lines_region.y2+eh*2 );
+	}
+	
+    var max_menuitem=2;  // 0 Back button, 1 New Settings Profile, 2 Choose Settings Profile, 3/4 Up/Down Scroll, Deadzone1, Deadzone2
+	var mi_back=max_menuitem-2;    // Back / Capture again
+	var mi_accept=max_menuitem-1;  // Accept this capture
+	var mi_cancel=max_menuitem;    // Abort capturing.
+	
+	// Back Button
+	var r=rectangle(__INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, eh*2, eh*2);
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.capture.select=mi_back;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.capture.select == mi_back, "", r.x,r.y,r.w,r.h );
+	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
+	
+    var bw=__INPUTCANDY.ui.region.w/2;
+	var btn_height=__INPUTCANDY.ui.region.h/12;
+	var sx=__INPUTCANDY.ui.region.x + bw;
+	var sy=__INPUTCANDY.ui.region.y - (btn_height+btn_height/5)*2;
+	
+	r =rectangle( sx, sy, bw, btn_height );
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_select_from_list;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_select == mi_select_from_list, "Accept", r.x,r.y,r.w,r.h );
+	sy += btn_height+btn_height/5;
+	r =rectangle( sx, sy, btn_width, btn_height );
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_capture_input;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_select == mi_capture_input, "Cancel", r.x,r.y,r.w,r.h );
+	
+	if( __INPUTCANDY.ui.input(ICUI_button) ) {
+	 	audio_play_sound(a_ICUI_tone,100,0);
+		switch ( __INPUTCANDY.ui.input_binding.capture.select ) {
+			case mi_back: // Abort / go back / cancel
+		 	 __INPUTCANDY.ui.input_binding.choosing_capture_confirming=false;
+		     __INPUTCANDY.ui.input_binding.capture={ // Special mode where we're capturing input.
+		         exitting: false,          // Leaving capturing mode
+		         expired: 0.0,             // How long we've been attempting to capture.
+		         select: 0,                 // Menu on confirming page.
+		         refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
+		         baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
+		     };
+			 audio_play_sound(a_ICUI_pageflip,100,0);
+			__ICI.SaveSettings();
+			break;
+			case mi_accept: // Assign the capture codes to the action and its appropriate device
+			 if ( km ) {
+			 } else {
+			 }
+			 audio_play_sound(a_ICUI_tone,100,0);
+			break;
+			case mi_cancel: // Cancel capturing altogether
+			 __INPUTCANDY.ui.input_binding.choosing_capture=false;
+		 	 __INPUTCANDY.ui.input_binding.choosing_capture_confirming=false;
+		     __INPUTCANDY.ui.input_binding.capture={ // Special mode where we're capturing input.
+		         exitting: false,          // Leaving capturing mode
+		         expired: 0.0,             // How long we've been attempting to capture.
+		         select: 0,                 // Menu on confirming page.
+		         refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
+		         baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
+		     };
+             audio_play_sound(a_ICUI_click,100,0);
+			break;
+			default:
+			break;
+		}
+	}
 	
 	draw_set_font(oldfont);
 	draw_set_halign(oldhalign);
 	draw_set_valign(oldvalign);
 }
-
-
-/*
-			choosing_capture: false,
-			choosing_capture_confirming: false,
-			choosing_capture_select: 0,
-            capture: { // Special mode where we're capturing input.
-		    	capturing: false,         // When true, we are capturing, otherwise we are confirming.
-		    	expired: 0.0,             // How long we've been attempting to capture.
-		    	stage: 0,                 // Used for directional capturing when you need to do more than 1 input
-		    	refresh_baseline: false,  // Turn this true to get a new baseline as we exit the capture frame.
-		    	baseline: none            // The baseline is a capture when we are beginning capture to detect changes.
-		    },
- */
 
 function ICUI_Draw_input_binding_choice_capture() {
 	
