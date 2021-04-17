@@ -1856,6 +1856,11 @@ function ICUI_Draw_input_binding_choice_pick() {
 
 
 function ICUI_Draw_input_binding_choosing_capture_confirming() {
+    if ( !ICUI_assure_settings_exist() ) {
+     __INPUTCANDY.ui.device_select.mode=true;
+	 __INPUTCANDY.ui.input_binding.mode=false;
+	 return;
+	}
 	// How many input detected elements to display per line
 	var test_wrap=floor( (__INPUTCANDY.ui.region.w*0.75) / 128);
 	
@@ -1879,14 +1884,14 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 	var player_index=__INPUTCANDY.ui.device_select.influencing;
 	var player_number=player_index+1;
 	var settings_index=__INPUTCANDY.players[player_index].settings;
+	var settings = settings_index != none ? __INPUTCANDY.settings[settings_index] : none;
 	var player=__INPUTCANDY.players[player_index];
 	var device_index=__INPUTCANDY.players[player_index].device;
 	var device=player.device==none?none:__INPUTCANDY.devices[player.device];
 	var bound=__ICI.GetBindingData(settings_index,action_index);	
 	var km=__INPUTCANDY.player_using_keyboard_mouse == player_index and __INPUTCANDY.allow_keyboard_mouse and __INPUTCANDY.ui.input_binding.keyboard_and_mouse;
 
-		
-	// Draws a background
+    // Draws a background
 	ICUI_text_in_box( false, "", __INPUTCANDY.ui.region.x, __INPUTCANDY.ui.region.y, __INPUTCANDY.ui.region.w, __INPUTCANDY.ui.region.h );
 	
 	// Title
@@ -1900,7 +1905,14 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 	
 	oy+=eh*2;
 	
-  	ICUI_draw_ICaction(__INPUTCANDY.ui.input_binding.capture.captured,ICDeviceType_gamepad,false,true,false,r);	
+	var r;
+	
+    r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/8,oy,__INPUTCANDY.ui.region.w*0.75,eh*2);
+  	ICUI_draw_ICaction(__INPUTCANDY.ui.input_binding.capture.captured,
+	 km ? ICDeviceType_keyboard_mouse : ICDeviceType_gamepad,
+	 action.is_directional,!km ? action.gamepad_combo : false,
+	 km ? (action.mouse_combo or action.keyboard_combo or action.mouse_keyboard_combo): false,
+	r);
 	
 	var conflicting=__ICI.GetActionsBindingsByCode( settings_index, __INPUTCANDY.ui.input_binding.capture.captured, bound == none ? none : bound.index, action_index );
 	if ( conflicting.bindings_count > 0 or conflicting.actions_count > 0 ) {
@@ -1932,19 +1944,30 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.capture.select == mi_back, "", r.x,r.y,r.w,r.h );
 	draw_sprite_ext(s_InputCandy_ICUI_icons,0,__INPUTCANDY.ui.region.x+eh,__INPUTCANDY.ui.region.y+eh,icon_scale*eh,icon_scale*eh,0,__INPUTCANDY.ui.style.text1,1.0);
 	
-    var bw=__INPUTCANDY.ui.region.w/2;
+    var bw=__INPUTCANDY.ui.region.w/4;
 	var btn_height=__INPUTCANDY.ui.region.h/12;
-	var sx=__INPUTCANDY.ui.region.x + bw;
-	var sy=__INPUTCANDY.ui.region.y - (btn_height+btn_height/5)*2;
+	var sx=__INPUTCANDY.ui.region.x2 - bw;
+	var sy=__INPUTCANDY.ui.region.y2 - (btn_height+btn_height/5)*2;
 	
 	r =rectangle( sx, sy, bw, btn_height );
-	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_select_from_list;
-	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_select == mi_select_from_list, "Accept", r.x,r.y,r.w,r.h );
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_accept;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.capture.select == mi_accept, "Accept", r.x,r.y,r.w,r.h );
 	sy += btn_height+btn_height/5;
-	r =rectangle( sx, sy, btn_width, btn_height );
-	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_capture_input;
-	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.choosing_select == mi_capture_input, "Cancel", r.x,r.y,r.w,r.h );
+	r =rectangle( sx, sy, bw, btn_height );
+	if ( cwithin(mouse_x,mouse_y,r) ) __INPUTCANDY.ui.input_binding.choosing_select=mi_cancel;
+	ICUI_labeled_button( __INPUTCANDY.ui.input_binding.capture.select == mi_cancel, "Cancel", r.x,r.y,r.w,r.h );
 	
+	
+	if ( __INPUTCANDY.ui.input(ICUI_right) or __INPUTCANDY.ui.input(ICUI_down) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.input_binding.capture.select+=1;
+		if ( __INPUTCANDY.ui.input_binding.capture.select > max_menuitem ) __INPUTCANDY.ui.input_binding.capture.select=0;
+	}
+	if ( __INPUTCANDY.ui.input(ICUI_left) or __INPUTCANDY.ui.input(ICUI_up) ) {
+		audio_play_sound(a_ICUI_click,100,0);
+		__INPUTCANDY.ui.input_binding.capture.select-=1;
+		if ( __INPUTCANDY.ui.input_binding.capture.select < 0 ) __INPUTCANDY.ui.input_binding.capture.select=max_menuitem;
+	}
 	if( __INPUTCANDY.ui.input(ICUI_button) ) {
 	 	audio_play_sound(a_ICUI_tone,100,0);
 		switch ( __INPUTCANDY.ui.input_binding.capture.select ) {
@@ -1961,11 +1984,28 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 			__ICI.SaveSettings();
 			break;
 			case mi_accept: // Assign the capture codes to the action and its appropriate device
+			 var b_index=__ICI.GetBinding(settings_index,action.index);
+			 if ( b_index < 0 ) b_index=__ICI.AddBinding(settings_index,action.index);
 			 if ( km ) {
-			 } else {
+				 var keys=[]
+				 var mice=[]
+				 var len=array_length(__INPUTCANDY.ui.input_binding.capture.captured);
+				 for ( var i=0; i<len; i++ ) {
+					 var value=__INPUTCANDY.ui.input_binding.capture.captured[i];
+					 if ( value == IC_mouse_left or value == IC_mouse_right or value == IC_mouse_middle
+					   or value == IC_mouse_scrolldown || value == IC_mouse_scrollup ) mice[array_length(mice)]=value;
+					 else keys[array_length(keys)]=value;
+				 }
+				 if ( array_length(mice) > 0 ) {
+			 	  __INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.mouse=b.code;
+				 }
+				 if ( array_length(keys) > 0 ) {
+			 	  __INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=b.code;
+				 }
+			 } else { // Gamepad...
+			 	__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=captured;				 
 			 }
-			 audio_play_sound(a_ICUI_tone,100,0);
-			break;
+			 /* allow us to continue on and act like a cancel */
 			case mi_cancel: // Cancel capturing altogether
 			 __INPUTCANDY.ui.input_binding.choosing_capture=false;
 		 	 __INPUTCANDY.ui.input_binding.choosing_capture_confirming=false;
@@ -2080,8 +2120,20 @@ function ICUI_Draw_input_binding_choice_capture() {
        	 ICUI_draw_ICaction(codes,ICDeviceType_gamepad,false,true,false,r);
        	 oy+=smidge+eh*3;
        }
+     } else { // Directional on Gamepad
+	
+	  var state=__INPUTCANDY.states[player.device];
+	  
+      if ( __IC.Signal( player_number, IC_padd ) or __IC.Signal( player_number, IC_padu ) or __IC.Signal( player_number, IC_padl ) or __IC.Signal( player_number, IC_padr ) ) {
+	     captured[array_length(captured)]=IC_dpad;
+         r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+         ICUI_image( s_InputCandy_ICUI_icons, 4, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+	  	 ICUI_text( false, "(D-Pad)", r.x, r.y );
+	  	 oy += smidge+eh;
+	  }
+   
 	   var k=0;
-	   for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count; k++ ) {
+	   for ( k=0; k<__INPUTCANDY.devices[player.device].hat_count; k++ ) {
 	  	 var hat_state=__IC.GetHatSignal(player_number,k);
 	  	 if ( (hat_state.H != AXIS_NO_VALUE or hat_state.V != AXIS_NO_VALUE) and ( abs(hat_state.V) > 0.5 or abs(hat_state.H) > 0.5 ) ) {
 	  		r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
@@ -2090,45 +2142,24 @@ function ICUI_Draw_input_binding_choice_capture() {
             captured[array_length(captured)]=IC_hat0+k;
 	  		oy += smidge+eh;
 	  	 }
-	   }  
-     } else { // Directional on Gamepad
-	
-	  var state=__INPUTCANDY.states[player.device];
-//	  var hat_icon=16;
-//	  var axis_icon=17;
-/*
-	   r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/4,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
-	   if ( (state.LV != AXIS_NO_VALUE and state.LH != AXIS_NO_VALUE) and ( floor(state.LV*10)/10 != 0 and floor(state.LH*10)/10 != 0 ) ) {
-	 	ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
-	 	ICUI_text( false, "Left Stick, Axes:\nH:"+(state.LH != AXIS_NO_VALUE ? string_format(state.LH,1,1) : "-")+" V:"+(state.LV != AXIS_NO_VALUE ? string_format(state.LV,1,1) : "-"), r.x, r.y );
-		found=true;
-		captured[array_length(captured)]=IC_stick_left;
 	   }
 	   
-	   r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/2,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
-	   if ( (state.RV != AXIS_NO_VALUE and state.RH != AXIS_NO_VALUE) and ( floor(state.RV*10)/10 != 0 and floor(state.RH*10)/10 != 0 ) ) {
-	 	 ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
-	 	 ICUI_text( false, "Right Stick, Axes:\nH:"+(state.RH != AXIS_NO_VALUE ? string_format(state.RH,1,1) : "-")+" V:"+(state.RV != AXIS_NO_VALUE ? string_format(state.RV,1,1) : "-"), r.x, r.y );
-         captured[array_length(captured)]=IC_stick_right;
-	   }
-       oy += smidge+eh;*/
-	   
-	   for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count; k++ ) {
-		 var l=0;
-		 for ( l=0; l<__INPUTCANDY.devices[player.device].axis_count; l++ ) {
-			 if ( l == k ) continue;
-			 if ( !__ICI.DirectionalSupported(device,k,l) ) continue;
-	  	     var stick=__IC.GetStickSignal(player_number,k,l);
-	  	     if ( (stick.H != AXIS_NO_VALUE and stick.V != AXIS_NO_VALUE) and ( abs(stick.V) > 0.5 and abs(stick.H) > 0.5 ) ) {
+	   if ( __INPUTCANDY.devices[player.device].axis_count > 1 ) {
+	    for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count-1; k++ ) {
+		 var l=k+1;
+		 if ( !__ICI.DirectionalSupported(device,k,l) ) continue;
+  	     var stick=__IC.GetStickSignal(player_number,k,l);
+  	     if ( (stick.H != AXIS_NO_VALUE and stick.V != AXIS_NO_VALUE) and ( abs(stick.V) > 0.5 and abs(stick.H) > 0.5 ) ) {
 	  	    	r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
                 ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
-	  	    	ICUI_text( false, "Stick #"+int(k), r.x, r.y );
+	  	    	ICUI_text( false, "(Stick #"+int(k)+", Axes "+int(k)+","+int(l)+")", r.x, r.y );
 				captured[array_length(captured)]=__ICI.GetStickByAxisPair(k,l);
 	  	    	oy += smidge+eh;
-	  	     }
-		 }
-	  }	 
-	 }
+  	     }
+        }
+	   }  
+	}	 
+	 
    } else if ( km ) {
 	 var len =array_length(__INPUTCANDY.mouseStates);
 	 if ( len > 0 ) found=true;
@@ -2176,18 +2207,22 @@ function ICUI_Draw_input_binding_choice_capture() {
 	
 	found=array_length(captured)>0;
 	
-	if ( found == false ) __INPUTCANDY.ui.input_binding.capture.expired=0;
-	else __INPUTCANDY.ui.input_binding.capture.expired += 1.0/room_speed;
-	if ( __INPUTCANDY.ui.input_binding.capture.expired > ICUI_test_duration_s ) {
-		__INPUTCANDY.ui.input_binding.capture.captured=captured;
-		__INPUTCANDY.ui.input_binding.capture.exitting=true;
-	}	
-	
-	if ( __INPUTCANDY.ui.input_binding.capture.exitting and found == false ) {  // do something...
-		__INPUTCANDY.ui.input_binding.capture.exitting=false;
-	} else if ( __INPUTCANDY.ui.input_binding.capture.exitting and found == true ) {
-	    __INPUTCANDY.ui.input_binding.choosing_capture_confirming=true;
+	if ( !__INPUTCANDY.ui.input_binding.capture.exitting ) {
+		if ( found == false ) __INPUTCANDY.ui.input_binding.capture.expired=0;
+	    else {
+			__INPUTCANDY.ui.input_binding.capture.expired += 1.0/room_speed;
+	        if ( __INPUTCANDY.ui.input_binding.capture.expired > ICUI_capture_duration_s ) {
+	        	__INPUTCANDY.ui.input_binding.capture.captured=captured;
+	        	__INPUTCANDY.ui.input_binding.capture.exitting=true;
+			   audio_play_sound(a_ICUI_tone,100,0);
+			}
+		}
 	}
+	if ( __INPUTCANDY.ui.input_binding.capture.exitting and !found ) {
+	    __INPUTCANDY.ui.input_binding.choosing_capture_confirming=true;
+	    audio_play_sound(a_ICUI_pageflip,100,0);
+	}
+	
 	draw_set_font(oldfont);
 	draw_set_halign(oldhalign);
 	draw_set_valign(oldvalign);
