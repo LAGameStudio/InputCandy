@@ -366,7 +366,7 @@ function ICUI_draw_ICaction( codes, deviceType, is_directional, is_combo, key_mo
 					   var str="Stick: "+int(__INPUTCANDY.directionals[directional_index].stickH)+"+"+int(__INPUTCANDY.directionals[directional_index].stickV);
 					   ICUI_image( s_InputCandy_ICUI_icons, 17, sx, r.y, swh, r.h, c_white, 0, 1.0 );
 					   ICUI_text_color( c_white, c_white, c_white, c_white, str, sx+swh+spacing+fontsize, sy);
-					   sx+=swh+spacing+fontsize*3;
+					   sx+=swh+spacing+fontsize*6;
 					  }
 					}
 				} else if ( code == IC_padl ) {
@@ -1853,7 +1853,16 @@ function ICUI_Draw_input_binding_choice_pick() {
 	draw_set_valign(oldvalign);
 }
 
-function ICUI_Draw_sticktest( axis1, axis2 ) {
+function ICUI_Draw_sticktest( player_number,axis1, axis2, r, rotate, invert, reverse ) {
+ var stick=__IC.GetStickSignal(player_number,axis1,axis2);
+ ICUI_box( r.x,r.y,r.w,r.h );
+ if ( !stick.not_available ) {
+	 var h=(stick.H == AXIS_NO_VALUE ? 0 : stick.H)*0.5+0.5;
+	 var v=(stick.V == AXIS_NO_VALUE ? 0 : stick.V)*0.5+0.5;
+	 var bs=r.w/10;
+	 ICUI_box( r.x,r.y,r.w,r.h );
+	 ICUI_tinted_box( c_white, c_gray, r.x+h*r.w-bs/2,r.y+v*r.h-bs/2,bs,bs );
+ }
 }
 
 function ICUI_Draw_input_binding_choosing_capture_confirming() {
@@ -1913,7 +1922,20 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 	 km ? ICDeviceType_keyboard_mouse : ICDeviceType_gamepad,
 	 action.is_directional,!km ? action.gamepad_combo : false,
 	 km ? (action.mouse_combo or action.keyboard_combo or action.mouse_keyboard_combo): false,
-	r);
+	 r
+	);
+	
+	var clen=array_length(__INPUTCANDY.ui.input_binding.capture.captured);
+	var r2=rectangle(r.x,r.y+eh*2,eh*3,eh*3);
+	for ( var k=0; k<clen; k++ ) {
+	    var c=__INPUTCANDY.ui.input_binding.capture.captured[k];
+		if ( c >= IC_stick_01 and c<= IC_stick_98 ) {
+			var d=__ICI.GetDirectionalByCode(c);
+			var dir=__INPUTCANDY.directionals[d];
+			ICUI_Draw_sticktest(player_number,dir.stickH,dir.stickV,r2, false,false,false);
+			r2=rectangle(r2.x+smidge+r2.w,r2.y,r2.w,r2.h);
+		}
+	}
 	
 	var conflicting=__ICI.GetActionsBindingsByCode( settings_index, __INPUTCANDY.ui.input_binding.capture.captured, bound == none ? none : bound.index, action_index );
 	if ( conflicting.bindings_count > 0 or conflicting.actions_count > 0 ) {
@@ -2156,7 +2178,7 @@ function ICUI_Draw_input_binding_choice_capture() {
 			 var len=array_length(pairs);
 			 var fondu=false;
 			 for ( m=0; m<len; m++ ) {
-				 if ( (pairs[m].a == k and pairs[m].b == l) or (pairs[m].b == k and pairs[m].a == l) ) { fondu=true; break; }
+				 if ( (pairs[m].a == k or pairs[m].b == k) or (pairs[m].a == l or pairs[m].b == l) ) { fondu=true; break; }
 			 }
 			 if ( fondu ) continue;
 			 pairs[len] = { a: k, b: l };
