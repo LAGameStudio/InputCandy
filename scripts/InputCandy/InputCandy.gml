@@ -106,7 +106,8 @@ function ICDeviceTypeString(i) {
 		default: return "?";
 	}
 }
-		
+
+#macro IC_absolute_minimum_deadzone 0.05
 
 #macro ICKeyboardLayout_qwerty 0
 #macro ICKeyboardLayout_azerty 1
@@ -2318,8 +2319,8 @@ function New_InputCandy_Private() {
 	GetStickByAxisPair: function ( haxis, vaxis ) {
 		var len=__ICI.GetDirectionalByCode(IC_stick_98);
 		for ( var j=__ICI.GetDirectionalByCode(IC_stick_01); j<len; j++ ) {
-			if ( __INPUTCANDY.directionals[j].stickH == haxis
-			 and __INPUTCANDY.directionals[j].stickV == vaxis ) return j;
+			if ( (__INPUTCANDY.directionals[j].stickH == haxis
+			 and __INPUTCANDY.directionals[j].stickV == vaxis) ) return j;
 		}
 		return none;
 	},
@@ -2465,8 +2466,8 @@ function New_InputCandy_Private() {
 		return {
 			index: none,
 			deviceInfo: none,
-			deadzone1: none,
-			deadzone2: none,
+			deadzone1: IC_absolute_minimum_deadzone,
+			deadzone2: IC_absolute_minimum_deadzone,
 			bindings: []
 		};
 	},
@@ -2707,8 +2708,8 @@ function New_InputCandy_Private() {
 			output[i]={				
 			    index: s.index,
 			    deviceInfo: s.deviceInfo,
-			    deadzone1: s.deadzone1,
-			    deadzone2: s.deadzone2,
+			    deadzone1: (s.deadzone1<IC_absolute_minimum_deadzone?IC_absolute_minimum_deadzone:s.deadzone1),
+			    deadzone2: (s.deadzone2<IC_absolute_minimum_deadzone?IC_absolute_minimum_deadzone:s.deadzone2),
 				bindings:[]
 			}
 			var blen=array_length(s.bindings);
@@ -2734,8 +2735,8 @@ function New_InputCandy_Private() {
 			var s={ index: i };
 			s.deviceInfo=a[i].deviceInfo;
 			s.bindings=[];
-			s.deadzone1 =a[i].deadzone1;
-			s.deadzone2 =a[i].deadzone2;
+			s.deadzone1 =a[i].deadzone1; if ( s.deadzone1 < IC_absolute_minimum_deadzone ) s.deadzone1 = IC_absolute_minimum_deadzone;
+			s.deadzone2 =a[i].deadzone2; if ( s.deadzone2 < IC_absolute_minimum_deadzone ) s.deadzone2 = IC_absolute_minimum_deadzone;
 			var blen=array_length(a[i].bindings);
 			var k=0;
 			for ( var j=0; j<blen; j++ ) {

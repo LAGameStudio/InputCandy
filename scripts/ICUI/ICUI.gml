@@ -1853,7 +1853,8 @@ function ICUI_Draw_input_binding_choice_pick() {
 	draw_set_valign(oldvalign);
 }
 
-
+function ICUI_Draw_sticktest( axis1, axis2 ) {
+}
 
 function ICUI_Draw_input_binding_choosing_capture_confirming() {
     if ( !ICUI_assure_settings_exist() ) {
@@ -2018,6 +2019,9 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 		     };
              audio_play_sound(a_ICUI_click,100,0);
 			break;
+//			case mi_rotate:
+//			case mi_invert:
+//			case mi_reverse:
 			default:
 			break;
 		}
@@ -2135,7 +2139,7 @@ function ICUI_Draw_input_binding_choice_capture() {
 	   var k=0;
 	   for ( k=0; k<__INPUTCANDY.devices[player.device].hat_count; k++ ) {
 	  	 var hat_state=__IC.GetHatSignal(player_number,k);
-	  	 if ( (hat_state.H != AXIS_NO_VALUE or hat_state.V != AXIS_NO_VALUE) and ( abs(hat_state.V) > 0.5 or abs(hat_state.H) > 0.5 ) ) {
+	  	 if ( !hat_state.not_available and (hat_state.H != AXIS_NO_VALUE or hat_state.V != AXIS_NO_VALUE) and ( abs(hat_state.V) > 0.5 or abs(hat_state.H) > 0.5 ) ) {
 	  		r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
              ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
 	  		ICUI_text( false, "(On Hat #"+int(k)+")", r.x, r.y );
@@ -2145,17 +2149,30 @@ function ICUI_Draw_input_binding_choice_capture() {
 	   }
 	   
 	   if ( __INPUTCANDY.devices[player.device].axis_count > 1 ) {
+		var pairs=[]
 	    for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count-1; k++ ) {
-		 var l=k+1;
-		 if ( !__ICI.DirectionalSupported(device,k,l) ) continue;
-  	     var stick=__IC.GetStickSignal(player_number,k,l);
-  	     if ( (stick.H != AXIS_NO_VALUE and stick.V != AXIS_NO_VALUE) and ( abs(stick.V) > 0.5 and abs(stick.H) > 0.5 ) ) {
-	  	    	r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
-                ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
-	  	    	ICUI_text( false, "(Stick #"+int(k)+", Axes "+int(k)+","+int(l)+")", r.x, r.y );
-				captured[array_length(captured)]=__ICI.GetStickByAxisPair(k,l);
-	  	    	oy += smidge+eh;
-  	     }
+		 for ( l=0; l<__INPUTCANDY.devices[player.device].axis_count-1; l++ ) {
+			 if ( l==k ) continue;
+			 var len=array_length(pairs);
+			 var fondu=false;
+			 for ( m=0; m<len; m++ ) {
+				 if ( (pairs[m].a == k and pairs[m].b == l) or (pairs[m].b == k and pairs[m].a == l) ) { fondu=true; break; }
+			 }
+			 if ( fondu ) continue;
+			 pairs[len] = { a: k, b: l };
+//			 if ( !__ICI.DirectionalSupported(device,k,l) ) continue;
+  			 var stick=__IC.GetStickSignal(player_number,k,l);
+  			 if ( !stick.not_available and (stick.H != AXIS_NO_VALUE and stick.V != AXIS_NO_VALUE) and ( abs(stick.V) > 0.5 and abs(stick.H) > 0.5 ) ) {
+					pair=__ICI.GetStickByAxisPair(k,l);
+					if ( pair==none ) continue;
+					pair=__INPUTCANDY.directionals[pair];
+					captured[array_length(captured)]=pair.code;
+	  		    	r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+			        ICUI_image( s_InputCandy_ICUI_icons, 17, r.x-__INPUTCANDY.ui.region.w/8, r.y, eh, eh, c_white, 0, 1.0 );
+	  		    	ICUI_text( false, "(Stick #"+int(k)+", Axes "+int(k)+","+int(l)+")", r.x, r.y );
+	  		    	oy += smidge+eh;
+  			 }
+		 }
         }
 	   }  
 	}	 
