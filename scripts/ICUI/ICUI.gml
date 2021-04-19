@@ -2004,7 +2004,7 @@ function ICUI_Draw_input_binding_choosing_capture_confirming() {
 			 	  __INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.keyboard=b.code;
 				 }
 			 } else { // Gamepad...
-			 	__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=captured;				 
+			 	__INPUTCANDY.settings[settings_index].bindings[b_index].bound_action.gamepad=__INPUTCANDY.ui.input_binding.capture.captured;				 
 			 }
 			 /* allow us to continue on and act like a cancel */
 			case mi_cancel: // Cancel capturing altogether
@@ -2150,8 +2150,8 @@ function ICUI_Draw_input_binding_choice_capture() {
 	   
 	   if ( __INPUTCANDY.devices[player.device].axis_count > 1 ) {
 		var pairs=[]
-	    for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count-1; k++ ) {
-		 for ( l=0; l<__INPUTCANDY.devices[player.device].axis_count-1; l++ ) {
+	    for ( k=0; k<__INPUTCANDY.devices[player.device].axis_count; k++ ) {
+		 for ( l=0; l<__INPUTCANDY.devices[player.device].axis_count; l++ ) {
 			 if ( l==k ) continue;
 			 var len=array_length(pairs);
 			 var fondu=false;
@@ -2223,6 +2223,12 @@ function ICUI_Draw_input_binding_choice_capture() {
 	}
 	
 	found=array_length(captured)>0;
+	
+	if ( found ) {		
+	  		r=rectangle(__INPUTCANDY.ui.region.x+__INPUTCANDY.ui.region.w/3,oy,__INPUTCANDY.ui.region.w*0.25,eh*2);
+	  		ICUI_text( false, "Found: "+int(array_length(captured)), r.x, r.y );
+	  		oy += smidge+eh;
+	}
 	
 	if ( !__INPUTCANDY.ui.input_binding.capture.exitting ) {
 		if ( found == false ) __INPUTCANDY.ui.input_binding.capture.expired=0;
