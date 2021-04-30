@@ -2124,8 +2124,10 @@ function New_InputCandy_Private() {
 		return moving;
 	},
     // When using bindings, special options can modify a "moving" state
-	ApplyBindingToMoving: function ( binding, moving ) {
-		if ( binding.rotate ) { // Swap Left-Right for Up-Down
+	ApplyBindingToMoving: function ( binding, calibration_index, moving ) {
+		if ( calibration_index == none or calibration_index >= array_length(binding.calibration) ) return moving;
+		var calibration=binding.calibration[calibration_index];
+		if ( calibration.rotate ) { // Swap Left-Right for Up-Down
 			var V=moving.V;
 			moving.V=moving.H;
 			moving.H=V;
@@ -2136,18 +2138,19 @@ function New_InputCandy_Private() {
 			moving.down=moving.left;
 			moving.left=down;
 		}
-		if ( binding.reverse ) { // Swap Left for Right
+		if ( calibration.reverse ) { // Swap Left for Right
 			var left=moving.left;
 			moving.left=moving.right;
 			moving.right=left;
 			if ( moving.H != AXIS_NO_VALUE ) moving.H=-moving.H;
 		}
-		if ( binding.invert ) { // Swap Up for Down
+		if ( calibration.invert ) { // Swap Up for Down
 			var up=moving.up;
 			moving.up=moving.down;
 			moving.down=up;
 			if ( moving.V != AXIS_NO_VALUE ) moving.V=-moving.V;
 		}
+		return moving;
 	},
 	GetDirectional: function ( player_index, moving, type ) {
 		var player_number=player_index+1;
@@ -2375,6 +2378,7 @@ function New_InputCandy_Private() {
 					  or binding.bound_action.keyboard == IC_numpad
 					  or binding.bound_action.keyboard == IC_wasd ) {
 					  var value=__ICI.GetDirectional(player_index,moving,binding.bound_action.keyboard);
+					  value=__ICI.ApplyBindingToMoving(binding,i,moving);
 					  if ( !first_found ) { moving=value; first_found=true; }
 					  else if ( binding.bound_action.keyboard_combo ) moving=__ICI._MovingAnd(moving,value);
 					  else moving=__ICI._MovingOr(moving,value);
@@ -2390,7 +2394,7 @@ function New_InputCandy_Private() {
 				}
 			}
 		}
-		return __ICI.ApplyBindingToMoving(moving);
+		return moving;
 	},
 	// Call only on actions that are is_directional
 	MatchDirectional: function (player_index,action_index,action) {
@@ -2519,9 +2523,7 @@ function New_InputCandy_Private() {
 			action: none,     // Saves as a string, loads and is turned into an int
 			group: "",        // Used in the loading and saving process.
 			bound_action: none,
-			rotate: false,    // Swaps Up/Down for Left/Right
-			reverse: false,  // Reverses Left-Right after rotation
-			invert: false    // Inverts (Reverses) the Up/Down after rotation
+			calibrations: []
 		};
 	},	
 	
@@ -2692,9 +2694,7 @@ function New_InputCandy_Private() {
 			action: action.name,
 			group: action.group,
 			rotate: binding.rotate,
-			index: binding.index,
-			invert: binding.invert,
-		    reverse: binding.reverse,
+			calibrations: binding.calibrations,
 			bound_action: json_parse(json_stringify(binding.bound_action))
 		};
 		return new_jsonifiable;
