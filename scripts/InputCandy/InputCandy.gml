@@ -2404,7 +2404,7 @@ function New_InputCandy_Private() {
 		var moving=__ICI.New_ICMoving();
 		if ( settings_index >= 0 ) {
 		 var settings=__INPUTCANDY.settings[settings_index];
-		 var binding=__ICI.GetBinding( settings, action_index );
+		 var binding=__ICI.GetBinding( settings_index, action_index );
 		 if ( binding != none and binding.bound_action != none and binding.bound_action.is_directional ) return MatchBoundDirectional(player_index,action_index,action,binding,moving);
 		}
 		// No binding found.
@@ -2746,7 +2746,7 @@ function New_InputCandy_Private() {
 					show_debug_message("__ICI.LoadSettings: Could not locate an action for "+json_stringify(a[i].bindings[j]));
 					continue;
 				}
-				if ( res.index == none ) continue;
+				if ( res.action == none ) continue;
 				s.bindings[k]=res;
 				k++;
 			}
