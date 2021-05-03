@@ -1,6 +1,5 @@
-Init_InputCandy_Advanced();
-
-
+Init_InputCandy_Advanced({
+ init: function () {
 // Setup actions for our test game
 
 __IC.Action( "Jump", IC_B, IC_space, IC_mouse_right );
@@ -19,3 +18,6 @@ __IC.Action( "Dodge Low", IC_hat0_D, IC_key_S, IC_none );
 __IC.Action( "Special", IC_Ltrigger, IC_key_E, IC_none );
 __IC.Action( "Inventory", IC_Rshoulder, IC_key_I, IC_none );
 __IC.Action( "Help/Menu",  IC_back_select, IC_f1, IC_none );
+ }
+}
+);

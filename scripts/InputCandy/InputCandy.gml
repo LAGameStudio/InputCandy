@@ -14,7 +14,7 @@ See Notes > Note1 for more information
 #macro __ICI __INPUTCANDY.internal
 
 // 1. Initialize the "Advanced mode" with the following function call in a Room Creation or during initial game startup.
-function Init_InputCandy_Advanced() { __Private_Init_InputCandy(); }
+function Init_InputCandy_Advanced( bootstrap ) { __Private_Init_InputCandy(bootstrap); }
 
 /*
   InputCandy's advanced mode is relatively easy to use.
@@ -503,7 +503,7 @@ function ICDeviceTypeString(i) {
 
 // Called "once" to initialize everything.
 
-function __Private_Init_InputCandy() {
+function __Private_Init_InputCandy( bootstrap ) {
 	
 global.SDLDB_Entries=0;
 global.SDLDB=[];
@@ -829,6 +829,7 @@ __INPUTCANDY.directionals=[
 
 __INPUTCANDY.SDL_GameControllerDB = [];
 
+bootstrap.init();
 __ICI.LoadSettings();
 
 __ICI.Init();
@@ -2682,9 +2683,10 @@ function New_InputCandy_Private() {
 	
 	PostLoadBinding: function( binding ) {
 		var new_json=json_parse(json_stringify(binding));
-		var action_for_index =  __IC.GetAction( binding.action, binding.group );
-		new_json.action = action_for_index.index;
-		new_json.bound_action.index = action_for_index.index;
+		var action_index =  __IC.GetAction( binding.action, binding.group );
+		if ( action_index < 0 ) return false;
+		new_json.action = action_index;
+		new_json.bound_action.index = action_index;
 		return new_json;
 	},
 	
@@ -2693,7 +2695,6 @@ function New_InputCandy_Private() {
 		var new_jsonifiable={
 			action: action.name,
 			group: action.group,
-			rotate: binding.rotate,
 			calibrations: binding.calibrations,
 			bound_action: json_parse(json_stringify(binding.bound_action))
 		};
@@ -2741,6 +2742,10 @@ function New_InputCandy_Private() {
 			var k=0;
 			for ( var j=0; j<blen; j++ ) {
 				var res=__ICI.PostLoadBinding(a[i].bindings[j]);
+				if ( !res ) {
+					show_debug_message("__ICI.LoadSettings: Could not locate an action for "+json_stringify(a[i].bindings[j]));
+					continue;
+				}
 				if ( res.index == none ) continue;
 				s.bindings[k]=res;
 				k++;
