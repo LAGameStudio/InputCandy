@@ -108,6 +108,7 @@ function SDLDB_Process_Step() {
 	}
 	if ( __INPUTCANDY.SDLDB_Process_i < __INPUTCANDY.SDLDB_Process_len ) {
 		repeat ( __SDLDB_PROCESS_LINES_BATCH_SIZE ) {
+			if ( __INPUTCANDY.SDLDB_Process_i >= __INPUTCANDY.SDLDB_Process_len ) continue;
 			var line = __INPUTCANDY.SDLDB_Process_Lines[__INPUTCANDY.SDLDB_Process_i];
 			__INPUTCANDY.SDLDB_Process_i++;
 			var comma=string_pos(",",line);
