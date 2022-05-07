@@ -1,7 +1,9 @@
 
 for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
  if ( __INPUTCANDY.players[i].active ) {
-	 var str="Player "+int(i+1)+": "+int(__INPUTCANDY.players[i].data.scored)
+	 var str="Player "+int(i+1)+": "
+	  +int(__INPUTCANDY.players[i].data.scored)
+	  +" "
 	  + __IC.PlayerDiagnosticString(i+1);
 	 draw_text( 16, (i+1)*64, str );
  } else if ( i == 0 or __INPUTCANDY.players[i].device != none ) {

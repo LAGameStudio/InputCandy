@@ -46,7 +46,7 @@
       {"name":"frames","spriteId":null,"keyframes":{"Keyframes":[
             {"id":"80d40d0b-09c4-4f1b-9ab9-448d964198c0","Key":0.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"25804690-dc43-4105-a0be-e72e5074a58a","path":"sprites/s_InputCandy_TestGameSprites/s_InputCandy_TestGameSprites.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
             {"id":"d605708d-8772-40ad-84ed-b4a738d3fbd8","Key":1.0,"Length":1.0,"Stretch":false,"Disabled":false,"IsCreationKey":false,"Channels":{"0":{"Id":{"name":"5fb95ad5-70da-4047-8287-b3abfee22faf","path":"sprites/s_InputCandy_TestGameSprites/s_InputCandy_TestGameSprites.yy",},"resourceVersion":"1.0","resourceType":"SpriteFrameKeyframe",},},"resourceVersion":"1.0","resourceType":"Keyframe<SpriteFrameKeyframe>",},
-          ],"resourceVersion":"1.0","resourceType":"KeyframeStore<SpriteFrameKeyframe>",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"modifiers":[],"isCreationTrack":false,"resourceVersion":"1.0","tags":[],"resourceType":"GMSpriteFramesTrack",},
+          ],"resourceVersion":"1.0","resourceType":"KeyframeStore<SpriteFrameKeyframe>",},"trackColour":0,"inheritsTrackColour":true,"builtinName":0,"traits":0,"interpolation":1,"tracks":[],"events":[],"isCreationTrack":false,"resourceVersion":"1.0","tags":[],"resourceType":"GMSpriteFramesTrack","modifiers":[],},
     ],
     "visibleRange": null,
     "lockOrigin": false,
@@ -63,7 +63,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"s_InputCandy_TestGameSprites","path":"sprites/s_InputCandy_TestGameSprites/s_InputCandy_TestGameSprites.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "s_InputCandy_TestGameSprites",
     "tags": [],
     "resourceType": "GMSequence",
@@ -71,6 +71,7 @@
   "layers": [
     {"visible":true,"isLocked":false,"blendMode":0,"opacity":100.0,"displayName":"default","resourceVersion":"1.0","name":"4f925339-070c-4e31-92d4-ba686f4ace36","tags":[],"resourceType":"GMImageLayer",},
   ],
+  "nineSlice": null,
   "parent": {
     "name": "InputCandy",
     "path": "folders/Sprites/InputCandy.yy",

@@ -689,8 +689,12 @@ function ICUI_Draw_device_select( exit_to ) {
 			 r.x,r.y,r.w,r.h );
 		}
 		if ( k==__INPUTCANDY.player_using_keyboard_mouse ) {
-			draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*swh*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*swh*0.75, 0, c_white, 1.0 );
-			draw_sprite_ext( s_InputCandy_device_icons, 0,ox+cw/2+cw/4,oy+rh/2+rh/4, 1.0/sprite_get_width(s_InputCandy_device_icons)*swh*0.25, 1.0/sprite_get_height(s_InputCandy_device_icons)*swh*0.25, 0, c_white, 1.0 );
+			if ( __INPUTCANDY.players[k].device >= 0 ) {
+				draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*swh*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*swh*0.75, 0, c_white, 1.0 );
+				draw_sprite_ext( s_InputCandy_device_icons, 0,ox+cw/2+cw/4,oy+rh/2+rh/4, 1.0/sprite_get_width(s_InputCandy_device_icons)*swh*0.25, 1.0/sprite_get_height(s_InputCandy_device_icons)*swh*0.25, 0, c_white, 1.0 );
+			} else { // K3yb0@rd 0nly
+				draw_sprite_ext( s_InputCandy_device_icons, 0,ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*swh*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*swh*0.75, 0, c_white, 1.0 );
+			}
 		} else
 		draw_sprite_ext( s_InputCandy_device_icons, __ICI.GuessBestDeviceIcon(__INPUTCANDY.players[k].device==none?none:__INPUTCANDY.devices[__INPUTCANDY.players[k].device]),ox+cw/2,oy+rh/2, 1.0/sprite_get_width(s_InputCandy_device_icons)*swh*0.75, 1.0/sprite_get_height(s_InputCandy_device_icons)*swh*0.75, 0, c_white, 1.0 );
 		if ( __INPUTCANDY.players[k].device != none )
@@ -785,7 +789,8 @@ function ICUI_Draw_device_select( exit_to ) {
 		
 		if ( player_index == __INPUTCANDY.player_using_keyboard_mouse ) {
 			var kms="Keyboard and Mouse Settings";
-			if ( device.type == ICDeviceType_keyboard ) kms="Keyboard Settings";
+			if ( device == none ) {}
+			else if ( device.type == ICDeviceType_keyboard ) kms="Keyboard Settings";
 			else if ( device.type == ICDeviceType_mouse ) kms="Mouse Settings";
 			max_menuitem=mi;
 			sy += btn_height+btn_height/5;
@@ -1085,7 +1090,7 @@ function ICUI_assure_settings_exist() {
     // Create new settings if none exist, otherwise let the player choose existing settings or create new.
 	if ( __INPUTCANDY.players[player_index].settings == none ) {
 		if ( __INPUTCANDY.players[player_index].device == none ) {
-			if ( player_index != __INPUTCANDY.player_using_keyboard_mouse or !__INPUTCANDY.ui.input_binding.keyboard_mouse ) { // Return to previous screen
+			if ( player_index != __INPUTCANDY.player_using_keyboard_mouse or !__INPUTCANDY.ui.input_binding.keyboard_and_mouse ) { // Return to previous screen
 				return false;
 			} else if (array_length(__INPUTCANDY.settings) == 0 and __INPUTCANDY.ui.input_binding.keyboard_mouse) {
 				__INPUTCANDY.settings[0]=__ICI.New_ICSettings();
@@ -1281,32 +1286,34 @@ function ICUI_Draw_input_binding() {
 		ICUI_tinted_box(__INPUTCANDY.ui.style.knob1,__INPUTCANDY.ui.style.knob2, sb_mid.x+smidge, sb_mid.y+smidge + total_size*first_perc, sb_mid.w-smidge*2, (total_size*last_perc)-(total_size*first_perc) );
 	}
 
-	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
-		if ( cwithin(mouse_x,mouse_y,dz1) ) __INPUTCANDY.ui.input_binding.influencing=mi_dz1;
-		ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz1, dz1.x, dz1.y, dz1.w, dz1.h );
-	}
-	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2 != none ) {
-		if ( cwithin(mouse_x,mouse_y,dz2) ) __INPUTCANDY.ui.input_binding.influencing=mi_dz2;
-		ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz2, dz2.x, dz2.y, dz2.w, dz2.h );
-	}
+	if ( __INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings != none ) {
+		if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
+			if ( cwithin(mouse_x,mouse_y,dz1) ) __INPUTCANDY.ui.input_binding.influencing=mi_dz1;
+			ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz1, dz1.x, dz1.y, dz1.w, dz1.h );
+		}
+		if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2 != none ) {
+			if ( cwithin(mouse_x,mouse_y,dz2) ) __INPUTCANDY.ui.input_binding.influencing=mi_dz2;
+			ICUI_surround_button( __INPUTCANDY.ui.input_binding.influencing == mi_dz2, dz2.x, dz2.y, dz2.w, dz2.h );
+		}
 
-	// Draw this part second (that's why the ifs are identical)
-	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
-		ICUI_text( false, 
-			"Axis DeadZone: "+string_format(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1,1,2),
-			dz1.x+dz1.w/4, dz1.y+dz1.h/2 );
-		ICUI_slider( __INPUTCANDY.ui.input_binding.influencing == mi_dz1, 
-			__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1,
-			0.05, dz1.x+dz1.w/2,dz1.y,dz1.w/2,dz1.h );
+		// Draw this part second (that's why the ifs are identical)
+		if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1 != none ) {
+			ICUI_text( false, 
+				"Axis DeadZone: "+string_format(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1,1,2),
+				dz1.x+dz1.w/4, dz1.y+dz1.h/2 );
+			ICUI_slider( __INPUTCANDY.ui.input_binding.influencing == mi_dz1, 
+				__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone1,
+				0.05, dz1.x+dz1.w/2,dz1.y,dz1.w/2,dz1.h );
+		}
+		if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2 != none ) {
+			ICUI_text( false,
+				"Btn Threshold: "+string_format(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2,1,2),
+				dz2.x+dz2.w/4, dz2.y+dz2.h/2 );
+			ICUI_slider( __INPUTCANDY.ui.input_binding.influencing == mi_dz2, 
+				__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2,
+				0.05, dz2.x+dz2.w/2,dz2.y,dz2.w/2,dz2.h );
+		}	
 	}
-	if ( __INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2 != none ) {
-		ICUI_text( false,
-			"Btn Threshold: "+string_format(__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2,1,2),
-			dz2.x+dz2.w/4, dz2.y+dz2.h/2 );
-		ICUI_slider( __INPUTCANDY.ui.input_binding.influencing == mi_dz2, 
-			__INPUTCANDY.settings[__INPUTCANDY.players[__INPUTCANDY.ui.device_select.influencing].settings].deadzone2,
-			0.05, dz2.x+dz2.w/2,dz2.y,dz2.w/2,dz2.h );
-	}	
 	
 	if ( __INPUTCANDY.ui.input(ICUI_right) or __INPUTCANDY.ui.input(ICUI_down) ) {
 		audio_play_sound(a_ICUI_click,100,0);

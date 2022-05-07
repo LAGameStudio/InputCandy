@@ -2545,6 +2545,8 @@ function New_InputCandy_Private() {
 	},
 	
 	GetBindingData: function ( settings_index, action_index ) {
+	 if ( settings_index == none ) return none;
+	 if ( action_index == none ) return none;
 	 var bindings=array_length(__INPUTCANDY.settings[settings_index].bindings);
      for ( var i=0; i<bindings; i++ ) if ( __INPUTCANDY.settings[settings_index].bindings[i].action == action_index ) return __INPUTCANDY.settings[settings_index].bindings[i];
 	 return none;
