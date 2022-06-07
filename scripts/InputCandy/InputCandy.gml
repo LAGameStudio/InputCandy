@@ -1,6 +1,7 @@
 /*
 
 InputCandy for GMS 2.3.1+
+Tested in Runtime 2022.5.0.8
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
 
 See LICENSE for usage guidelines.
@@ -2804,12 +2805,12 @@ function New_InputCandy_Private() {
 	// Activate Setup applies device swapping, settings, call on "Frame 5", and only then. 
 	ActivateSetup: function() {
 		for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
-			if ( !__ICI.Is_Valid_Setting(__INPUTCANDY.setup.settings[i]) ) {
+			if ( array_length(__INPUTCANDY.setup.settings) < (i+1) || !__ICI.Is_Valid_Setting(__INPUTCANDY.setup.settings[i]) ) {
 				__INPUTCANDY.players[i].settings=none;
-				if ( !__ICI.Is_Valid_Device(__INPUTCANDY.setup.devices[i]) ) __INPUTCANDY.players[i].device=none;
+				if ( array_length(__INPUTCANDY.setup.devices) < (i+1) || !__ICI.Is_Valid_Device(__INPUTCANDY.setup.devices[i]) ) __INPUTCANDY.players[i].device=none;
 				continue;
 			}
-			if ( !__ICI.Is_Valid_Device(__INPUTCANDY.setup.devices[i]) ) {
+			if ( array_length(__INPUTCANDY.setup.devices) < (i+1) || !__ICI.Is_Valid_Device(__INPUTCANDY.setup.devices[i]) ) {
 				__INPUTCANDY.players[i].device=none;
 				continue;
 			}
