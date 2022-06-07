@@ -21,6 +21,8 @@ __If you download, use or just simply like this library, please star the above R
 game, please add the provided Lost Astronaut and Image Candy logos to your startup screen if you wish
 to give back a little credit to the creators of InputCandy.
 
+Likewise, we'd love to showcase any game you make with InputCandy here on this page, or in a file included with future versions of InputCandy, so please open an "Issue" and announce your game when it's available for others to play, and we'll include it.
+
 Using InputCandy
 ----------------
 
