@@ -1092,7 +1092,7 @@ function ICUI_assure_settings_exist() {
 		if ( __INPUTCANDY.players[player_index].device == none ) {
 			if ( player_index != __INPUTCANDY.player_using_keyboard_mouse or !__INPUTCANDY.ui.input_binding.keyboard_and_mouse ) { // Return to previous screen
 				return false;
-			} else if (array_length(__INPUTCANDY.settings) == 0 and __INPUTCANDY.ui.input_binding.keyboard_mouse) {
+			} else if (array_length(__INPUTCANDY.settings) == 0 and __INPUTCANDY.ui.input_binding.keyboard_and_mouse) {
 				__INPUTCANDY.settings[0]=__ICI.New_ICSettings();
 				__INPUTCANDY.settings[0].deviceInfo=__ICI.New_ICDevice();
 				__INPUTCANDY.settings[0].index=0;
