@@ -119,6 +119,7 @@ The following table illustrates support level for each device type by the InputC
 |Apple TV      |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported
 |iOS           |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported
 |Android       |Some coverage, use GameMaker to handle touch and other special platform options, Gamepads supported
+|Atari VCS     |See https://forum.yoyogames.com/index.php?threads/building-for-atari-vcs-ubuntu-18-04.96036/#post-591776 |
 |Xbox          |Untested, Gamepads supported
 |Sony PS4/5    |Untested, Gamepads supported
 |HTML5 (Web)   |Untested, Gamepads supported
