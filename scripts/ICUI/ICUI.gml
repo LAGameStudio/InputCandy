@@ -3091,7 +3091,7 @@ function ICUI_Draw_gamepad_test() {
 	var settings=settings_index == none ? none : __INPUTCANDY.settings[settings_index];
 	
 	// Someone ripped out the controller?
-	if ( player.device > array_length(__INPUTCANDY.devices)-1 or player.device == none and not km ) {  // go back
+	if ( (player.device > array_length(__INPUTCANDY.devices)-1 or player.device == none) and not km ) {  // go back
 		__INPUTCANDY.ui.gamepad_test.mode=false;
 		__INPUTCANDY.ui.gamepad_test.exitting=false;
 		__INPUTCANDY.ui.device_select.mode=true;
