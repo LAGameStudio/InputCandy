@@ -3095,6 +3095,7 @@ function ICUI_Draw_gamepad_test() {
 		__INPUTCANDY.ui.gamepad_test.mode=false;
 		__INPUTCANDY.ui.gamepad_test.exitting=false;
 		__INPUTCANDY.ui.device_select.mode=true;
+		return;
 	}	
 	
 	var device=player.device==none?none:__INPUTCANDY.devices[player.device];
