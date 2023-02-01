@@ -679,7 +679,9 @@ function ICUI_Draw_device_select( exit_to ) {
 	var swh=min(cw,rh);
 	var r;
 	
+	var devices_available = array_length(__INPUTCANDY.devices);
 	for ( var k=0; k<__INPUTCANDY.max_players; k++ ) {
+		if ( __INPUTCANDY.players[k].device >= devices_available ) __INPUTCANDY.players[k].device = none;
 		ICUI_text( false, "Player "+int(k+1), ox+cw/2, oy );
 		if ( !__INPUTCANDY.ui.device_select.inspecting ) {
 		    r=rectangle(ox+cw/2-cw*0.375, oy+rh/2-rh*0.375, cw*0.75, rh*0.75);	
