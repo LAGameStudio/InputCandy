@@ -11,8 +11,8 @@ See Notes > Note1 for more information
 */
 
 #macro __INPUTCANDY global.IC
-#macro __IC __INPUTCANDY.interface
-#macro __ICI __INPUTCANDY.internal
+#macro __IC global.IC.interface
+#macro __ICI global.IC.internal
 
 // 1. Initialize the "Advanced mode" with the following function call in a Room Creation or during initial game startup.
 function Init_InputCandy_Advanced( bootstrap ) { __Private_Init_InputCandy(bootstrap); }
@@ -1305,12 +1305,12 @@ function New_InputCandy() {
 			__INPUTCANDY.players=player_list;
 		},
 		// Returns the number of active players
-		GetPlayers: function () { return __ICI.GetActivePlayers(); },
+		GetPlayers: function () { var actives=0; for ( var i=0; i<(__INPUTCANDY.max_players); i++ ) if ( __INPUTCANDY.players[i].active ) actives++; return actives; },
 		GetPlayerIndex: function ( player_number ) { return player_number-1; },
 		// Returns 1 if the player has been activated, 2 if the player doesn't exist or 3 was already active
 		ActivatePlayer: function ( player_number ) {
 			var player_index=player_number-1;
-			if ( player_index >= array_length(__INPUTCANDY.max_players) ) return 2;
+			if ( player_index >= (__INPUTCANDY.max_players) ) return 2;
 			if ( __INPUTCANDY.players[player_index].active ) return 3;
 			__INPUTCANDY.players[player_index].active=true;
 			return 1;
@@ -1318,7 +1318,7 @@ function New_InputCandy() {
 		// Returns 1 if the player has been deactivated, 2 if the player doesn't exist or 3 was already not active
 		DeactivatePlayer: function ( player_number ) {
 			var player_index=player_number-1;
-			if ( player_index >= array_length(__INPUTCANDY.max_players) ) return 2;
+			if ( player_index >= (__INPUTCANDY.max_players) ) return 2;
 			if ( !__INPUTCANDY.players[player_index].active ) return 3;
 			__INPUTCANDY.players[player_index].active=false;
 			return 1;
