@@ -2033,7 +2033,7 @@ function New_InputCandy_Private() {
 			if ( action.fire_limit == 1 and s == frames ) return true;
 			else if ( frames > 0 and s % frames == 0 ) {
 				var fired_times=floor(s/frames);
-				if ( fired_times <= fire_limit ) return true;
+				if ( fired_times <= action.fire_limit ) return true;
 				else return false;
 			}
 		}
