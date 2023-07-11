@@ -617,7 +617,7 @@ function ICUI_Draw() {
 		default: return false;
 	}
 	// Draw FPS counter
-	if (debug_mode || global.showFPScounter) {
+	if (debug_mode) {
 	    draw_text(32, 32, "FPS = " + string(fps_real));
 	}
 	return true;
