@@ -7,5 +7,9 @@ var oldha=draw_get_halign();
 draw_set_halign(fa_center);
 
 draw_text( x+16, y+16, "Player "+int(player_number) );
+if ( moving != false ) {
+	draw_text(x+16, y+32, json_stringify(moving));
+}
+
 
 draw_set_halign(oldha);
