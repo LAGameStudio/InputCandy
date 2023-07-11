@@ -151,6 +151,13 @@ Advanced features of the library have been tested on a windows PC with the follo
 		- Stick-press did not register on right stick
 		- Stick-press on left stick only worked when stick was slightly up-left
 		- Supported vibration
+   		- Cannot detect X button  
+  	- Modern XBOX Controller (X or S series) ($49.95)
+   		- Generally maps correctly to most GameMaker defaults
+     		- Left trigger registers as "Buttons[10]" and has a range of 0.0 - 0.30 (fully pulled)
+       		- Underneath micro buttons do not register (cannot read value)
+	 	- Left/right switch control on LED illuminated did not register (cannot read value)
+   		- Cannot detect X button
 	- LUXMO SNES Wired USB Controller for PC ($7.99)
 	- Tomee USB Controller for PC/PS3 (PS3-style controller) ($19.99)
 		- Both stick-presses registered properly
