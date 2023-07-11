@@ -122,6 +122,9 @@ function __Init_ICUI() {
              return true;
 			}
 		},
+		pulse_calculator: function () {
+			return abs(sin(2*pi*lerp(0.25,1.0,__INPUTCANDY.ui.expired % __INPUTCANDY.ui.style.pulse_speed_s / __INPUTCANDY.ui.style.pulse_speed_s)));
+		},
 		expired: 0.0,  // seconds counter
 		// UI mode where we're selecting a device for each player, this is the default mode
 		device_select: {
@@ -203,7 +206,7 @@ function ICUI_slider( is_focused, value, increment, x, y, w, h ) {
 	var smidge=w*__INPUTCANDY.ui.style.highlight_thickness/2;
 	if ( is_focused ) {
 		if ( __INPUTCANDY.ui.style.pulse_highlight ) {
-			var pulse = __INPUTCANDY.ui.expired % __INPUTCANDY.ui.style.pulse_speed_s / __INPUTCANDY.ui.style.pulse_speed_s;
+			var pulse = __INPUTCANDY.ui.pulse_calculator();
 			var rgb1=color_mult( __INPUTCANDY.ui.style.highlight1, pulse );
 			var rgb2=color_mult( __INPUTCANDY.ui.style.highlight2, pulse );
 			draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,rgb1,rgb2,false);
@@ -222,7 +225,7 @@ function ICUI_text( is_focused, text, x, y ) {
 	if ( is_focused ) {
 		if ( __INPUTCANDY.ui.style.pulse_highlight ) {
 			draw_text_transformed_color( x, y, text, __INPUTCANDY.ui.fw, __INPUTCANDY.ui.fh, 0.0, __INPUTCANDY.ui.style.text1, __INPUTCANDY.ui.style.text2, __INPUTCANDY.ui.style.text3, __INPUTCANDY.ui.style.text4, 1.0 );
-			var pulse = __INPUTCANDY.ui.expired % __INPUTCANDY.ui.style.pulse_speed_s / __INPUTCANDY.ui.style.pulse_speed_s;
+			var pulse = __INPUTCANDY.ui.pulse_calculator();
 			draw_text_color( x, y, text, __INPUTCANDY.ui.style.highlight1, __INPUTCANDY.ui.style.highlight1, __INPUTCANDY.ui.style.highlight2, __INPUTCANDY.ui.style.highlight2, pulse );
 		} else {
 			draw_text_color( x, y, text, __INPUTCANDY.ui.style.highlight1, __INPUTCANDY.ui.style.highlight1, __INPUTCANDY.ui.style.highlight2, __INPUTCANDY.ui.style.highlight2, 1.0 );
@@ -264,7 +267,7 @@ function ICUI_text_in_box( is_focused, text, x, y, w, h ) {
 	if ( is_focused ) {
 		var thickness=h*__INPUTCANDY.ui.style.highlight_thickness;
 		if ( __INPUTCANDY.ui.style.pulse_highlight ) {
-			var pulse = __INPUTCANDY.ui.expired % __INPUTCANDY.ui.style.pulse_speed_s / __INPUTCANDY.ui.style.pulse_speed_s;
+			var pulse = __INPUTCANDY.ui.pulse_calculator();
 			var rgb1=color_mult( __INPUTCANDY.ui.style.highlight1, pulse );
 			var rgb2=color_mult( __INPUTCANDY.ui.style.highlight2, pulse );
 			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness,y+h+thickness,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,rgb1,rgb2,false);
@@ -280,7 +283,7 @@ function ICUI_surround_button( is_focused, x, y, w, h ) {
 	if ( is_focused ) {
 		var thickness=h*__INPUTCANDY.ui.style.highlight_thickness;
 		if ( __INPUTCANDY.ui.style.pulse_highlight ) {
-			var pulse = __INPUTCANDY.ui.expired % __INPUTCANDY.ui.style.pulse_speed_s / __INPUTCANDY.ui.style.pulse_speed_s;
+			var pulse = __INPUTCANDY.ui.pulse_calculator();
 			var rgb1=color_mult( __INPUTCANDY.ui.style.highlight1, pulse );
 			var rgb2=color_mult( __INPUTCANDY.ui.style.highlight2, pulse );
 			draw_roundrect_color_ext(x-thickness,y-thickness,x+w+thickness,y+h+thickness,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,rgb1,rgb2,false);
@@ -303,7 +306,7 @@ function ICUI_labeled_button( is_focused, labeltext, x, y, w, h ) {
 	if ( __INPUTCANDY.ui.style.draw_3d_buttons ) draw_roundrect_color_ext(x+thickness,y+thickness,x+w+thickness,y+h+thickness,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,rgb1,rgb2,false);
 	if ( is_focused ) {
 		if ( __INPUTCANDY.ui.style.pulse_highlight ) {
-			var pulse = __INPUTCANDY.ui.expired % __INPUTCANDY.ui.style.pulse_speed_s / __INPUTCANDY.ui.style.pulse_speed_s;
+			var pulse = __INPUTCANDY.ui.pulse_calculator();
 			rgb1=color_mult( __INPUTCANDY.ui.style.highlight1, pulse );
 			rgb2=color_mult( __INPUTCANDY.ui.style.highlight2, pulse );
 			draw_roundrect_color_ext(x,y,x+w,y+h,__INPUTCANDY.ui.style.corner_x,__INPUTCANDY.ui.style.corner_y,__INPUTCANDY.ui.style.box2,__INPUTCANDY.ui.style.box1,false);
@@ -612,6 +615,10 @@ function ICUI_Draw() {
 		case ICUI_SDLDB_select: ICUI_Draw_SDLDB_select(); break;
 		case ICUI_input_binding: ICUI_Draw_input_binding(); break;
 		default: return false;
+	}
+	// Draw FPS counter
+	if (debug_mode || global.showFPScounter) {
+	    draw_text(32, 32, "FPS = " + string(fps_real));
 	}
 	return true;
 }
