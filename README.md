@@ -47,7 +47,7 @@ However, in first writing and later using InputCandy, SDL and GameMaker, I can t
 Example Implementation
 ----------------------
 
-In my game, Apolune: Through the Wormhole, InputCandy is used as a fallback, and before I implemented anything to do with InputCandy, I identified requirements:
+In my game, **Apolune: Through the Wormhole**, InputCandy is used as a fallback, and before I implemented anything to do with InputCandy, I identified requirements:
 
 1) The game targets PCs running Windows OR Linux, OR the VCS Console.
 2) It would support a maximum of 8 players in local multiplayer.
@@ -140,7 +140,7 @@ In the above struct, the player ship object has to interpret these controls to u
 MenuControls
 ------------
 
-You need a generic, broadly usable, keyboard-friendly, and game-controller-friendly way of navigating menus before the player is asked a single configuration question.  This is the code I use in Apolune: Through the Wormhole to do this.  It is used on all cutscenes, help panels, game menus, and the main menu.  It has the ability to guess which player is doing the "accept" action.  It also tries to indicate if a VCS controller is present.  The MenuControls struct will return "release" signals for "left", "right", "up", "down", "back", "accept", and "cancel" - and you can also access globally the previous state via `global.Menucontrols_old_results` if you absolutely need to.
+You need a generic, broadly usable, keyboard-friendly, and game-controller-friendly way of navigating menus before the player is asked a single configuration question.  This is the code I use in **Apolune: Through the Wormhole** to do this.  It is used on all cutscenes, help panels, game menus, and the main menu.  It has the ability to guess which player is doing the "accept" action.  It also tries to indicate if a VCS controller is present.  The MenuControls struct will return "release" signals for "left", "right", "up", "down", "back", "accept", and "cancel" - and you can also access globally the previous state via `global.Menucontrols_old_results` if you absolutely need to.
 
 This code is built on top of InputCandySimple.  It supports VCS, PC games and can be adapted to other consoles.  This code is an example of the code used in Apolune: Through the Wormhole, and allows users to navigate game menus when the game first starts up.  Using this they can navigate to a menu option that leads to the customization panels available in ICUI.
 
