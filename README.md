@@ -42,7 +42,7 @@ However, in first writing and later using InputCandy, SDL and GameMaker, I can t
 1) There is no reliable way to detect most controllers, including the most common ones like XBOX and PS4.  This is because no one uses the GUID properly and third-party companies fake their GUID information or the GUID information returned to GameMaker is unreliable and differs per platform.  The "Gamepad Description" is also not reliable.
 2) Because there is no reliable way to detect most controllers, use of the SDLDB should be done so only in specific situations and is generally not recommended.  It certainly cannot be automagically applied to detected gamepads without user confirmation and one of those "Reverting in 15 seconds..." screens like you see in the Windows desktop when you change resolutions.
 3) Because there is no reliable way to detect most controllers, you may have to resort to checking "number of buttons, hats and axis" in specific cases which can result in false positives.
-4) See [Issue #4](https://github.com/LAGameStudio/InputCandy/issues/4)
+4) See [Issue #2](https://github.com/LAGameStudio/InputCandy/issues/2)
 
 Example Implementation
 ----------------------
@@ -57,7 +57,7 @@ In my game, Apolune: Through the Wormhole, InputCandy is used as a fallback, and
 
 Where InputCandy shines is not in the ability to detect controller manufacturers, but rather to detect if they are connected, and to assign them to players and remember that setting.  It also works well when adjusting if a player has disconnected a controller during gameplay.
 
-In point 2 above, I'm talking about profiles.  What I mean is, specific implementations selectable by the player. While [Issue #2](https://github.com/LAGameStudio/InputCandy/issues/2) suggests InputCandy provide a formal way of handling this, as it stands in <1.0.0 versions, it is left up to you, the game developer, to handle this because it is really specific to what you are trying to accomplish, ie. what platforms and expectations you have of your user audience.
+In point 2 above, I'm talking about profiles.  What I mean is, specific implementations selectable by the player. While [Issue #4](https://github.com/LAGameStudio/InputCandy/issues/4) suggests InputCandy provide a formal way of handling this, as it stands in <1.0.0 versions, it is left up to you, the game developer, to handle this because it is really specific to what you are trying to accomplish, ie. what platforms and expectations you have of your user audience.
 
 For example, I chose to support the XBOX Series X/S controller.  It is wise to also support the PS4 Dual Shock controller.  In 2023, these are the most likely controllers for the PC, not because the game is going to come out on those consoles.   Additionally, I targeted 1 other platform, the Atari VCS Console, so I have support built in for the VCS Modern and the VCS Classic.
 
