@@ -80,29 +80,62 @@ For each of these functions, I check against the player's game settings.  Here's
 ```javascript
 function CheckMenuButtonForPlayer(pn) {
 	var hand=GetPlayerControllerProfile(pn);
-	if ( hand == false ) return false;
+	if ( hand == false ) return false; // This means no device is selected.  In the future, this may check keyboard only if it is the keyboard-using-player.
 	var dv=hand.slot_id;
 	if ( hand.slot_id != none ) {
-		if ( isPlayerUsingVCSControls(pn) ) {
+		if ( isPlayerUsingVCSControls(pn) ) { // "VCS"
 			if ( isPlayerUsingVCSClassic(pn) ) {
 				return gamepad_button_check_released(dv,gp_face4);
 			} else { // VCS Modern
 				return gamepad_button_check_released(dv,gp_shoulderrb);
 			}
-		} else if ( isPlayerUsingXBOXControls(pn) ) {
+		} else if ( isPlayerUsingXBOXControls(pn) ) { // "XBOX"
 			return gamepad_button_check_released(dv,gp_start);
-		} else if ( isPlayerUsingPS4Controls(pn) ) {
+		} else if ( isPlayerUsingPS4Controls(pn) ) { // "PS4"
 			return gamepad_button_check_released(dv,gp_start);
 		} else if ( isPlayerUsingInputCandy(pn) ) { // "CUSTOM"
-			return IC_Match(pn,global.game_actions.menu.index);
+			return IC_Match(pn,global.game_actions.menu.index); // Calls InputCandy to test for action
 		}
 	} else if ( pn-1 == __INPUTCANDY.player_using_keyboard_mouse ) { 
 		return IC_Match(pn,global.game_actions.menu.index);
+ // This calls InputCandy to test for action.  In the future, this may check keyboard only if it is the keyboard-using-player.
 	}
 }
 ```
 
 The way I went about figuring out how to program the above is by testing each controller on each platform using InputCandy's `rm_InputCandy_diagnostics`, and then writing a special case for each scenario that needed one.
+
+Finally, I want to mention special considerations for the "Move" action.  The "Move" action is complicated because I let the user use the d-pad OR the stick.  It returns the following values in a struct:
+
+```javascript
+	var result={
+		combined: { x:0, y:0 },
+		move2: { x:0, y:0 },
+		move: { x:0, y:0 },
+		angle: AXIS_NO_VALUE,
+		angle2: AXIS_NO_VALUE,
+		left: false,
+		up: false,
+		right: false,
+		down: false,
+		leftUp: false,
+		leftDown: false,
+		rightUp: false,
+		rightDown: false,
+		left2: false,
+		up2: false,
+		right2: false,
+		down2: false,
+		leftUp2: false,
+		leftDown2: false,
+		rightUp2: false,
+		rightDown2: false,
+		raw: false,
+		raw2: false
+	};
+```
+
+In the above struct, the player ship object has to interpret these controls to update ship parameters (speed, direction, etc).  The _combined_ value takes the "greater magnitude" of move2 and move vectors.  Usually, the player will only be pressing one or the other, but they may be pressing both.  It also returns the explicit values for both the _move_ and _move2_ (d-pad and stick).  For the VCS Classic, Move2 is never set so those all appear as false always and shouldn't affect anything else.  The _raw_ and _raw2_ values are the structs returned by `global.IC.MatchDirectional()`, aka the struct seen in `global.ICI.New_ICMoving`
 
 MenuControls
 ------------
