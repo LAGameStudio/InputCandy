@@ -415,10 +415,11 @@ Advanced features of the library have been tested on a windows PC with the follo
        		- Underneath micro buttons do not register (cannot read value)
 	 	- Left/right switch control on LED illuminated did not register (cannot read value)
    		- Cannot detect X button
-	- LUXMO SNES Wired USB Controller for PC ($7.99)
+        - PS4 Dual Shock (in progress)
 	- Tomee USB Controller for PC/PS3 (PS3-style controller) ($19.99)
 		- Both stick-presses registered properly
 		- Triggers registered as shoulders and shoulders registered as triggers
+	- LUXMO SNES Wired USB Controller for PC ($7.99)
 	- ATARI VCS Classic Controller (not in a special mode)
 	- ATARI VCS Modern Controller (not in a special mode)
 	- Mouse, Keyboard
