@@ -14,6 +14,11 @@ For GMS 2.3.1+
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
 See a bug?  Submit an issue here, or better yet, a Pull Request.
 
+Asking Questions
+----------------
+
+If you need to ask the primary author a question, do so on the Lost Astronaut discord in the #inputcandy channel: https://discord.gg/PN6gS3CAEe
+
 Supporting InputCandy
 ---------------------
 
