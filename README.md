@@ -19,6 +19,8 @@ Asking Questions
 
 If you need to ask the primary author a question, do so on the Lost Astronaut discord in the #inputcandy channel: https://discord.gg/PN6gS3CAEe
 
+I have posted some additional code there to help people integrate InputCandy with their game.  There are many ways to do it, so I've left it over there because you can come up with your own implementation or tie it into your own game in whatever way you choose.
+
 If you have found an issue, simply create one [here](https://github.com/LAGameStudio/InputCandy/issues)
 
 Supporting InputCandy
