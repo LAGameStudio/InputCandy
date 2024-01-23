@@ -19,6 +19,8 @@ Asking Questions
 
 If you need to ask the primary author a question, do so on the Lost Astronaut discord in the #inputcandy channel: https://discord.gg/PN6gS3CAEe
 
+If you have found an issue, simply create one [here](https://github.com/LAGameStudio/InputCandy/issues)
+
 Supporting InputCandy
 ---------------------
 
