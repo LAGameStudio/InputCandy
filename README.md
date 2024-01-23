@@ -392,10 +392,13 @@ The following table illustrates the support level for each device type by the In
 
 In the above table, I'm trying to illustrate that, if you are making a single-player game for a touch device, this
 probably isn't the library for you.  If you want to support multiple controllers and user-defined control bindings,
-and you want to also support the keyboard and mouse, this library is probably for you.
+and you want to also support the keyboard and mouse, this library is probably for you.  It's tailored to support
+physical controllers, mouse+keyboard, on the PC and consoles.  It's not really for mobile, but it might help with
+physical controllers supported by mobile devices and tablets.
 
 As an alternative, there are many on GitHub.
 You may like https://github.com/JujuAdams/input/ which purports to be "Comprehensive cross-platform input for GameMaker Studio 2.3.0"
+and seems to support mobile and web more extensively.
 
 InputCandy's default settings panels for your games can be accessed directly or by calling the base panel.  This allows you to divide up the UI as you desire.  The UI also smartly turns off features when they have no value.   You'll never see a menu with one option, for example.
 
