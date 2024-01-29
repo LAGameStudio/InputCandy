@@ -1374,7 +1374,7 @@ function New_InputCandy() {
 		},
 		PlayerDiagnosticString: function( player_number ) {
 			var device=__INPUTCANDY.players[player_number-1].device;
-			if ( device == none ) return "No device";
+			if ( device == none or device >= array_length(__INPUTCANDY.states) ) return "No device";
 			return string_replace_all( json_stringify(__INPUTCANDY.states[device].signals), "},", "},\n" )+"\n";
 		}
 		
