@@ -9,7 +9,7 @@ of PC and gamepad-friendly platforms (consoles).
 It's that classic "control setup" panel system you are accustomed to seeing
 in video games small and large, but for GameMaker.  
 
-It also is an object-oriented controller programming api, with action matching, and a bunch of device detection features for keyboard, mouse and any SDL controller.
+It also is an object-oriented input API, with action matching, and a bunch of device detection features for keyboard, mouse and any SDL controller.
 
 For GMS 2.3.1+
 
