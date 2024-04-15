@@ -14,6 +14,17 @@ For GMS 2.3.1+
 Always get the latest version from https://github.com/LAGameStudio/InputCandy
 See a bug?  Submit an issue here, or better yet, a Pull Request.
 
+Games Using InputCandy
+======================
+
+Using InputCandy but not yet on this list? Submit your game via the Issues tab.
+
+Games that have used or benefitted from or contributed to InputCandy:
+- Circus Interstellar by EttinSoft @ https://steamcommunity.com/app/984030
+- Popcorn Rocket by Battle Geek Plus, LLC ( https://www.battlegeekplus.com/ ) @ https://www.popcornrocket.com/
+- 8-Bit Bakery by Shiphaven Games @ https://shiphavengames.com/
+- Uncle Flip's Sky Frizz @ https://liminalist-contraptions.itch.io/
+
 Asking Questions
 ----------------
 
