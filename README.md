@@ -7,7 +7,9 @@ InputCandy focuses on providing input testing and customization for users
 of PC and gamepad-friendly platforms (consoles).
 
 It's that classic "control setup" panel system you are accustomed to seeing
-in video games small and large, but for GameMaker.
+in video games small and large, but for GameMaker.  
+
+It also is an object-oriented controller programming api, with action matching, and a bunch of device detection features for keyboard, mouse and any SDL controller.
 
 For GMS 2.3.1+
 
@@ -15,7 +17,7 @@ Always get the latest version from https://github.com/LAGameStudio/InputCandy
 See a bug?  Submit an issue here, or better yet, a Pull Request.
 
 Games Using InputCandy
-======================
+----------------
 
 Using InputCandy but not yet on this list? Submit your game via the Issues tab.
 
