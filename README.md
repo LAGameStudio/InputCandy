@@ -69,7 +69,7 @@ However, in first writing and later using InputCandy, SDL and GameMaker, I can t
 Example Implementation
 ----------------------
 
-In my game, **Apolune: Through the Wormhole**, InputCandy is used as a fallback, and before I implemented anything to do with InputCandy, I identified requirements:
+In my game, **Apolune: Through the Wormhole**, InputCandy customization of controls is used as a fallback, and before I implemented anything to do with InputCandy, I identified requirements:
 
 1) The game targets PCs running Windows OR Linux, OR the VCS Console.
 2) It would support a maximum of 8 players in local multiplayer.
