@@ -2769,14 +2769,16 @@ function New_InputCandy_Private() {
 			deviceInfo: []
 		};
 	},
-	
+
 	// Since setup is driven by the current state, we create an IC setup from the existing configuration.
 	CurrentSetup: function() {
-		var setup=__ICI.New_ICSetup();		
+		var setup=global.IC.internal.New_ICSetup();		
 		for ( var i=0; i<__INPUTCANDY.max_players; i++ ) {
 			setup.devices[array_length(setup.devices)]=__INPUTCANDY.players[i].device;
 			setup.settings[array_length(setup.settings)]=__INPUTCANDY.players[i].settings;
-			if ( __INPUTCANDY.players[i].device == none ) setup.deviceInfo[array_length(setup.deviceInfo)]=none;
+			if ( __INPUTCANDY.players[i].device == none
+			  or __INPUTCANDY.players[i].device < array_length(__INPUTCANDY.devices) )
+				setup.deviceInfo[array_length(setup.deviceInfo)]=none;
 			else setup.deviceInfo[array_length(setup.deviceInfo)]=__INPUTCANDY.devices[__INPUTCANDY.players[i].device];
 		}
 		return setup;
