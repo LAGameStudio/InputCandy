@@ -56,8 +56,8 @@ function IC_Action_ext( n, g, gp, gpcombo, kb, kcombo, m, mcombo, kmcombo, UDLR,
  return __IC.Action_ext( n, g, gp, gpcombo, kb, kcombo, m, mcombo, kmcombo, UDLR, angled, held_s, flimit, on_rel, enabled, forbid );
 }
 
-function IC_GetAction( action_name ) {
-	if ( argument_count > 1 ) return __IC.GetAction(action_name,argument1);
+function IC_GetAction( action_name, group=none ) {
+	if ( group != none ) return __IC.GetAction(action_name,group);
 	else return __IC.GetAction(action_name);
 }
 
@@ -1812,10 +1812,10 @@ function New_InputCandy_Private() {
 		var previous_keys=__INPUTCANDY.keys;
 		var previous_keys_length=array_length(__INPUTCANDY.keys);
 		__INPUTCANDY.keys=[];
-		var j=0;
-		for ( var k=__FIRST_KEYBOARD_SIGNAL; k<__LAST_KEYBOARD_SIGNAL_PLUS_1; k++ ) {
+		var j=0,k=0,prev=none;
+		for ( k=__FIRST_KEYBOARD_SIGNAL; k<__LAST_KEYBOARD_SIGNAL_PLUS_1; k++ ) {
 			var signal=__INPUTCANDY.signals[k];
-			var prev=ButtonStateIn(signal.code,previous_keys,previous_keys_length);
+			prev=ButtonStateIn(signal.code,previous_keys,previous_keys_length);
 			var detected=false;
 			switch ( signal.keyboardMethod ) {
 				case ICKeyboardMethod_keycheck: detected = keyboard_check(signal.keycode); break;
@@ -1825,7 +1825,7 @@ function New_InputCandy_Private() {
 				default: show_debug_message("Invalid entry in INPUTCANDY's signals table! Index: "+int(k)); break;
 			}
 			if ( detected ) {
-				var state=__ICI.New_ICButtonState();
+				var state=global.IC.internal.New_ICButtonState();
 				state.button=__INPUTCANDY.signals[k].code;
 				state.signal_index=k;
 				state.is_held = true;
@@ -1836,7 +1836,7 @@ function New_InputCandy_Private() {
 				__INPUTCANDY.keys[j]=state;
 				j++;
 			} else if ( prev != none and prev.is_held == true ) {
-				var state=__ICI.New_ICButtonState();
+				var state=global.IC.internal.New_ICButtonState();
 				state.button=__INPUTCANDY.signals[k].code;
 				state.signal_index=k;
 				state.is_held = false;
@@ -1857,7 +1857,7 @@ function New_InputCandy_Private() {
 		prev=ButtonStateIn(IC_mouse_left,previous_mouse,previous_mouse_len);
 		if ( mouse_check_button(mb_left) ) {
 			__INPUTCANDY.mouse.left=true;
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = true;
@@ -1868,7 +1868,7 @@ function New_InputCandy_Private() {
 			__INPUTCANDY.mouseStates[j]=state;
 			j++;
 		} else if ( prev != none and prev.is_held == true ) {
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = false;
@@ -1881,7 +1881,7 @@ function New_InputCandy_Private() {
 		prev=ButtonStateIn(IC_mouse_right,previous_mouse,previous_mouse_len);
 		if ( mouse_check_button(mb_right) ) {
 			__INPUTCANDY.mouse.right=true;
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = true;
@@ -1892,7 +1892,7 @@ function New_InputCandy_Private() {
 			__INPUTCANDY.mouseStates[j]=state;
 			j++;
 		} else if ( prev != none and prev.is_held == true ) {
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = false;
@@ -1905,7 +1905,7 @@ function New_InputCandy_Private() {
 		prev=ButtonStateIn(IC_mouse_middle,previous_mouse,previous_mouse_len);
 		if ( mouse_check_button(mb_middle) ) {
 			__INPUTCANDY.mouse.middle=true;
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = true;
@@ -1916,7 +1916,7 @@ function New_InputCandy_Private() {
 			__INPUTCANDY.mouseStates[j]=state;
 			j++;
 		} else if ( prev != none and prev.is_held == true ) {
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = false;
@@ -1929,7 +1929,7 @@ function New_InputCandy_Private() {
 		prev=ButtonStateIn(IC_mouse_scrollup,previous_mouse,previous_mouse_len);
 		if ( mouse_wheel_up() ) {
 			__INPUTCANDY.mouse.up=true;
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = true;
@@ -1940,7 +1940,7 @@ function New_InputCandy_Private() {
 			__INPUTCANDY.mouseStates[j]=state;
 			j++;
 		} else if ( prev != none and prev.is_held == true ) {
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = false;
@@ -1953,7 +1953,7 @@ function New_InputCandy_Private() {
 		prev=ButtonStateIn(IC_mouse_scrolldown,previous_mouse,previous_mouse_len);
 		if ( mouse_wheel_down() ) {
 			__INPUTCANDY.mouse.down=true;
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = true;
@@ -1964,7 +1964,7 @@ function New_InputCandy_Private() {
 			__INPUTCANDY.mouseStates[j]=state;
 			j++;
 		} else if ( prev != none and prev.is_held == true ) {
-			var state=__ICI.New_ICButtonState();
+			var state=global.IC.internal.New_ICButtonState();
 			state.button=__INPUTCANDY.signals[k].code;
 			state.signal_index=k;
 			state.is_held = false;
